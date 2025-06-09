@@ -1,0 +1,21 @@
+# nodejs
+node_modules
+
+# nextjs
+out
+.next
+public
+
+# vscode
+.vscode
+
+# pc
+.DS_Store
+
+# serverless
+.serverless
+.serverless_nextjs
+
+# sst
+.open-next
+.sst
