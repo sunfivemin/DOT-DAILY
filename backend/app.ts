@@ -3,3 +3,4 @@ function greet(name: string): string {
 }
 
 console.log(greet("TypeScript"));
+
