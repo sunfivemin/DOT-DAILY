@@ -1,0 +1,38 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL") // .env에 연결 정보 들어감
+}
+
+// user - 이메일
+model User {
+    id       Int       @id @default(autoincrement())
+    email    String    @unique
+    nickname String?
+    accounts Account[] // 1:N 관계 (유저는 여러 소셜 계정 가질 수 있음)
+}
+
+// user - 인증
+model Account {
+    id           Int      @id @default(autoincrement())
+    userId       Int
+    provider     Provider // ENUM
+    providerId   String?
+    passwordHash String?
+    refreshToken String?
+    createdAt    DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+enum Provider {
+    local
+    google
+    kakao
+    github
+}
