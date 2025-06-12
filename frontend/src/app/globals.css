@@ -2,25 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @font-face {
-  font-family: 'Kkonghae';
-  src: url('/fonts/kkonghae.ttf') format('truetype');
-  font-display: swap;
-}
-
-.kkonghae {
-  font-family: 'Kkonghae', cursive;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-} */
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 html {
+  box-sizing: border-box;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
