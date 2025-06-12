@@ -28,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.variable} ${kkonghae.variable} font-sans`}>
-        {children}
+        <div className="w-full max-w-[430px] mx-auto min-h-screen bg-white shadow">
+          {children}
+        </div>
       </body>
     </html>
   );
