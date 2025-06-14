@@ -181,3 +181,11 @@
 .emoji-soso::before {
   background-image: url("/soso-on.svg");
 }
+
+.emoji-great::before {
+  background-image: url("/great-on.svg");
+}
+
+.emoji-appreciate::before {
+  background-image: url("/appreciate-on.svg");
+}
