@@ -43,16 +43,12 @@
   border: none;
   font-weight: bold;
   font-size: 12px;
-  color: #374151;
-  /* gray 700 */
 }
 
 /* 요일 */
 .fc-theme-standard th {
   background-color: #f8fafc;
   /* surface-base */
-  color: #4B5563;
-  /* gray 600 */
 }
 
 .fc-daygrid-day-events {
@@ -90,8 +86,8 @@
   width: 32px;
   height: 32px;
   border-radius: 100%;
-  background-color: #e5e7eb;
-  color: #374151;
+  background-color: #e4e4e7;
+  /* zinc 200 */
 
   display: flex;
   align-items: center;
@@ -102,7 +98,8 @@
 }
 
 .fc-daygrid-day-number:hover {
-  background-color: #d1d5db;
+  background-color: #d4d4d8;
+  /* zinc 300 */
 }
 
 .fc-daygrid-day.selected .fc-daygrid-day-number,

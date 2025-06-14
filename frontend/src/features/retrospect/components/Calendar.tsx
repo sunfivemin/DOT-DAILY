@@ -1,70 +1,46 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { DayCellContentArg } from '@fullcalendar/core';
 import './Calendar.css';
+import { getDailyEmojiMemos } from '../api';
+import { DailyEmojiMemo } from '../types/retrospect';
+import { formatDateToString, titleFormat } from '../utils';
 
 interface CalendarProps {
-  onDateSelect: (date: Date) => void;
-}
-
-interface DailyEmojiMemo {
-  date: string;
-  emoji: string;
-  memo: string;
+  onDateSelect: (date: Date, emoji: string, memo: string) => void;
 }
 
 const Calendar = ({ onDateSelect }: CalendarProps) => {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [emojiMemoList, setEmojiMemoList] = useState<DailyEmojiMemo[]>([
-    { date: '2025-06-23', emoji: 'great', memo: '오늘은 정말 좋은 하루였다!' },
-    { date: '2025-06-24', emoji: 'bad', memo: '새로운 프로젝트를 시작했다.' },
-    { date: '2025-06-25', emoji: 'appreciate', memo: '친구와 맛있는 저녁을 먹었다.' },
-    { date: '2025-06-12', emoji: 'good', memo: '운동을 열심히 했다.' },
-    { date: '2025-06-13', emoji: 'bad', memo: '책을 한 권 다 읽었다.' },
-    { date: '2025-06-17', emoji: 'great', memo: '업무를 모두 마무리했다.' },
-    { date: '2025-06-19', emoji: 'soso', memo: '산책하며 힐링했다.' },
-    { date: '2025-06-30', emoji: 'soso', memo: '한 달을 잘 마무리했다.' },
-    { date: '2025-06-26', emoji: 'bad', memo: '' },
-    { date: '2025-06-27', emoji: 'appreciate', memo: '' },
-    { date: '2025-06-28', emoji: 'great', memo: '' },
-    { date: '2025-06-29', emoji: 'good', memo: '' }
-  ]);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [emojiMemoList, setEmojiMemoList] = useState<DailyEmojiMemo[]>([]);
 
   const headerToolbar = useMemo(() => ({
     start: "title",
     center: "",
-    end: "prev next"
+    // end: "prev next"
+    end: ""
   }), []);
-
-  const titleFormat = (date: any) => {
-    const month = date.date.month + 1;
-    const paddedMonth = month < 10 ? `0${month}` : month;
-    return `${date.date.year}.${paddedMonth}`;
-  };
-
-  const formatDateToString = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
   const onDateClick = (dateInfo: DateClickArg) => {
     const clickedDate = formatDateToString(dateInfo.date);
     setSelectedDate(clickedDate);
 
+    const selectedItem = emojiMemoList.find(item => formatDateToString(item.date) === clickedDate);
+    const selectedEmoji = selectedItem?.emoji || '';
+    const selectedMemo = selectedItem?.memo || '';
+
     if (onDateSelect) {
-      onDateSelect(dateInfo.date);
+      onDateSelect(dateInfo.date, selectedEmoji, selectedMemo);
     }
   };
 
   const emojiByDateMap = useMemo(() => {
     return emojiMemoList.reduce((acc, item) => {
-      acc[item.date] = item.emoji;
+      acc[formatDateToString(item.date)] = item.emoji;
       return acc;
     }, {} as Record<string, string>);
   }, [emojiMemoList]);
@@ -89,20 +65,30 @@ const Calendar = ({ onDateSelect }: CalendarProps) => {
     return e.dayNumberText.replace('일', '');
   };
 
+  useEffect(() => {
+    const getEmojiMemos = async () => {
+      const data = await getDailyEmojiMemos();
+      setEmojiMemoList(data);
+    };
+    getEmojiMemos();
+  }, []);
+
   return (
-    <FullCalendar
-      plugins={[dayGridPlugin, interactionPlugin]}
-      initialView="dayGridMonth"
-      locale="ko"
-      height="auto"
-      headerToolbar={headerToolbar}
-      titleFormat={titleFormat}
-      dateClick={onDateClick}
-      dayCellClassNames={onDayCellClassNames}
-      dayCellContent={onDayCellContent}
-      showNonCurrentDates={false}
-      fixedWeekCount={false}
-    />
+    <section aria-label="회고 캘린더">
+      <FullCalendar
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        locale="ko"
+        height="auto"
+        headerToolbar={headerToolbar}
+        titleFormat={titleFormat}
+        dateClick={onDateClick}
+        dayCellClassNames={onDayCellClassNames}
+        dayCellContent={onDayCellContent}
+        showNonCurrentDates={false}
+        fixedWeekCount={false}
+      />
+    </section>
   );
 };
 
