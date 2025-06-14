@@ -1,0 +1,183 @@
+.fc-direction-ltr {
+  padding-bottom: 2.5rem;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 2rem;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* .fc .fc-button {
+  background-color: transparent;
+  border: none;
+  color: black;
+  padding: 0 8px;
+}
+
+.fc .fc-button span {
+  color: #3b82f6;
+}
+
+.fc .fc-button span:hover {
+  opacity: 0.7;
+}
+
+.fc .fc-button:hover {
+  background-color: transparent;
+}
+
+.fc .fc-button:focus {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+} */
+
+.fc-theme-standard .fc-scrollgrid,
+.fc-theme-standard th,
+.fc-theme-standard td {
+  border: none;
+  font-weight: bold;
+  font-size: 12px;
+  color: #374151;
+  /* gray 700 */
+}
+
+/* 요일 */
+.fc-theme-standard th {
+  background-color: #f8fafc;
+  /* surface-base */
+  color: #4B5563;
+  /* gray 600 */
+}
+
+.fc-daygrid-day-events {
+  display: none;
+}
+
+/* 오늘 날짜 */
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: transparent;
+}
+
+/* 이웃달 날짜 */
+.fc .fc-day-disabled {
+  background-color: transparent;
+}
+
+.fc-daygrid-day-frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
+
+/* dateClick 이벤트 비활성화 */
+.fc-daygrid-body {
+  pointer-events: none;
+}
+
+.fc-daygrid-day {
+  position: relative;
+}
+
+.fc-daygrid-day-number {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  background-color: #e5e7eb;
+  color: #374151;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.fc-daygrid-day-number:hover {
+  background-color: #d1d5db;
+}
+
+.fc-daygrid-day.selected .fc-daygrid-day-number,
+.fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background-color: #10b981;
+  color: white;
+}
+
+/* 라벨 공통 */
+.fc-daygrid-day.selected::after,
+.fc-daygrid-day.fc-day-today::after {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  padding: 1px 0;
+  font-size: 10px;
+  text-align: center;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.fc-daygrid-day.selected::after {
+  content: "선택";
+  background: #262C33;
+  color: #fff;
+}
+
+.fc-daygrid-day.fc-day-today::after {
+  content: "오늘";
+  background: #d1fae5;
+}
+
+/* 오늘 선택시 라벨 */
+.fc-daygrid-day.fc-day-today.selected::after {
+  background: #262C33;
+  color: #fff;
+}
+
+[class*="emoji-"] .fc-daygrid-day-number {
+  visibility: hidden;
+}
+
+[class*="emoji-"]:hover {
+  opacity: 0.7;
+}
+
+[class*="emoji-"] {
+  position: relative;
+}
+
+[class*="emoji-"]::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  background-size: 32px 32px;
+  background-repeat: no-repeat;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.emoji-good::before {
+  background-image: url("/good-on.svg");
+}
+
+.emoji-bad::before {
+  background-image: url("/bad-on.svg");
+}
+
+.emoji-soso::before {
+  background-image: url("/soso-on.svg");
+}
