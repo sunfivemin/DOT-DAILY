@@ -1,8 +1,10 @@
-export interface DailyEmojiMemo {
+import { Emotion } from '@/constants/emotion';
+
+export interface DailyEmotionMemo {
   date: Date;
-  emoji: string;
+  emotion: Emotion['id'];
   memo: string;
-} 
+}
 
 export interface TitleFormatDate {
   date: {

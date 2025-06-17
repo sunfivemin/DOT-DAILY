@@ -1,50 +1,39 @@
-import { Button } from '@/components/ui/Button';
-import { DailyEmojiMemo } from '../types/retrospect';
+import { DailyEmotionMemo } from '../types/retrospect';
+import { EMOTIONS } from '@/constants/emotion';
 
-const RetrospectContent = ({ date, emoji, memo }: DailyEmojiMemo) => {
+const RetrospectContent = ({ date, emotion, memo }: DailyEmotionMemo) => {
+  const emotionLabel = EMOTIONS.find(e => e.id === emotion)?.label;
+
   return (
-    <section aria-label="회고 내용">
-      <article className="
+    <article
+      aria-label="회고 내용"
+      className="
         bg-zinc-100
-        rounded-[10px]
-        font-kkonghae
-        h-[140px]
-        p-2
+        rounded-lg
+        h-[160px]
+        p-4
       ">
-        <header className='mb-2 text-zinc-700'>
-          {date instanceof Date ?
-            `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일` :
-            '날짜를 선택해주세요'
-          }
-        </header>
+      <header className='mb-2 text-zinc-700 font-kkonghae'>
+        {date instanceof Date ?
+          `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일` :
+          '날짜를 선택해주세요'
+        }
+      </header>
 
-        {emoji ? (
-          <figure className="flex gap-2 items-center">
-            <img src={`/${emoji}-on.svg`} alt={`${emoji} 이모지`} />
-            <figcaption>{memo || emoji}</figcaption>
-          </figure>
-        ) : (
-          <figure className="flex flex-col gap-2 items-center">
-            <img src="/good-off.svg" alt="흑백의 좋음 이모지" />
-            <figcaption className="text-zinc-400">
-              작성된 회고가 없어요
-            </figcaption>
-          </figure>
-        )}
-      </article>
-
-      <div className="flex justify-center gap-2 mt-6 px-4">
-        <Button
-          label="선택한 날짜로 이동"
-          variant="secondary"
-          className="flex-1 max-w-[160px]"
-        />
-        <Button
-          label="오늘 회고 작성하기"
-          className="flex-[1.5] max-w-[280px]"
-        />
-      </div>
-    </section>
+      {emotion ? (
+        <figure className="flex gap-2 items-center">
+          <img src={`/${emotion}-on.svg`} alt={`${emotionLabel} 이모션`} />
+          <figcaption className='font-kkonghae'>{memo || emotionLabel}</figcaption>
+        </figure>
+      ) : (
+        <figure className="flex flex-col gap-2 items-center">
+          <img src="/good-off.svg" alt="회고 이모션" />
+          <figcaption className="font-kkonghae text-zinc-400 ">
+            작성된 회고가 없어요
+          </figcaption>
+        </figure>
+      )}
+    </article>
   );
 };
 

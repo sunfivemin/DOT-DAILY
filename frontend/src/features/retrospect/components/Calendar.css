@@ -141,19 +141,19 @@
   color: #fff;
 }
 
-[class*="emoji-"] .fc-daygrid-day-number {
+[class*="emotion-"] .fc-daygrid-day-number {
   visibility: hidden;
 }
 
-[class*="emoji-"]:hover {
+[class*="emotion-"]:hover {
   opacity: 0.7;
 }
 
-[class*="emoji-"] {
+[class*="emotion-"] {
   position: relative;
 }
 
-[class*="emoji-"]::before {
+[class*="emotion-"]::before {
   content: "";
   position: absolute;
   top: 10px;
@@ -167,22 +167,22 @@
   cursor: pointer;
 }
 
-.emoji-good::before {
+.emotion-good::before {
   background-image: url("/good-on.svg");
 }
 
-.emoji-bad::before {
+.emotion-bad::before {
   background-image: url("/bad-on.svg");
 }
 
-.emoji-soso::before {
+.emotion-soso::before {
   background-image: url("/soso-on.svg");
 }
 
-.emoji-great::before {
+.emotion-great::before {
   background-image: url("/great-on.svg");
 }
 
-.emoji-appreciate::before {
+.emotion-appreciate::before {
   background-image: url("/appreciate-on.svg");
 }

@@ -6,17 +6,18 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { DayCellContentArg } from '@fullcalendar/core';
 import './Calendar.css';
-import { getDailyEmojiMemos } from '../api';
-import { DailyEmojiMemo } from '../types/retrospect';
+import { getDailyEmotionMemos } from '../api';
+import { DailyEmotionMemo } from '../types/retrospect';
 import { formatDateToString, titleFormat } from '../utils';
+import { Emotion } from '@/constants/emotion';
 
 interface CalendarProps {
-  onDateSelect: (date: Date, emoji: string, memo: string) => void;
+  onDateSelect: (date: Date, emotion: Emotion['id'] | '', memo: string) => void;
 }
 
 const Calendar = ({ onDateSelect }: CalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<string>('');
-  const [emojiMemoList, setEmojiMemoList] = useState<DailyEmojiMemo[]>([]);
+  const [emotionMemoList, setEmotionMemoList] = useState<DailyEmotionMemo[]>([]);
 
   const headerToolbar = useMemo(() => ({
     start: "title",
@@ -29,21 +30,21 @@ const Calendar = ({ onDateSelect }: CalendarProps) => {
     const clickedDate = formatDateToString(dateInfo.date);
     setSelectedDate(clickedDate);
 
-    const selectedItem = emojiMemoList.find(item => formatDateToString(item.date) === clickedDate);
-    const selectedEmoji = selectedItem?.emoji || '';
+    const selectedItem = emotionMemoList.find(item => formatDateToString(item.date) === clickedDate);
+    const selectedEmotion = selectedItem?.emotion || '';
     const selectedMemo = selectedItem?.memo || '';
 
     if (onDateSelect) {
-      onDateSelect(dateInfo.date, selectedEmoji, selectedMemo);
+      onDateSelect(dateInfo.date, selectedEmotion, selectedMemo);
     }
   };
 
-  const emojiByDateMap = useMemo(() => {
-    return emojiMemoList.reduce((acc, item) => {
-      acc[formatDateToString(item.date)] = item.emoji;
+  const emotionByDateMap = useMemo(() => {
+    return emotionMemoList.reduce((acc, item) => {
+      acc[formatDateToString(item.date)] = item.emotion;
       return acc;
     }, {} as Record<string, string>);
-  }, [emojiMemoList]);
+  }, [emotionMemoList]);
 
   const onDayCellClassNames = useCallback((dayCell: DayCellContentArg) => {
     const classes = [];
@@ -53,24 +54,24 @@ const Calendar = ({ onDateSelect }: CalendarProps) => {
       classes.push('selected');
     }
 
-    const emojiType = emojiByDateMap[dateStr];
-    if (emojiType) {
-      classes.push(`emoji-${emojiType}`);
+    const emotionType = emotionByDateMap[dateStr];
+    if (emotionType) {
+      classes.push(`emotion-${emotionType}`);
     }
 
     return classes;
-  }, [selectedDate, emojiByDateMap]);
+  }, [selectedDate, emotionByDateMap]);
 
   const onDayCellContent = (e: DayCellContentArg) => {
     return e.dayNumberText.replace('일', '');
   };
 
   useEffect(() => {
-    const getEmojiMemos = async () => {
-      const data = await getDailyEmojiMemos();
-      setEmojiMemoList(data);
+    const getEmotionMemos = async () => {
+      const data = await getDailyEmotionMemos();
+      setEmotionMemoList(data);
     };
-    getEmojiMemos();
+    getEmotionMemos();
   }, []);
 
   return (
