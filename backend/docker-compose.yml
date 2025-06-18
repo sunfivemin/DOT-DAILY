@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dotdaily
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
+
+  # docker-compose -f docker-compose.yml up 실행
+  # docker-compose -f docker-compose.yml down 끔
