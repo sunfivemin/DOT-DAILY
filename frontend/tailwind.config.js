@@ -4,6 +4,15 @@ const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx}', './.storybook/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-pretendard)', 'sans-serif'],
+        kkonghae: ['var(--font-kkonghae)', 'cursive'],
+      },
+      fontWeight: {
+        normal: '400',
+        medium: '500',
+        bold: '700',
+      },
       colors: {
         brand: {
           primary: colors.blue[500], // 로고 강조색

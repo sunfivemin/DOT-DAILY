@@ -4,11 +4,7 @@ import { useState } from 'react';
 import Calendar from '@/features/retrospect/components/Calendar';
 import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import RetrospectContent from '@/features/retrospect/components/RetrospectContent';
-import { Button } from '@/components/ui/Button';
-import { useRetrospectModal } from '@/features/retrospect/hooks/useRestrospectModal';
-import RetrospectModal from '@/features/retrospect/components/RetrospectModal';
-import { Emotion } from '@/constants/emotion';
+import { Button } from '@/components/ui/Button/Button';
 
 export default function RetrospectPage() {
   const [date, setDate] = useState(new Date());
