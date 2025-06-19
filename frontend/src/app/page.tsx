@@ -1,8 +1,8 @@
 'use client';
 
-import { TaskItem } from './features/myday/components';
 import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { TaskItem } from '@/features/myday/components';
 
 export default function MyDayPage() {
   return (
