@@ -1,4 +1,5 @@
-// src/components/ui/Button.tsx
+'use client';
+
 import type { ButtonHTMLAttributes } from 'react';
 import { clsx } from 'clsx';
 import { buttonVariants } from '@/lib/styles/buttonVariants';
@@ -8,16 +9,19 @@ type ButtonVariant = VariantProps<typeof buttonVariants>['variant'];
 type ButtonSize = VariantProps<typeof buttonVariants>['size'];
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  label: string;
+  label?: string;
   variant?: ButtonVariant;
   size?: ButtonSize;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export const Button = ({
   label,
-  variant,
-  size,
+  variant = 'primary',
+  size = 'md',
   className,
+  children,
   ...props
 }: ButtonProps) => {
   return (
@@ -25,7 +29,7 @@ export const Button = ({
       className={clsx(buttonVariants({ variant, size }), className)}
       {...props}
     >
-      {label}
+      {children ?? label}
     </button>
   );
 };

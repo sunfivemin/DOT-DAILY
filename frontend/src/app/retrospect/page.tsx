@@ -3,7 +3,7 @@
 
 import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/Button/Button';
 
 export default function RetrospectPage() {
   return (
