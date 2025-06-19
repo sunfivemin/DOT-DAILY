@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Emotion } from '@/constants/emotion';
-import { useModal } from '@/hooks/useModal';
+import { useFullScreenModal } from '@/components/ui/FullScreenModal/FullScreenModalProvider';
 
 export const useRetrospectModal = () => {
-  const { isOpen, openModal, closeModal: closeGenericModal } = useModal();
+  const { closeModal: closeFullScreenModal } = useFullScreenModal();
+
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion['id'] | ''>('');
   const [retrospectText, setRetrospectText] = useState('');
 
   const closeModal = () => {
-    closeGenericModal();
+    closeFullScreenModal();
     setSelectedEmotion('');
     setRetrospectText('');
   };
@@ -18,12 +19,10 @@ export const useRetrospectModal = () => {
   };
 
   return {
-    isOpen,
     selectedEmotion,
     retrospectText,
     setSelectedEmotion,
     setRetrospectText,
-    openModal,
     closeModal,
     onSubmit
   };

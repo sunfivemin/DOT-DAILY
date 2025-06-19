@@ -1,10 +1,10 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/Button/Button';
 import EmotionSelector from './EmotionSelector';
+import { motion } from 'framer-motion';
 
 interface RetrospectModalProps {
-  isOpen: boolean;
   selectedEmotion: string;
   retrospectText: string;
   onEmotionSelect: (emotion: string) => void;
@@ -14,7 +14,6 @@ interface RetrospectModalProps {
 }
 
 export default function RetrospectModal({
-  isOpen,
   selectedEmotion,
   retrospectText,
   onEmotionSelect,
@@ -23,16 +22,24 @@ export default function RetrospectModal({
   onSubmit
 }: RetrospectModalProps) {
   return (
-    <div className="
-      flex-1 flex flex-col 
-      justify-between
-      px-4 py-6
-    ">
+    <motion.div
+      key="retrospect-modal"
+      initial={{ y: '100%' }}
+      animate={{ y: 0 }}
+      exit={{ y: '100%' }}
+      transition={{ type: 'tween', duration: 0.3 }}
+      className="
+        absolute inset-y-0 z-10
+        flex flex-col justify-between
+        top-[54px] bottom-[61px]
+        w-[430px]
+        bg-white
+        px-4 py-6
+        "
+    >
       <div>
-        <button
-          onClick={onClose}
-        >
-          <img src="/back-arrow.svg" alt="회고 이모션" />
+        <button onClick={onClose}>
+          <img src="/back.svg" alt="회고 이모션" />
         </button>
         <EmotionSelector
           selectedEmotion={selectedEmotion}
@@ -50,6 +57,7 @@ export default function RetrospectModal({
               font-kkonghae 
               w-full h-40 p-4 mt-2
               border border-gray-200 rounded-lg
+              resize-none
             "
           />
           <div className="text-right text-xs text-gray-400">
@@ -62,17 +70,13 @@ export default function RetrospectModal({
         label="오늘 회고 등록하기"
         disabled={!selectedEmotion || !retrospectText.trim()}
         onClick={onSubmit}
-        variant="outline"
+        variant="solid" // variant를 outline에서 solid로 변경
         className="
-          w-full
-          bg-black
-          hover:bg-gray-700 
-          text-white
           disabled:bg-gray-400 
           disabled:border-none
           disabled:cursor-not-allowed
         "
       />
-    </div>
+    </motion.div>
   );
 }

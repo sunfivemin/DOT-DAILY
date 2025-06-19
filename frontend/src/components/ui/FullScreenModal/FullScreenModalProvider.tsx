@@ -9,9 +9,11 @@ import React, {
 } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import TaskFormModal from '@/features/myday/components/TaskFormModal';
+import { useRetrospectModal } from '@/features/retrospect/hooks/useRestrospectModal';
+import RetrospectModal from '@/features/retrospect/components/RetrospectModal';
 
 
-export type ModalName = 'taskForm' | null;
+export type ModalName = 'taskForm' | 'retrospectForm' | null;
 
 export interface TaskFormModalProps {
   defaultDate?: string;
@@ -58,11 +60,22 @@ export const useFullScreenModal = () => {
 
 const FullScreenModalRenderer = () => {
   const { modalName, modalProps, closeModal } = useFullScreenModal();
+  const retrospectModal = useRetrospectModal();
 
   return (
     <AnimatePresence>
       {modalName === 'taskForm' && (
         <TaskFormModal onClose={closeModal} {...modalProps} />
+      )}
+      {modalName === 'retrospectForm' && (
+        <RetrospectModal
+          selectedEmotion={retrospectModal.selectedEmotion}
+          retrospectText={retrospectModal.retrospectText}
+          onEmotionSelect={retrospectModal.setSelectedEmotion}
+          onTextChange={retrospectModal.setRetrospectText}
+          onClose={retrospectModal.closeModal}
+          onSubmit={retrospectModal.onSubmit}
+        />
       )}
     </AnimatePresence>
   );
