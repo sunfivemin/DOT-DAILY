@@ -1,42 +1,36 @@
 'use client';
 
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { DayCellContentArg } from '@fullcalendar/core';
 import './Calendar.css';
 import { getDailyEmotionMemos } from '../api';
-import { DailyEmotionMemo } from '../types/retrospect';
-import { formatDateToString, titleFormat } from '../utils';
-import { Emotion } from '@/constants/emotion';
+import { formatDateToString } from '../utils';
+import { useDateStore } from '@/store/dateStore';
 
 interface CalendarProps {
-  onDateSelect: (date: Date, emotion: Emotion['id'] | '', memo: string) => void;
+  onDateModalOpen: () => void;
 }
 
-const Calendar = ({ onDateSelect }: CalendarProps) => {
-  const [selectedDate, setSelectedDate] = useState<string>('');
-  const [emotionMemoList, setEmotionMemoList] = useState<DailyEmotionMemo[]>([]);
+const Calendar = ({ onDateModalOpen }: CalendarProps) => {
+  const {
+    selectedDate,
+    setSelectedDate,
+    emotionMemoList,
+    setEmotionMemoList,
+    selectedYearMonth
+  } = useDateStore();
+  const calendarRef = useRef<FullCalendar>(null);
 
-  const headerToolbar = useMemo(() => ({
-    start: "title",
-    center: "",
-    // end: "prev next"
-    end: ""
-  }), []);
+  const onDateNavigation = () => {
+    onDateModalOpen();
+  }
 
   const onDateClick = (dateInfo: DateClickArg) => {
     const clickedDate = formatDateToString(dateInfo.date);
     setSelectedDate(clickedDate);
-
-    const selectedItem = emotionMemoList.find(item => formatDateToString(item.date) === clickedDate);
-    const selectedEmotion = selectedItem?.emotion || '';
-    const selectedMemo = selectedItem?.memo || '';
-
-    if (onDateSelect) {
-      onDateSelect(dateInfo.date, selectedEmotion, selectedMemo);
-    }
   };
 
   const emotionByDateMap = useMemo(() => {
@@ -74,15 +68,30 @@ const Calendar = ({ onDateSelect }: CalendarProps) => {
     getEmotionMemos();
   }, []);
 
+  useEffect(() => {
+    if (calendarRef.current) {
+      const targetDate = new Date(selectedYearMonth.year, selectedYearMonth.month - 1, 1);
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.gotoDate(targetDate);
+    }
+  }, [selectedYearMonth]);
+
   return (
     <section aria-label="회고 캘린더">
+      <button
+        onClick={onDateNavigation}
+        className='flex gap-2 items-center text-xl font-bold mb-8'
+      >
+        {selectedYearMonth.year}. {selectedYearMonth.month}
+        <img src="/dropdown.svg" alt="달력 선택" />
+      </button>
       <FullCalendar
+        ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         locale="ko"
         height="auto"
-        headerToolbar={headerToolbar}
-        titleFormat={titleFormat}
+        headerToolbar={false}
         dateClick={onDateClick}
         dayCellClassNames={onDayCellClassNames}
         dayCellContent={onDayCellContent}

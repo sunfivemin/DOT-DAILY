@@ -2,41 +2,6 @@
   padding-bottom: 2.5rem;
 }
 
-.fc .fc-toolbar.fc-header-toolbar {
-  margin-bottom: 2rem;
-}
-
-.fc .fc-toolbar-title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-/* .fc .fc-button {
-  background-color: transparent;
-  border: none;
-  color: black;
-  padding: 0 8px;
-}
-
-.fc .fc-button span {
-  color: #3b82f6;
-}
-
-.fc .fc-button span:hover {
-  opacity: 0.7;
-}
-
-.fc .fc-button:hover {
-  background-color: transparent;
-}
-
-.fc .fc-button:focus {
-  box-shadow: none !important;
-  border: none !important;
-  outline: none !important;
-  background-color: transparent !important;
-} */
-
 .fc-theme-standard .fc-scrollgrid,
 .fc-theme-standard th,
 .fc-theme-standard td {

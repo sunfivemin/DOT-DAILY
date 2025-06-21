@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/Button/Button';
 import EmotionSelector from './EmotionSelector';
 import { motion } from 'framer-motion';
+import { useDateStore } from '@/store/dateStore';
+import { formatDisplayDate } from '../utils';
 
 interface RetrospectModalProps {
   selectedEmotion: string;
@@ -21,6 +23,8 @@ export default function RetrospectModal({
   onClose,
   onSubmit
 }: RetrospectModalProps) {
+  const { selectedDate } = useDateStore();
+
   return (
     <motion.div
       key="retrospect-modal"
@@ -29,10 +33,11 @@ export default function RetrospectModal({
       exit={{ y: '100%' }}
       transition={{ type: 'tween', duration: 0.3 }}
       className="
-        absolute inset-y-0 z-10
+        absolute z-10
         flex flex-col justify-between
         top-[54px] bottom-[61px]
-        w-[430px]
+        max-w-[430px]
+        w-full
         bg-white
         px-4 py-6
         "
@@ -47,7 +52,7 @@ export default function RetrospectModal({
         />
 
         <section aria-label="회고 작성">
-          <label className="font-kkonghae">2025년 6월 18일 - zustand로 날짜</label>
+          <label className="font-kkonghae">{formatDisplayDate(selectedDate)}</label>
           <textarea
             value={retrospectText}
             onChange={(e) => onTextChange(e.target.value)}
@@ -70,7 +75,7 @@ export default function RetrospectModal({
         label="오늘 회고 등록하기"
         disabled={!selectedEmotion || !retrospectText.trim()}
         onClick={onSubmit}
-        variant="solid" // variant를 outline에서 solid로 변경
+        variant="solid"
         className="
           disabled:bg-gray-400 
           disabled:border-none

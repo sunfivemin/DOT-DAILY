@@ -1,31 +1,22 @@
 'use client';
 
-import { useState } from 'react';
 import Calendar from '@/features/retrospect/components/Calendar';
 import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button/Button';
-import { Emotion } from '@/constants/emotion';
 import RetrospectContent from '@/features/retrospect/components/RetrospectContent';
 import { FullScreenModalProvider, useFullScreenModal } from '@/components/ui/FullScreenModal/FullScreenModalProvider';
 
 function RetrospectPageContent() {
-  const [date, setDate] = useState(new Date());
-  const [emotion, setEmotion] = useState<Emotion['id'] | ''>('');
-  const [memo, setMemo] = useState('');
   const { openModal } = useFullScreenModal();
 
-  const onDateSelect = (date: Date, emotion: Emotion['id'] | '', memo: string) => {
-    setDate(date);
-    setEmotion(emotion);
-    setMemo(memo);
-  };
-
   const onTodayRetrospect = () => {
-    const today = new Date();
-    setDate(today);
     openModal('retrospectForm');
   };
+
+  const onDateNavigation = () => {
+    openModal('DateNavigationForm');
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-surface-base">
@@ -33,10 +24,9 @@ function RetrospectPageContent() {
 
       <div className="flex-1">
         <main className="px-4 py-6">
-          <Calendar onDateSelect={onDateSelect} />
-          <RetrospectContent date={date} emotion={emotion} memo={memo} />
+          <Calendar onDateModalOpen={onDateNavigation} />
+          <RetrospectContent />
         </main>
-
       </div>
 
       <nav

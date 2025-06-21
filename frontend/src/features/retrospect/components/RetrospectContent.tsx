@@ -1,7 +1,17 @@
-import { DailyEmotionMemo } from '../types/retrospect';
 import { EMOTIONS } from '@/constants/emotion';
+import { useDateStore } from '@/store/dateStore';
+import { formatDateToString, formatDisplayDate } from '../utils';
+import { useMemo } from 'react';
 
-const RetrospectContent = ({ date, emotion, memo }: DailyEmotionMemo) => {
+const RetrospectContent = () => {
+  const { selectedDate, emotionMemoList } = useDateStore();
+  const selectedEmotionMemo = useMemo(() => {
+    return emotionMemoList.find(item => {
+      return formatDateToString(item.date) === selectedDate;
+    });
+  }, [emotionMemoList, selectedDate]);
+  const emotion = selectedEmotionMemo?.emotion || '';
+  const memo = selectedEmotionMemo?.memo || '';
   const emotionLabel = EMOTIONS.find(e => e.id === emotion)?.label;
 
   return (
@@ -14,10 +24,7 @@ const RetrospectContent = ({ date, emotion, memo }: DailyEmotionMemo) => {
         p-4
       ">
       <header className='mb-2 text-zinc-700 font-kkonghae'>
-        {date instanceof Date ?
-          `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일` :
-          '날짜를 선택해주세요'
-        }
+        {formatDisplayDate(selectedDate)}
       </header>
 
       {emotion ? (

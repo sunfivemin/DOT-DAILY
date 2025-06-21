@@ -11,9 +11,9 @@ import { AnimatePresence } from 'framer-motion';
 import TaskFormModal from '@/features/myday/components/TaskFormModal';
 import { useRetrospectModal } from '@/features/retrospect/hooks/useRestrospectModal';
 import RetrospectModal from '@/features/retrospect/components/RetrospectModal';
+import DateNavigationModal from '@/features/retrospect/components/DateNavigationModal';
 
-
-export type ModalName = 'taskForm' | 'retrospectForm' | null;
+export type ModalName = 'taskForm' | 'retrospectForm' | 'DateNavigationForm' | null;
 
 export interface TaskFormModalProps {
   defaultDate?: string;
@@ -76,6 +76,9 @@ const FullScreenModalRenderer = () => {
           onClose={retrospectModal.closeModal}
           onSubmit={retrospectModal.onSubmit}
         />
+      )}
+      {modalName === 'DateNavigationForm' && (
+        <DateNavigationModal onClose={closeModal} />
       )}
     </AnimatePresence>
   );
