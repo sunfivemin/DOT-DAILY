@@ -26,6 +26,7 @@ const config = {
         status: {
           doneBg: colors.indigo[100], // 완료 배경
           disabledText: colors.indigo[300], // 흐린 텍스트
+          success: colors.green[500], // 성공 상태
         },
         tag: {
           retryBg: colors.indigo[100],
@@ -41,6 +42,7 @@ const config = {
           card: colors.white, // 카드 배경
           input: colors.gray[50], // 입력창 배경
           popup: colors.white, // 팝업용 배경
+          hover: colors.gray[100], // 호버 배경
         },
         text: {
           default: colors.gray[800], // 일반 텍스트

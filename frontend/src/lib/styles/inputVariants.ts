@@ -12,9 +12,10 @@ export const inputVariants = cva(
       },
       state: {
         default:
-          'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500',
-        error: 'border-red-500 focus:ring-1 focus:ring-red-500',
-        success: 'border-green-500 focus:ring-1 focus:ring-green-500',
+          'border-border-input focus:border-brand-primary focus:ring-1 focus:ring-brand-primary',
+        error: 'border-priority-must focus:ring-1 focus:ring-priority-must',
+        success:
+          'border-status-success focus:ring-1 focus:ring-status-success',
       },
     },
     defaultVariants: {
