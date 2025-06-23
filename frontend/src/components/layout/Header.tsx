@@ -17,7 +17,7 @@ export default function Header({ title }: HeaderProps) {
             alt="dot_daily logo"
             width={100}
             height={24}
-            className="w-auto"
+            priority
           />
         </Link>
         <h1 className="text-lg font-bold text-text-strong">{title}</h1>

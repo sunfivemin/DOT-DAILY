@@ -1,21 +1,40 @@
 'use client';
 
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { clsx } from 'clsx';
+import { useDateStore } from '@/store/useDateStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { getTasksByDate } from '@/lib/api/tasks';
 
 // 각 날짜 아이템을 렌더링하는 내부 컴포넌트
 function DateItem({
   date,
   isSelected,
+  onSelect,
 }: {
   date: Date;
   isSelected: boolean;
+  onSelect: () => void;
 }) {
+  const isToday = isSameDay(date, new Date());
+  const queryClient = useQueryClient();
+
+  const prefetchTasks = async () => {
+    console.log(`Prefetching tasks for ${date.toLocaleDateString()}`);
+    await queryClient.prefetchQuery({
+      queryKey: ['tasks', date.toISOString().split('T')[0]],
+      queryFn: () => getTasksByDate(date),
+    });
+    console.log(`Prefetching complete for ${date.toLocaleDateString()}`);
+  };
+
   return (
     <div
+      onClick={onSelect}
+      onMouseEnter={prefetchTasks}
       className={clsx(
-        'flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-all',
+        'flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-all cursor-pointer',
         isSelected
           ? 'bg-surface-card shadow-sm' // 선택되면 흰색 배경 + 그림자
           : 'bg-transparent' // 선택되지 않으면 투명
@@ -35,25 +54,38 @@ function DateItem({
           isSelected ? 'text-text-strong' : 'text-text-weak'
         )}
       >
-        {isSelected ? '오늘' : format(date, 'E', { locale: ko })}
+        {isToday ? '오늘' : format(date, 'E', { locale: ko })}
       </span>
     </div>
   );
 }
 
 export default function DateHeader() {
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
+  const { selectedDate, setSelectedDate } = useDateStore();
+
+  const getDates = () => {
+    const prevDate = new Date(selectedDate);
+    prevDate.setDate(selectedDate.getDate() - 1);
+
+    const nextDate = new Date(selectedDate);
+    nextDate.setDate(selectedDate.getDate() + 1);
+
+    return [prevDate, selectedDate, nextDate];
+  };
+
+  const dates = getDates();
 
   return (
     // 전체 배경은 앱의 기본 배경색(surface-base)과 동일하게 맞춥니다.
     <div className="flex items-center justify-around py-3 px-2 bg-surface-base">
-      <DateItem date={yesterday} isSelected={false} />
-      <DateItem date={today} isSelected={true} />
-      <DateItem date={tomorrow} isSelected={false} />
+      {dates.map((date, index) => (
+        <DateItem
+          key={index}
+          date={date}
+          isSelected={isSameDay(date, selectedDate)}
+          onSelect={() => setSelectedDate(date)}
+        />
+      ))}
     </div>
   );
 } 
