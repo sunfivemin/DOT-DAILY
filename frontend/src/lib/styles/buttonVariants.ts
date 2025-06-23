@@ -21,7 +21,7 @@ export const buttonVariants = cva(
           'bg-white text-brand-primary border border-brand-primary hover:bg-brand-primary/10',
 
         /** 삭제 등 위험한 액션 버튼 */
-        danger: 'bg-red-500 text-white hover:bg-red-600',
+        danger: 'bg-priority-must text-white hover:bg-priority-must/90',
 
         /** 테두리 버튼 (중립 액션, 기본 텍스트 색상 사용) */
         outline:
