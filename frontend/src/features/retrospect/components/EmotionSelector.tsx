@@ -1,11 +1,9 @@
-import { EMOTIONS } from '@/constants/emotion';
+import { Emotion, EMOTIONS } from '@/constants/emotion';
+import { useState } from 'react';
 
-interface EmotionSelectorProps {
-  selectedEmotion: string;
-  onEmotionSelect: (emotion: string) => void;
-}
+export default function EmotionSelector() {
+  const [selectedEmotion, setSelectedEmotion] = useState<Emotion['id'] | ''>('');
 
-export default function EmotionSelector({ selectedEmotion, onEmotionSelect }: EmotionSelectorProps) {
   return (
     <section aria-label="감정 선택">
       <h3 className="mt-6 mb-4">
@@ -16,7 +14,7 @@ export default function EmotionSelector({ selectedEmotion, onEmotionSelect }: Em
         {EMOTIONS.map((emotion) => (
           <button
             key={emotion.id}
-            onClick={() => onEmotionSelect(emotion.id)}
+            onClick={() => setSelectedEmotion(emotion.id)}
             className="flex flex-col items-center gap-2"
           >
             <img

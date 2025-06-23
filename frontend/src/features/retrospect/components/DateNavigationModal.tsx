@@ -1,6 +1,6 @@
 'use client';
 
-import { useDateStore } from '@/store/dateStore';
+import { useRetrospectStore } from '@/store/useRestrospectStore';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -11,7 +11,7 @@ interface DateNavigationModalProps {
 export default function DateNavigationModal({
   onClose
 }: DateNavigationModalProps) {
-  const { selectedYearMonth, setSelectedYearMonth } = useDateStore();
+  const { selectedYearMonth, setSelectedYearMonth } = useRetrospectStore();
   const [selectedYear, setSelectedYear] = useState(selectedYearMonth.year);
   const [selectedMonth, setSelectedMonth] = useState(selectedYearMonth.month);
 
@@ -35,8 +35,7 @@ export default function DateNavigationModal({
       transition={{ type: 'tween', duration: 0.3 }}
       className="
         absolute z-10
-        bottom-[61px]
-        max-w-[430px]
+        bottom-[80px]
         w-full
         h-1/2
         bg-white
@@ -81,7 +80,7 @@ export default function DateNavigationModal({
               w-12 h-12
               rounded-full 
               font-medium
-              ${selectedMonth === month
+              ${selectedYear === selectedYearMonth.year && selectedMonth === month
                   ? 'bg-brand-primary text-white'
                   : 'text-gray-900 hover:bg-gray-100'
                 }

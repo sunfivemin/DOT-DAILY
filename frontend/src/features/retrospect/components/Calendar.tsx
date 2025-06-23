@@ -8,20 +8,16 @@ import { DayCellContentArg } from '@fullcalendar/core';
 import './Calendar.css';
 import { getDailyEmotionMemos } from '../api';
 import { formatDateToString } from '../utils';
-import { useDateStore } from '@/store/dateStore';
+import { useDateStore } from '@/store/useDateStore';
+import { useRetrospectStore } from '@/store/useRestrospectStore';
 
 interface CalendarProps {
   onDateModalOpen: () => void;
 }
 
 const Calendar = ({ onDateModalOpen }: CalendarProps) => {
-  const {
-    selectedDate,
-    setSelectedDate,
-    emotionMemoList,
-    setEmotionMemoList,
-    selectedYearMonth
-  } = useDateStore();
+  const { selectedDate, setSelectedDate } = useDateStore();
+  const { emotionMemoList, setEmotionMemoList, selectedYearMonth } = useRetrospectStore();
   const calendarRef = useRef<FullCalendar>(null);
 
   const onDateNavigation = () => {
@@ -29,8 +25,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
   }
 
   const onDateClick = (dateInfo: DateClickArg) => {
-    const clickedDate = formatDateToString(dateInfo.date);
-    setSelectedDate(clickedDate);
+    setSelectedDate(dateInfo.date);
   };
 
   const emotionByDateMap = useMemo(() => {
@@ -42,13 +37,12 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
 
   const onDayCellClassNames = useCallback((dayCell: DayCellContentArg) => {
     const classes = [];
-    const dateStr = formatDateToString(dayCell.date);
 
-    if (dateStr === selectedDate) {
+    if (formatDateToString(dayCell.date) === formatDateToString(selectedDate)) {
       classes.push('selected');
     }
 
-    const emotionType = emotionByDateMap[dateStr];
+    const emotionType = emotionByDateMap[formatDateToString(dayCell.date)];
     if (emotionType) {
       classes.push(`emotion-${emotionType}`);
     }

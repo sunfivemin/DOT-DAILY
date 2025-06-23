@@ -23,7 +23,7 @@ function RetrospectPageContent() {
       <Header title="오늘 회고" />
 
       <div className="flex-1">
-        <main className="px-4 py-6">
+        <main className="px-4 py-2">
           <Calendar onDateModalOpen={onDateNavigation} />
           <RetrospectContent />
         </main>

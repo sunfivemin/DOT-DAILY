@@ -35,6 +35,7 @@ export const FullScreenModalProvider = ({ children }: { children: ReactNode }) =
   const openModal = useCallback((name: ModalName, props?: TaskFormModalProps) => {
     setModalName(name);
     setModalProps(props || null);
+    document.body.style.overflow = 'hidden';
   }, []);
 
   const closeModal = useCallback(() => {
@@ -69,10 +70,6 @@ const FullScreenModalRenderer = () => {
       )}
       {modalName === 'retrospectForm' && (
         <RetrospectModal
-          selectedEmotion={retrospectModal.selectedEmotion}
-          retrospectText={retrospectModal.retrospectText}
-          onEmotionSelect={retrospectModal.setSelectedEmotion}
-          onTextChange={retrospectModal.setRetrospectText}
           onClose={retrospectModal.closeModal}
           onSubmit={retrospectModal.onSubmit}
         />

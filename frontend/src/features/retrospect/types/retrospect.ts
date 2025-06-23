@@ -1,5 +1,10 @@
 import { Emotion } from '@/constants/emotion';
 
+export interface YearMonth {
+  year: number;
+  month: number;
+}
+
 export interface DailyEmotionMemo {
   date: Date;
   emotion: Emotion['id'];

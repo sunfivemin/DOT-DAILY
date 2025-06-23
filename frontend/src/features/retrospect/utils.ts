@@ -1,6 +1,6 @@
 import { TitleFormatDate } from './types/retrospect';
 
-export const formatDateToString = (date: Date): string => {
+export const formatDateToString = (date: Date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -13,7 +13,7 @@ export const titleFormat = (titleDate: TitleFormatDate) => {
   return `${titleDate.date.year}. ${paddedMonth}`;
 };
 
-export const formatDisplayDate = (date: string) => {
+export const formatDisplayDate = (date: Date) => {
   return new Date(date).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',

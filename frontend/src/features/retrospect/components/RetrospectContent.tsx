@@ -1,13 +1,15 @@
 import { EMOTIONS } from '@/constants/emotion';
-import { useDateStore } from '@/store/dateStore';
+import { useDateStore } from '@/store/useDateStore';
 import { formatDateToString, formatDisplayDate } from '../utils';
 import { useMemo } from 'react';
+import { useRetrospectStore } from '@/store/useRestrospectStore';
 
 const RetrospectContent = () => {
-  const { selectedDate, emotionMemoList } = useDateStore();
+  const { selectedDate } = useDateStore();
+  const { emotionMemoList } = useRetrospectStore();
   const selectedEmotionMemo = useMemo(() => {
     return emotionMemoList.find(item => {
-      return formatDateToString(item.date) === selectedDate;
+      return formatDateToString(item.date) === formatDateToString(selectedDate);
     });
   }, [emotionMemoList, selectedDate]);
   const emotion = selectedEmotionMemo?.emotion || '';
