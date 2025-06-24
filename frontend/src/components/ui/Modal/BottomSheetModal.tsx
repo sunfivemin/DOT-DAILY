@@ -59,4 +59,4 @@ export default function BottomSheetModal({ open, onClose, children }: BottomShee
       )}
     </AnimatePresence>
   );
-} 
+}

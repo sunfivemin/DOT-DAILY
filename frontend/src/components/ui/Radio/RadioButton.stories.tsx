@@ -18,7 +18,7 @@ const Example = () => {
         variant="must"
         checked={priority === 'must'}
         onChange={() => setPriority('must')}
-        label={<span><span className="inline-block w-5 h-5 mr-1 text-center rounded-full bg-priority-must text-white text-xs align-middle">1</span> 오늘 무조건</span>}
+        label={<span><span className="inline-flex items-center justify-center w-5 h-5 mr-1 text-center rounded-full bg-priority-must text-white text-xs font-bold" style={{lineHeight:'1.3rem'}}>1</span> 오늘 무조건</span>}
       />
       <RadioButton
         name="priority"
@@ -26,7 +26,7 @@ const Example = () => {
         variant="should"
         checked={priority === 'should'}
         onChange={() => setPriority('should')}
-        label={<span><span className="inline-block w-5 h-5 mr-1 text-center rounded-full bg-priority-should text-white text-xs align-middle">2</span> 오늘이면 굿</span>}
+        label={<span><span className="inline-flex items-center justify-center w-5 h-5 mr-1 text-center rounded-full bg-priority-should text-white text-xs font-bold" style={{lineHeight:'1.3rem'}}>2</span> 오늘이면 굿</span>}
       />
       <RadioButton
         name="priority"
@@ -34,7 +34,7 @@ const Example = () => {
         variant="remind"
         checked={priority === 'remind'}
         onChange={() => setPriority('remind')}
-        label={<span><span className="inline-block w-5 h-5 mr-1 text-center rounded-full bg-priority-remind text-white text-xs align-middle">3</span> 잊지말자</span>}
+        label={<span><span className="inline-flex items-center justify-center w-5 h-5 mr-1 text-center rounded-full bg-priority-remind text-white text-xs font-bold" style={{lineHeight:'1.3rem'}}>3</span> 잊지말자</span>}
       />
     </div>
   );
