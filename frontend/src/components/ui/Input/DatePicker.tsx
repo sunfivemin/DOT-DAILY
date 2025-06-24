@@ -101,15 +101,7 @@ export function DatePicker({
             onSelect={handleSelect}
             className="text-sm text-gray-800"
             classNames={{
-              caption:
-                'flex justify-center items-center px-4 pt-6 pb-2 font-semibold text-gray-800 relative',
-              nav: 'absolute left-4 top-1 flex items-center gap-20',
-              nav_button:
-                'text-indigo-600 hover:text-indigo-400 transition-colors',
-              table: 'w-full border-collapse mt-2',
-              head_row: 'text-gray-500 text-xs left-10',
-              row: 'text-center',
-              day: 'w-8 h-8 rounded hover:bg-indigo-100 focus:outline-none focus:ring-1 focus:ring-indigo-400',
+              nav_button: 'text-indigo-600 hover:text-indigo-400 transition-colors',
               day_selected: 'bg-indigo-600 text-white',
             }}
             modifiersClassNames={{

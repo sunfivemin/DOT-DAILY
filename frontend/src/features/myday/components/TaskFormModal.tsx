@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button/Button';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import RadioButton from '@/components/ui/Radio/RadioButton';
 
 interface TaskFormModalProps {
   onClose: () => void;
@@ -54,7 +55,7 @@ export default function TaskFormModal({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: '100%', opacity: 0 }}
       transition={{ type: 'tween', duration: 0.3 }}
-      className="fixed inset-0 z-[999] bg-white overflow-y-auto flex flex-col"
+      className="flex flex-col w-full flex-1"
     >
       <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <button onClick={onClose} aria-label="뒤로가기">
@@ -64,7 +65,7 @@ export default function TaskFormModal({
         <div className="w-6" />
       </div>
 
-      <div className="flex-1 px-6 py-4 space-y-6">
+      <div className="flex-1 px-6 py-4 space-y-6 overflow-y-auto">
         <div>
           <label className="font-semibold">오늘 할 일을 적어주세요</label>
           <Input
@@ -79,22 +80,45 @@ export default function TaskFormModal({
         <div>
           <label className="font-semibold">우선순위를 선택해주세요</label>
           <div className="space-y-3 mt-2">
-            {priorities.map(p => (
-              <label key={p.value} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  value={p.value}
-                  checked={priority === p.value}
-                  onChange={() => setPriority(p.value)}
-                />
-                <div
-                  className={`w-5 h-5 text-xs rounded-full text-white flex items-center justify-center ${p.circle}`}
-                >
-                  {p.value === 'must' ? '1' : p.value === 'should' ? '2' : '3'}
-                </div>
-                <span className={p.color}>{p.label}</span>
-              </label>
-            ))}
+            <RadioButton
+              name="priority"
+              value="must"
+              variant="must"
+              checked={priority === 'must'}
+              onChange={() => setPriority('must')}
+              label={
+                <>
+                  <span className="inline-flex items-center justify-center w-5 h-5 mr-1 rounded-full bg-priority-must text-white text-xs font-bold text-center" style={{ lineHeight: '1.3rem' }}>1</span>
+                  <span className="text-red-500">오늘 무조건</span>
+                </>
+              }
+            />
+            <RadioButton
+              name="priority"
+              value="should"
+              variant="should"
+              checked={priority === 'should'}
+              onChange={() => setPriority('should')}
+              label={
+                <>
+                  <span className="inline-flex items-center justify-center w-5 h-5 mr-1 rounded-full bg-priority-should text-white text-xs font-bold text-center" style={{ lineHeight: '1.3rem' }}>2</span>
+                  <span className="text-emerald-500">오늘이면 굿</span>
+                </>
+              }
+            />
+            <RadioButton
+              name="priority"
+              value="remind"
+              variant="remind"
+              checked={priority === 'remind'}
+              onChange={() => setPriority('remind')}
+              label={
+                <>
+                  <span className="inline-flex items-center justify-center w-5 h-5 mr-1 rounded-full bg-priority-remind text-white text-xs font-bold text-center" style={{ lineHeight: '1.3rem' }}>3</span>
+                  <span className="text-blue-500">잊지말자</span>
+                </>
+              }
+            />
           </div>
         </div>
 
@@ -104,7 +128,7 @@ export default function TaskFormModal({
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 px-4 pb-6 pt-2 bg-white">
+      <div className="flex-none px-4 pb-6 pt-2 bg-white">
         <Button size="lg" variant="primary" className="w-full rounded-full">
           할 일 등록하기
         </Button>

@@ -15,10 +15,14 @@ import {
   Tasks,
 } from '@/lib/api/tasks';
 import TaskListSkeleton from '@/features/myday/components/TaskListSkeleton';
+import FullScreenModal from '@/components/ui/Modal/FullScreenModal';
+import TaskFormModal from '@/features/myday/components/TaskFormModal';
+import { useState } from 'react';
 
 export default function MyDayPage() {
   const { selectedDate } = useDateStore();
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
 
   const queryKey = ['tasks', selectedDate.toISOString().split('T')[0]];
 
@@ -125,10 +129,13 @@ export default function MyDayPage() {
       </div>
 
       <div className="fixed bottom-[5.5rem] z-20 w-full max-w-md left-1/2 -translate-x-1/2 flex justify-end pr-4 pointer-events-none">
-        <Fab aria-label="새로운 할 일 추가" className="pointer-events-auto">
+        <Fab aria-label="새로운 할 일 추가" className="pointer-events-auto" onClick={() => setOpen(true)}>
           <Plus className="w-6 h-6" />
         </Fab>
       </div>
+      <FullScreenModal open={open} onClose={() => setOpen(false)}>
+        <TaskFormModal onClose={() => setOpen(false)} defaultDate={selectedDate.toISOString().split('T')[0]} />
+      </FullScreenModal>
     </MobileLayout>
   );
 }
