@@ -1,0 +1,153 @@
+.fc-direction-ltr {
+  padding-bottom: 2.5rem;
+}
+
+.fc-theme-standard .fc-scrollgrid,
+.fc-theme-standard th,
+.fc-theme-standard td {
+  border: none;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* 요일 */
+.fc-theme-standard th {
+  background-color: #f8fafc;
+  /* surface-base */
+}
+
+.fc-daygrid-day-events {
+  display: none;
+}
+
+/* 오늘 날짜 */
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: transparent;
+}
+
+/* 이웃달 날짜 */
+.fc .fc-day-disabled {
+  background-color: transparent;
+}
+
+.fc-daygrid-day-frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
+
+/* dateClick 이벤트 비활성화 */
+.fc-daygrid-body {
+  pointer-events: none;
+}
+
+.fc-daygrid-day {
+  position: relative;
+}
+
+.fc-daygrid-day-number {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  background-color: #e4e4e7;
+  /* zinc 200 */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.fc-daygrid-day-number:hover {
+  background-color: #d4d4d8;
+  /* zinc 300 */
+}
+
+.fc-daygrid-day.selected .fc-daygrid-day-number,
+.fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background-color: #10b981;
+  color: white;
+}
+
+/* 라벨 공통 */
+.fc-daygrid-day.selected::after,
+.fc-daygrid-day.fc-day-today::after {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  padding: 1px 0;
+  font-size: 10px;
+  text-align: center;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.fc-daygrid-day.selected::after {
+  content: "선택";
+  background: #262C33;
+  color: #fff;
+}
+
+.fc-daygrid-day.fc-day-today::after {
+  content: "오늘";
+  background: #d1fae5;
+}
+
+/* 오늘 선택시 라벨 */
+.fc-daygrid-day.fc-day-today.selected::after {
+  background: #262C33;
+  color: #fff;
+}
+
+[class*="emotion-"] .fc-daygrid-day-number {
+  visibility: hidden;
+}
+
+[class*="emotion-"]:hover {
+  opacity: 0.7;
+}
+
+[class*="emotion-"] {
+  position: relative;
+}
+
+[class*="emotion-"]::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  background-size: 32px 32px;
+  background-repeat: no-repeat;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.emotion-good::before {
+  background-image: url("/good-on.svg");
+}
+
+.emotion-bad::before {
+  background-image: url("/bad-on.svg");
+}
+
+.emotion-soso::before {
+  background-image: url("/soso-on.svg");
+}
+
+.emotion-great::before {
+  background-image: url("/great-on.svg");
+}
+
+.emotion-appreciate::before {
+  background-image: url("/appreciate-on.svg");
+}
