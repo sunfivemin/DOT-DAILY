@@ -13,6 +13,8 @@ import { TaskFormModal } from '@/features/myday/components';
 import { useRetrospectModal } from '@/features/retrospect/hooks/useRestrospectModal';
 import RetrospectModal from '@/features/retrospect/components/RetrospectModal';
 import DateNavigationModal from '@/features/retrospect/components/DateNavigationModal';
+import FullScreenModal from '@/components/ui/Modal/components/FullScreenModal';
+import BottomSheetModal from '@/components/ui/Modal/components/BottomSheetModal';
 
 export type ModalName = 'taskForm' | 'retrospectForm' | 'dateNavigationForm' | null;
 
@@ -86,16 +88,22 @@ const FullScreenModalRenderer = () => {
   return (
     <AnimatePresence>
       {modalName === 'taskForm' && (
-        <TaskFormModal onClose={closeModal} {...modalProps} />
+        <FullScreenModal open={true} onClose={closeModal} variant="card">
+          <TaskFormModal onClose={closeModal} {...modalProps} />
+        </FullScreenModal>
       )}
       {modalName === 'retrospectForm' && (
-        <RetrospectModal
-          onClose={retrospectModal.closeModal}
-          onSubmit={retrospectModal.onSubmit}
-        />
+        <FullScreenModal open={true} onClose={closeModal} variant="card">
+          <RetrospectModal
+            onClose={retrospectModal.closeModal}
+            onSubmit={retrospectModal.onSubmit}
+          />
+        </FullScreenModal>
       )}
       {modalName === 'dateNavigationForm' && (
-        <DateNavigationModal onClose={closeModal} />
+        <BottomSheetModal open={true} onClose={closeModal}>
+          <DateNavigationModal onClose={closeModal} />
+        </BottomSheetModal>
       )}
     </AnimatePresence>
   );

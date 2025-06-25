@@ -23,22 +23,20 @@ export default function BottomSheetModal({ open, onClose, children }: BottomShee
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center"
+          className="absolute inset-0 z-50 flex items-end justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
         >
-          {/* 오버레이 */}
-          <motion.div
-            className="absolute inset-0 bg-black/40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          {/* 상단에만 딤드(overlay): 카드 상단까지 정확히 */}
+          <div
+            className="absolute top-0 left-0 right-0 bg-black/40"
+            style={{ height: 'calc(100vh)', zIndex: 0 }}
           />
-          {/* 바텀시트 */}
+          {/* 바텀시트 카드 */}
           <motion.div
-            className={modalVariants({ variant: 'bottomSheet', size: 'full' }) + ' relative w-screen max-w-full left-0 right-0 rounded-t-2xl'}
+            className={modalVariants({ variant: 'bottomSheet', size: 'full' }) + ' relative w-full max-w-md mx-auto left-0 right-0 rounded-t-2xl'}
             style={{ borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -51,7 +49,7 @@ export default function BottomSheetModal({ open, onClose, children }: BottomShee
               <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
             </div>
             {/* 내용 스크롤 영역: 드래그 바와 겹치지 않게 pt-8 */}
-            <div className="max-h-[80vh] overflow-y-auto px-4 pb-4 pt-8">
+            <div className="max-h-[80vh] w-full overflow-y-auto px-4 pb-4 pt-8 relative z-10">
               {children}
             </div>
           </motion.div>
