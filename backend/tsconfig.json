@@ -10,8 +10,8 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "strict": true,
-    "typeRoots": ["types/", "node_modules/@types"]
+  "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "include": ["**/*.ts"],
+ "include": ["**/*.ts", "types"],
   "exclude": ["node_modules"]
 }
