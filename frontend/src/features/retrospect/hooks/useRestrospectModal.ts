@@ -1,4 +1,4 @@
-import { useFullScreenModal } from '@/components/ui/FullScreenModal/FullScreenModalProvider';
+import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
 
 export const useRetrospectModal = () => {
   const { closeModal: closeFullScreenModal } = useFullScreenModal();

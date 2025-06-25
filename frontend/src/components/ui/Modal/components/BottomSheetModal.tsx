@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { modalVariants } from '@/lib/styles/modalVariants';
 import { AnimatePresence, motion } from 'framer-motion';
 

@@ -5,24 +5,31 @@ import React, {
   useCallback,
   useContext,
   useState,
+  useEffect,
   type ReactNode,
 } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import TaskFormModal from '@/features/myday/components/TaskFormModal';
+import { TaskFormModal } from '@/features/myday/components';
 import { useRetrospectModal } from '@/features/retrospect/hooks/useRestrospectModal';
 import RetrospectModal from '@/features/retrospect/components/RetrospectModal';
 import DateNavigationModal from '@/features/retrospect/components/DateNavigationModal';
 
-export type ModalName = 'taskForm' | 'retrospectForm' | 'DateNavigationForm' | null;
+export type ModalName = 'taskForm' | 'retrospectForm' | 'dateNavigationForm' | null;
 
 export interface TaskFormModalProps {
   defaultDate?: string;
 }
 
+export type RetrospectModalProps = Record<string, never>;
+
+export type DateNavigationModalProps = Record<string, never>;
+
+type ModalProps = TaskFormModalProps | RetrospectModalProps | DateNavigationModalProps | null;
+
 interface ModalContextType {
   modalName: ModalName;
-  modalProps: TaskFormModalProps | null;
-  openModal: (name: ModalName, props?: TaskFormModalProps) => void;
+  modalProps: ModalProps;
+  openModal: (name: ModalName, props?: ModalProps) => void;
   closeModal: () => void;
 }
 
@@ -30,12 +37,25 @@ const FullScreenModalContext = createContext<ModalContextType | undefined>(undef
 
 export const FullScreenModalProvider = ({ children }: { children: ReactNode }) => {
   const [modalName, setModalName] = useState<ModalName>(null);
-  const [modalProps, setModalProps] = useState<TaskFormModalProps | null>(null);
+  const [modalProps, setModalProps] = useState<ModalProps>(null);
 
-  const openModal = useCallback((name: ModalName, props?: TaskFormModalProps) => {
+  // 모달 상태에 따라 body overflow 관리
+  useEffect(() => {
+    if (modalName) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // 컴포넌트 언마운트 시 cleanup
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [modalName]);
+
+  const openModal = useCallback((name: ModalName, props?: ModalProps) => {
     setModalName(name);
     setModalProps(props || null);
-    document.body.style.overflow = 'hidden';
   }, []);
 
   const closeModal = useCallback(() => {
@@ -74,7 +94,7 @@ const FullScreenModalRenderer = () => {
           onSubmit={retrospectModal.onSubmit}
         />
       )}
-      {modalName === 'DateNavigationForm' && (
+      {modalName === 'dateNavigationForm' && (
         <DateNavigationModal onClose={closeModal} />
       )}
     </AnimatePresence>
