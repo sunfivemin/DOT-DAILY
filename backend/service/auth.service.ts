@@ -68,3 +68,13 @@ export const loginService = async (payload: LoginPayload) => {
     token: `Bearer ${refreshToken}`,
   };
 };
+
+export const logoutService = async (userId: number) => {
+  await prisma.account.deleteMany({
+    where: {
+      userId,
+      provider: 'local',
+    },
+  });
+  return;
+};

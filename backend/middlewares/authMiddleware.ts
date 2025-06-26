@@ -10,9 +10,10 @@ export const authenticate = (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res
+    res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ message: '인증 정보가 없습니다.' });
+    return;
   }
 
   const token = authHeader.split(' ')[1];
@@ -22,8 +23,9 @@ export const authenticate = (
     req.user = decoded;
     next();
   } catch (err) {
-    return res
+    res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ message: '유효하지 않은 토큰입니다.' });
+    return;
   }
 };
