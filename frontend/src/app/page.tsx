@@ -2,11 +2,15 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import MobileLayout from '@/components/layout/MobileLayout';
-import TaskItem from '@/features/myday/components/TaskItem';
-import TaskGroup from '@/features/myday/components/TaskGroup';
+import {
+  TaskItem,
+  TaskGroup,
+  DateHeader,
+  TaskListSkeleton,
+  TaskFormModal,
+} from '@/features/myday/components';
 import { Plus } from 'lucide-react';
 import Fab from '@/components/ui/Fab/Fab';
-import DateHeader from '@/features/myday/components/DateHeader';
 import { useDateStore } from '@/store/useDateStore';
 import {
   getTasksByDate,
@@ -14,9 +18,7 @@ import {
   TaskPriority,
   Tasks,
 } from '@/lib/api/tasks';
-import TaskListSkeleton from '@/features/myday/components/TaskListSkeleton';
-import FullScreenModal from '@/components/ui/Modal/FullScreenModal';
-import TaskFormModal from '@/features/myday/components/TaskFormModal';
+import FullScreenModal from '@/components/ui/Modal/components/FullScreenModal';
 import { useState } from 'react';
 
 export default function MyDayPage() {
