@@ -5,7 +5,7 @@ import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button/Button';
 import RetrospectContent from '@/features/retrospect/components/RetrospectContent';
-import { FullScreenModalProvider, useFullScreenModal } from '@/components/ui/FullScreenModal/FullScreenModalProvider';
+import { FullScreenModalProvider, useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
 
 function RetrospectPageContent() {
   const { openModal } = useFullScreenModal();
@@ -15,7 +15,7 @@ function RetrospectPageContent() {
   };
 
   const onDateNavigation = () => {
-    openModal('DateNavigationForm');
+    openModal('dateNavigationForm');
   }
 
   return (

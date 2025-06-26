@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
-import ModalItem from './ModalItem';
+import ModalItem from '../components/ModalItem';
 
 interface ModalContextType {
   showModal: (content: ReactNode) => void;
