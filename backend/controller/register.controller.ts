@@ -13,6 +13,7 @@ export const registerController = async (req: Request, res: Response) => {
 
     const result = await registerService({ username, email, password });
     res.status(StatusCodes.CREATED).json(result);
+
     return res.redirect('/');
   } catch (err) {
     if (err instanceof ZodError) {
