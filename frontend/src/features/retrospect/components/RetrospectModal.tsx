@@ -27,21 +27,18 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'tween', duration: 0.3 }}
-      className="
-        absolute z-10
-        flex flex-col justify-between
-        top-[80px] bottom-[80px]
-        w-full
-        bg-white
-        px-4 py-6
-        "
+      className="flex flex-col flex-1"
     >
-      <div>
-        <button onClick={onClose}>
-          <img src="/back.svg" alt="회고 이모션" />
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+        <button onClick={onClose} aria-label="뒤로가기">
+          <img src="/back.svg" alt="back" width={24} height={24} />
         </button>
-        <EmotionSelector />
+        <h2 className="text-sm text-gray-400">오늘 회고</h2>
+        <div className="w-6" />
+      </div>
 
+      <div className="flex-1 px-6 py-4">
+        <EmotionSelector />
         <section aria-label="회고 작성">
           <label className="font-kkonghae">{formatDisplayDate(selectedDate)}</label>
           <textarea
@@ -62,17 +59,22 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
         </section>
       </div>
 
-      <Button
-        label="오늘 회고 등록하기"
-        // disabled={!selectedEmotion || !retrospectText.trim()}
-        onClick={onSubmit}
-        variant="solid"
-        className="
-          disabled:bg-gray-400 
-          disabled:border-none
-          disabled:cursor-not-allowed
-        "
-      />
+      <div className="px-4 pb-6">
+        <Button
+          label="오늘 회고 등록하기"
+          size="lg"
+          variant="primary"
+          // disabled={!selectedEmotion || !retrospectText.trim()}
+          className="
+            w-full 
+            rounded-full
+            disabled:bg-gray-400 
+            disabled:border-none
+            disabled:cursor-not-allowed
+          "
+          onClick={onSubmit}
+        />
+      </div>
     </motion.div>
   );
 }

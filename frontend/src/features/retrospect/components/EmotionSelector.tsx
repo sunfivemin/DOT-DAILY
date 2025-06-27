@@ -6,7 +6,7 @@ export default function EmotionSelector() {
 
   return (
     <section aria-label="감정 선택">
-      <h3 className="mt-6 mb-4">
+      <h3 className="my-4">
         오늘 하루를 스마일카드 표현해 보세요
       </h3>
 
