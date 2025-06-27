@@ -1,5 +1,6 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import { authSwagger } from './auth.swagger';
+import { todoSwagger } from './todo.swagger';
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -13,8 +14,18 @@ const swaggerDefinition = {
       url: 'http://localhost:3000',
     },
   ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
   paths: {
     ...authSwagger,
+    ...todoSwagger,
   },
 };
 

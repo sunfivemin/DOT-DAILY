@@ -54,4 +54,39 @@ export const authSwagger = {
       },
     },
   },
+  '/api/v1/auth/logout': {
+    post: {
+      summary: '로그아웃',
+      tags: ['Auth'],
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+      responses: {
+        200: {
+          description: '로그아웃 성공',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  message: {
+                    type: 'string',
+                    example: '로그아웃되었습니다.',
+                  },
+                },
+              },
+            },
+          },
+        },
+        401: {
+          description: '인증 실패 (토큰 없음 또는 잘못됨)',
+        },
+        500: {
+          description: '서버 에러',
+        },
+      },
+    },
+  },
 };
