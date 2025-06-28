@@ -5,9 +5,9 @@ import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button/Button';
 import RetrospectContent from '@/features/retrospect/components/RetrospectContent';
-import { FullScreenModalProvider, useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
+import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
 
-function RetrospectPageContent() {
+export default function RetrospectPage() {
   const { openModal } = useFullScreenModal();
 
   const onTodayRetrospect = () => {
@@ -47,13 +47,5 @@ function RetrospectPageContent() {
 
       <Footer />
     </div>
-  );
-}
-
-export default function RetrospectPage() {
-  return (
-    <FullScreenModalProvider>
-      <RetrospectPageContent />
-    </FullScreenModalProvider>
   );
 }
