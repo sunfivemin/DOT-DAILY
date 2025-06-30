@@ -17,6 +17,14 @@ app.use(express.json());
 // 라우터
 app.use('/api/v1', routers);
 
+app.get('/', (req, res) => {
+  res.json({ message: 'ok' });
+});
+
+app.get('/healthz', (req, res) => {
+  res.json({ message: 'ok' });
+});
+
 // swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
