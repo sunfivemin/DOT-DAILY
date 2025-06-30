@@ -1,92 +1,237 @@
 // 임시 데이터가 수정될 수 있도록 let으로 변경하고, 외부에서 직접 접근하지 못하도록 숨깁니다.
-let tasksData = {
-    must: [
-      { id: 'must-1', label: '6.2일 강의 완강', done: false, retryCount: 1 },
-      { id: 'must-2', label: '투표하기', done: true },
-      { id: 'must-3', label: '프로젝트 기획서 초안 작성', done: false },
-      { id: 'must-4', label: '팀 회의 준비', done: false },
-    ],
-    should: [
-      { id: 'should-1', label: '건전지 사기', done: false },
-      { id: 'should-2', label: '회의내용 정리하기', done: true },
-      { id: 'should-3', label: '운동화 세탁 맡기기', done: true },
-      { id: 'should-4', label: '서점 들러서 책 찾아보기', done: false },
-      { id: 'should-5', label: '점심 약속 장소 예약', done: true },
-    ],
-    remind: [
-      { id: 'remind-1', label: '엄마한테 전화하기', done: false },
-      { id: 'remind-2', label: '5km 러닝하기', done: true },
-      { id: 'remind-3', label: 'OTT 구독 해지하기', done: false },
-      { id: 'remind-4', label: '휴가 계획 세우기', done: false },
-      { id: 'remind-5', label: '친구 생일 선물 주문', done: true },
-      { id: 'remind-6', label: '영양제 챙겨먹기', done: true },
-    ],
-  };
+const tasksData: { [date: string]: Task[] } = {
+  '2024-06-30': [
+    // { id: 1, title: '예시', priority: 'must', date: '2024-06-30', done: false, retryCount: 0 },
+    { id: 2, title: '건전지 사기', priority: 'should', date: '2024-06-30', done: false, retryCount: 0 },
+    { id: 3, title: '엄마한테 전화하기', priority: 'remind', date: '2024-06-30', done: false, retryCount: 0 },
+  ],
+};
 
-  export type TaskPriority = 'must' | 'should' | 'remind';
+// 보류함(archive) 데이터
+export let archiveTasks: Task[] = [];
 
-  export interface Task {
-      id: string;
-      label: string;
-      done: boolean;
-      retryCount?: number;
-  }
-  
-  export interface Tasks {
-    must: Task[];
-    should: Task[];
-    remind: Task[];
-  }
+export type TaskPriority = 'must' | 'should' | 'remind';
+
+export interface Task {
+  id: number;
+  title: string;
+  priority: TaskPriority;
+  date: string; // YYYY-MM-DD
+  done: boolean;
+  retryCount: number;
+}
+
+export interface CreateTaskRequest {
+  title: string;
+  priority: TaskPriority;
+  date: string; // YYYY-MM-DD
+}
+
+export interface UpdateTaskRequest {
+  title?: string;
+  priority?: TaskPriority;
+  date?: string;
+  done?: boolean;
+}
 
 /**
  * 특정 날짜의 할 일 목록을 가져오는 가짜 API 함수.
  * 발표 데모를 위해 1초의 딜레이를 시뮬레이션합니다.
- * @param date - 할 일을 가져올 날짜 (현재는 사용되지 않음)
+ * @param date - 할 일을 가져올 날짜
  */
-export const getTasksByDate = async (date: Date): Promise<Tasks> => {
-    console.log(`${date.toLocaleDateString()}의 할 일 데이터를 "서버"에서 가져오는 중...`);
-    
-    // API 호출을 시뮬레이션하기 위해 1초 대기
-    await new Promise(resolve => setTimeout(resolve, 1000));
+export const getTasksByDate = async (date: Date): Promise<Task[]> => {
+  console.log(`${date.toLocaleDateString()}의 할 일 데이터를 "서버"에서 가져오는 중...`);
+  
+  // API 호출을 시뮬레이션하기 위해 1초 대기
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // 실제로는 date를 사용해 해당 날짜의 데이터를 필터링해야 합니다.
-    // 객체의 복사본을 반환하여 실제 API처럼 동작하게 만듭니다.
-    return JSON.parse(JSON.stringify(tasksData));
+  const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD
+  const filteredTasks = tasksData[dateString] || [];
+  
+  return JSON.parse(JSON.stringify(filteredTasks));
 }
 
 /**
- * 할 일의 완료 상태를 업데이트하는 가짜 API 함수.
- * @param {object} params
- * @param {TaskPriority} params.priority - 업데이트할 태스크의 우선순위
- * @param {string} params.id - 업데이트할 태스크의 ID
- * @param {boolean} params.done - 새로운 완료 상태
+ * 새로운 할 일을 생성하는 가짜 API 함수.
+ * @param taskData - 생성할 할 일 데이터
  */
-export const updateTaskStatus = async ({
-  priority,
-  id,
-  done,
-}: {
-  priority: TaskPriority;
-  id: string;
-  done: boolean;
-}): Promise<{ success: boolean }> => {
-  console.log(
-    `"서버"에서 ${priority} 우선순위의 태스크(ID: ${id}) 상태를 ${done}으로 업데이트하는 중...`
-  );
+export const createTask = async (taskData: CreateTaskRequest): Promise<Task> => {
+  console.log('새로운 할 일을 "서버"에서 생성하는 중...', taskData);
+  
   // API 호출 시뮬레이션 (0.5초)
   await new Promise(resolve => setTimeout(resolve, 500));
 
-  // 메모리 내 데이터 직접 수정
-  const taskList = tasksData[priority];
-  const taskIndex = taskList.findIndex(task => task.id === id);
+  const dateString = taskData.date;
+  const existingIds = (tasksData[dateString] || []).map(task => task.id);
+  const newId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+  const newTask: Task = { id: newId, ...taskData, done: false, retryCount: 0 };
+  if (!tasksData[dateString]) tasksData[dateString] = [];
+  tasksData[dateString].push(newTask);
+  
+  console.log('할 일 생성 성공!', newTask);
+  return newTask;
+};
 
-  if (taskIndex !== -1) {
-    tasksData[priority][taskIndex].done = done;
-    console.log('업데이트 성공!');
-    return { success: true };
-  } else {
-    console.error('해당 태스크를 찾을 수 없습니다.');
-    // 실제 앱에서는 에러 처리를 해야 합니다.
-    return { success: false };
+/**
+ * 할 일을 수정하는 가짜 API 함수.
+ * @param id - 수정할 할 일의 ID
+ * @param taskData - 수정할 데이터
+ */
+export const updateTask = async (id: number, taskData: UpdateTaskRequest): Promise<Task> => {
+  console.log(`할 일(ID: ${id})을 "서버"에서 수정하는 중...`, taskData);
+  
+  // API 호출 시뮬레이션 (0.5초)
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  let foundTask: Task | undefined;
+  let foundDate: string | undefined;
+  for (const date in tasksData) {
+    const idx = tasksData[date].findIndex(task => task.id === id);
+    if (idx !== -1) {
+      foundTask = tasksData[date][idx];
+      foundDate = date;
+      // 날짜가 변경되면 해당 날짜로 이동
+      if (taskData.date && taskData.date !== date) {
+        const updatedTask = { ...foundTask, ...taskData, date: taskData.date };
+        tasksData[date].splice(idx, 1);
+        if (!tasksData[taskData.date]) tasksData[taskData.date] = [];
+        tasksData[taskData.date].push(updatedTask);
+        return updatedTask;
+      } else {
+        tasksData[date][idx] = { ...foundTask, ...taskData };
+        return tasksData[date][idx];
+      }
+    }
   }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
+};
+
+/**
+ * 할 일을 삭제하는 가짜 API 함수.
+ * @param id - 삭제할 할 일의 ID
+ */
+export const deleteTask = async (id: number): Promise<void> => {
+  console.log(`할 일(ID: ${id})을 "서버"에서 삭제하는 중...`);
+  
+  // API 호출 시뮬레이션 (0.5초)
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  for (const date in tasksData) {
+    const idx = tasksData[date].findIndex(task => task.id === id);
+    if (idx !== -1) {
+      tasksData[date].splice(idx, 1);
+      console.log('할 일 삭제 성공!');
+      return;
+    }
+  }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
+};
+
+/**
+ * 할 일의 완료 상태를 토글하는 가짜 API 함수.
+ * @param id - 토글할 할 일의 ID
+ */
+export const toggleTaskStatus = async (id: number): Promise<Task> => {
+  console.log(`할 일(ID: ${id}) 상태를 "서버"에서 토글하는 중...`);
+  
+  // API 호출 시뮬레이션 (0.5초)
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  for (const date in tasksData) {
+    const idx = tasksData[date].findIndex(task => task.id === id);
+    if (idx !== -1) {
+      tasksData[date][idx].done = !tasksData[date][idx].done;
+      console.log('상태 토글 성공!', tasksData[date][idx]);
+      return tasksData[date][idx];
+    }
+  }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
+};
+
+/**
+ * 할 일을 보류(미루기)하여 retryCount를 1 증가시키고, 날짜를 다음날로 이동하는 함수
+ */
+export const increaseRetryAndMoveToTomorrow = async (id: number): Promise<Task> => {
+  for (const date in tasksData) {
+    const idx = tasksData[date].findIndex(task => task.id === id);
+    if (idx !== -1) {
+      const task = tasksData[date][idx];
+      // 날짜를 내일로 이동
+      const tomorrow = new Date(task.date);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split('T')[0];
+      // retryCount 증가
+      const updatedTask = { ...task, retryCount: task.retryCount + 1, date: tomorrowStr };
+      // 기존 날짜에서 제거
+      tasksData[date].splice(idx, 1);
+      // 내일 날짜에 추가
+      if (!tasksData[tomorrowStr]) tasksData[tomorrowStr] = [];
+      tasksData[tomorrowStr].push(updatedTask);
+      return updatedTask;
+    }
+  }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
+};
+
+/**
+ * 할 일을 보류함으로 이동시키는 함수 (retryCount는 변경하지 않음)
+ */
+export const moveToArchive = async (id: number): Promise<Task> => {
+  for (const date in tasksData) {
+    const idx = tasksData[date].findIndex(task => task.id === id);
+    if (idx !== -1) {
+      const task = tasksData[date][idx];
+      // 오늘 리스트에서 제거
+      tasksData[date].splice(idx, 1);
+      // 보류함에 추가
+      archiveTasks.push(task);
+      return task;
+    }
+  }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
+};
+
+/**
+ * 보류함에서 오늘 할 일로 이동시키는 함수
+ */
+export const moveToTodayFromArchive = async (id: number): Promise<Task> => {
+  const idx = archiveTasks.findIndex(task => task.id === id);
+  if (idx !== -1) {
+    const task = archiveTasks[idx];
+    // 오늘 날짜로 이동
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const movedTask = { ...task, date: todayStr };
+    // 보류함에서 제거
+    archiveTasks.splice(idx, 1);
+    // 오늘 할 일에 추가
+    if (!tasksData[todayStr]) tasksData[todayStr] = [];
+    tasksData[todayStr].push(movedTask);
+    return movedTask;
+  }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
+};
+
+/**
+ * 보류함에서 할 일을 삭제하는 함수
+ */
+export const deleteArchiveTask = async (id: number): Promise<void> => {
+  const idx = archiveTasks.findIndex(task => task.id === id);
+  if (idx !== -1) {
+    archiveTasks.splice(idx, 1);
+    return;
+  }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
+};
+
+/**
+ * 보류함에서 할 일을 수정하는 함수
+ */
+export const updateArchiveTask = async (id: number, data: Partial<Task>): Promise<Task> => {
+  const idx = archiveTasks.findIndex(task => task.id === id);
+  if (idx !== -1) {
+    archiveTasks[idx] = { ...archiveTasks[idx], ...data };
+    return archiveTasks[idx];
+  }
+  throw new Error('해당 할 일을 찾을 수 없습니다.');
 }; 

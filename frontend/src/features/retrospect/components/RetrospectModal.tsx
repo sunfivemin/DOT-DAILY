@@ -27,21 +27,20 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'tween', duration: 0.3 }}
-      className="
-        absolute z-10
-        flex flex-col justify-between
-        top-[80px] bottom-[80px]
-        w-full
-        bg-white
-        px-4 py-6
-        "
+      className="flex flex-col w-full flex-1"
     >
-      <div>
-        <button onClick={onClose}>
-          <img src="/back.svg" alt="회고 이모션" />
+      {/* 상단 바 */}
+      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+        <button onClick={onClose} aria-label="뒤로가기">
+          <img src="/back.svg" alt="back" width={24} height={24} />
         </button>
-        <EmotionSelector />
+        <h2 className="text-sm text-gray-400">오늘 회고</h2>
+        <div className="w-6" />
+      </div>
 
+      {/* 내용 */}
+      <div className="flex-1 px-6 py-4 space-y-6 overflow-y-auto">
+        <EmotionSelector />
         <section aria-label="회고 작성">
           <label className="font-kkonghae">{formatDisplayDate(selectedDate)}</label>
           <textarea
@@ -49,12 +48,7 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
             onChange={onTextChange}
             placeholder="오늘 하루는 어떠셨나요? 자유롭게 작성해보세요."
             maxLength={3000}
-            className="
-              font-kkonghae 
-              w-full h-40 p-4 mt-2
-              border border-gray-200 rounded-lg
-              resize-none
-            "
+            className="font-kkonghae w-full h-40 p-4 mt-2 border border-gray-200 rounded-lg resize-none"
           />
           <div className="text-right text-xs text-gray-400">
             {retrospectText.length}/3000
@@ -62,17 +56,17 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
         </section>
       </div>
 
-      <Button
-        label="오늘 회고 등록하기"
-        // disabled={!selectedEmotion || !retrospectText.trim()}
-        onClick={onSubmit}
-        variant="solid"
-        className="
-          disabled:bg-gray-400 
-          disabled:border-none
-          disabled:cursor-not-allowed
-        "
-      />
+      {/* 하단 버튼 */}
+      <div className="flex-none px-4 pb-6 pt-2 bg-white">
+        <Button
+          size="lg"
+          variant="primary"
+          className="w-full rounded-full"
+          onClick={onSubmit}
+        >
+          오늘 회고 등록하기
+        </Button>
+      </div>
     </motion.div>
   );
 }

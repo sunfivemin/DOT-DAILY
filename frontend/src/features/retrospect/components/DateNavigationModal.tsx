@@ -27,22 +27,7 @@ export default function DateNavigationModal({
   };
 
   return (
-    <motion.div
-      key="retrospect-modal"
-      initial={{ y: '100%' }}
-      animate={{ y: 0 }}
-      exit={{ y: '100%' }}
-      transition={{ type: 'tween', duration: 0.3 }}
-      className="
-        absolute z-10
-        bottom-[80px]
-        w-full
-        h-1/2
-        bg-white
-        px-4 py-6
-        rounded-t-3xl
-        "
-    >
+    <div>
       <div className="flex items-center justify-between pb-4 border-b border-gray-100">
         <h2 className="text-lg font-semibold">월 선택</h2>
         <button
@@ -71,13 +56,13 @@ export default function DateNavigationModal({
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-2 w-full">
         {months.map((month) => (
-          <div key={month} className='m-auto h-20'>
+          <div key={month}>
             <button
               onClick={() => onDateSelect(month)}
               className={`
-              w-12 h-12
+              w-full h-12
               rounded-full 
               font-medium
               ${selectedYear === selectedYearMonth.year && selectedMonth === month
@@ -91,6 +76,6 @@ export default function DateNavigationModal({
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
