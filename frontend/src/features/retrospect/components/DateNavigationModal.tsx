@@ -1,7 +1,7 @@
 'use client';
 
 import { useRetrospectStore } from '@/store/useRestrospectStore';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useState } from 'react';
 
 interface DateNavigationModalProps {
@@ -34,7 +34,7 @@ export default function DateNavigationModal({
           onClick={onClose}
           className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
         >
-          <img src="/close.svg" alt="닫기" />
+          <Image src="/close.svg" alt="닫기" width={24} height={24} />
         </button>
       </div>
 
@@ -43,7 +43,7 @@ export default function DateNavigationModal({
           onClick={onPrevYear}
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
         >
-          <img src="/left.svg" alt="왼쪽" />
+          <Image src="/left.svg" alt="왼쪽" width={24} height={24} />
         </button>
 
         <div className="text-xl font-bold">{selectedYear}년</div>
@@ -52,7 +52,7 @@ export default function DateNavigationModal({
           onClick={onNextYear}
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
         >
-          <img src="/right.svg" alt="오른쪽" />
+          <Image src="/right.svg" alt="오른쪽" width={24} height={24} />
         </button>
       </div>
 

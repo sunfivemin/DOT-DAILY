@@ -10,6 +10,7 @@ import { getDailyEmotionMemos } from '../api';
 import { formatDateToString } from '../utils';
 import { useDateStore } from '@/store/useDateStore';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
+import Image from 'next/image';
 
 interface CalendarProps {
   onDateModalOpen: () => void;
@@ -60,7 +61,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
       setEmotionMemoList(data);
     };
     getEmotionMemos();
-  }, []);
+  }, [setEmotionMemoList]);
 
   useEffect(() => {
     if (calendarRef.current) {
@@ -77,7 +78,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
         className='flex gap-2 items-center text-xl font-bold mb-8'
       >
         {selectedYearMonth.year}. {selectedYearMonth.month}
-        <img src="/dropdown.svg" alt="달력 선택" />
+        <Image src="/dropdown.svg" alt="달력 선택" width={12} height={12} />
       </button>
       <FullCalendar
         ref={calendarRef}
