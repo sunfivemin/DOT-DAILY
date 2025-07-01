@@ -11,6 +11,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.18",
     "@fullcalendar/daygrid": "^6.1.17",
     "@fullcalendar/interaction": "^6.1.17",
     "@fullcalendar/react": "^6.1.17",
@@ -50,7 +51,6 @@
     "css-loader": "^7.1.2",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "eslint-plugin-storybook": "^9.0.6",
     "playwright": "^1.52.0",
     "postcss": "^8.5.5",
     "postcss-import": "^15.1.0",

@@ -1,9 +1,10 @@
+// src/components/layout/Header.tsx
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface HeaderProps {
+export interface HeaderProps {
   title: string;
 }
 

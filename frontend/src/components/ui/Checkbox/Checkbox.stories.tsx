@@ -1,6 +1,8 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { useState } from 'react';
 import Checkbox from './Checkbox';
+import type { CheckboxProps } from './Checkbox';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Components/UI/Checkbox',
@@ -38,12 +40,8 @@ export const Checked: Story = {
   },
 };
 
-interface InteractiveComponentProps {
-  checked?: boolean;
-}
-
-const InteractiveComponent = (args: InteractiveComponentProps) => {
-  const [checked, setChecked] = useState(args.checked);
+const InteractiveComponent = (args: CheckboxProps) => {
+  const [checked, setChecked] = useState(args.checked ?? false);
   return (
     <div className="flex flex-col items-start gap-4">
       <Checkbox
@@ -58,5 +56,5 @@ const InteractiveComponent = (args: InteractiveComponentProps) => {
 
 export const Interactive: Story = {
   name: '인터랙티브 예제',
-  render: (args) => <InteractiveComponent {...args} />,
-}; 
+  render: (args: CheckboxProps) => <InteractiveComponent {...args} />,
+};
