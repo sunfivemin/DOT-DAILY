@@ -31,11 +31,10 @@ const sampleOptions = [
   { label: '선택 3', value: '3' },
 ];
 
-// ✅ 렌더링용 Wrapper 컴포넌트 정의
 const SelectInputWrapper = (
-  args: Partial<React.ComponentProps<typeof SelectInput>>
+  args: React.ComponentProps<typeof SelectInput>
 ) => {
-  const [value, setValue] = useState<string>(args.value || '1');
+  const [value, setValue] = useState(args.value ?? '1');
   return (
     <SelectInput
       {...args}
@@ -48,31 +47,31 @@ const SelectInputWrapper = (
 
 export const Default: Story = {
   name: '기본',
-  render: () => <SelectInputWrapper label="옵션 선택" />,
+  render: (args) => <SelectInputWrapper {...args} />,
 };
 
 export const Error: Story = {
   name: '에러 상태',
-  render: () => <SelectInputWrapper label="에러" state="error" />,
+  render: (args) => <SelectInputWrapper {...args} state="error" />,
 };
 
 export const Disabled: Story = {
   name: '비활성화 상태',
-  render: () => <SelectInputWrapper label="비활성" disabled />,
+  render: (args) => <SelectInputWrapper {...args} disabled />,
 };
 
 export const Loading: Story = {
   name: '로딩 상태',
-  render: () => <SelectInputWrapper label="로딩 중" loading />,
+  render: (args) => <SelectInputWrapper {...args} loading />,
 };
 
 export const Sizes: Story = {
   name: '사이즈별 예시',
-  render: () => (
+  render: (args) => (
     <div className="space-y-4">
-      <SelectInputWrapper label="Small" size="sm" />
-      <SelectInputWrapper label="Medium" size="md" />
-      <SelectInputWrapper label="Large" size="lg" />
+      <SelectInputWrapper {...args} label="Small" size="sm" />
+      <SelectInputWrapper {...args} label="Medium" size="md" />
+      <SelectInputWrapper {...args} label="Large" size="lg" />
     </div>
   ),
 };

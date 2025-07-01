@@ -1,5 +1,4 @@
 // src/components/ui/Input/DatePicker/DatePicker.stories.tsx
-
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { DatePicker } from './DatePicker';
@@ -9,61 +8,50 @@ const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
   tags: ['autodocs'],
 };
-
 export default meta;
+
 type Story = StoryObj<typeof DatePicker>;
 
-// ✅ 공통 Wrapper 컴포넌트
-const DatePickerWrapper = ({
-  label = '날짜 선택',
-  state = 'default',
-  disabled = false,
-  loading = false,
-  size = 'md',
-}: {
-  label?: string;
-  state?: 'default' | 'error' | 'success';
-  disabled?: boolean;
-  loading?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-}) => {
+type WrapperProps = React.ComponentProps<typeof DatePicker>;
+
+const DatePickerWrapper = (args: WrapperProps) => {
   const [value, setValue] = useState<Date | null>(null);
   return (
     <DatePicker
-      label={label}
+      {...args}
       value={value}
       onChange={setValue}
-      state={state}
-      disabled={disabled}
-      loading={loading}
-      size={size}
     />
   );
 };
 
-// ✅ 스토리 정의
 export const BasicDatePicker: Story = {
-  render: () => <DatePickerWrapper />,
+  name: '기본 날짜 선택기',
+  render: (args) => <DatePickerWrapper {...args} />,
 };
 
 export const DatePickerWithError: Story = {
-  render: () => <DatePickerWrapper state="error" />,
+  name: '에러 상태',
+  render: (args) => <DatePickerWrapper {...args} state="error" />,
 };
 
 export const DisabledDatePicker: Story = {
-  render: () => <DatePickerWrapper disabled />,
+  name: '비활성화 상태',
+  render: (args) => <DatePickerWrapper {...args} disabled />,
 };
 
 export const LoadingDatePicker: Story = {
-  render: () => <DatePickerWrapper loading />,
+  name: '로딩 상태',
+  render: (args) => <DatePickerWrapper {...args} loading />,
 };
 
 export const DatePickerSizes: Story = {
-  render: () => (
+  name: '사이즈별',
+  render: (args) => (
     <div className="space-y-4">
-      <DatePickerWrapper label="Small" size="sm" />
-      <DatePickerWrapper label="Medium" size="md" />
-      <DatePickerWrapper label="Large" size="lg" />
+      <DatePickerWrapper {...args} label="Small" size="sm" />
+      <DatePickerWrapper {...args} label="Medium" size="md" />
+      <DatePickerWrapper {...args} label="Large" size="lg" />
     </div>
   ),
 };
