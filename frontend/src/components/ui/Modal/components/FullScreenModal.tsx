@@ -82,17 +82,17 @@ export default function FullScreenModal({ open, onClose, children, variant = 'ca
           ) : (
             <>
               {overlay}
-              <motion.div
+          <motion.div
                 className={modalClass}
                 initial={{ y: 0 }}
-                animate={{ y: 0 }}
+            animate={{ y: 0 }}
                 exit={{ y: 0 }}
-                transition={{ type: 'tween', duration: 0.3 }}
-                onClick={e => e.stopPropagation()}
+            transition={{ type: 'tween', duration: 0.3 }}
+            onClick={e => e.stopPropagation()}
                 style={{ zIndex: 1, position: 'relative' }}
-              >
-                {children}
-              </motion.div>
+          >
+            {children}
+          </motion.div>
             </>
           )}
         </motion.div>

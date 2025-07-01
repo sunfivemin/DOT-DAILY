@@ -35,7 +35,13 @@ export default function TaskItem({
       
       const dateKey = format(selectedDate, 'yyyy-MM-dd');
       queryClient.setQueryData(['tasks', dateKey], (old: Task[]) => {
-        return old?.map(t => t.id === task.id ? updatedTask : t) || [];
+        return old?.map(t => {
+          if (t.id === task.id) {
+            console.log('교체 전 priority:', t.priority, '교체 후 priority:', updatedTask.priority);
+            return updatedTask;
+          }
+          return t;
+        }) || [];
       });
     } catch (error) {
       console.error('상태 변경 실패:', error);

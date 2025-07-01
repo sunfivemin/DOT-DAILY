@@ -2,13 +2,21 @@
 
 import React, { useState } from 'react';
 import { ArchiveList } from '@/features/archive/components';
-import { ArchiveTask } from '@/features/archive/types';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { archiveTasks, moveToTodayFromArchive, deleteArchiveTask, updateArchiveTask } from '@/lib/api/tasks';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useDateStore } from '@/store/useDateStore';
 import BottomSheetModal from '@/components/ui/Modal/components/BottomSheetModal';
+
+// 파일 상단에 직접 타입 정의
+interface ArchiveTask {
+  id: string;
+  title: string;
+  priority: 1 | 2 | 3;
+  retryCount: number;
+  dueDate: string; // 'YY.MM.DD'
+}
 
 export default function ArchivePage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -41,8 +49,11 @@ export default function ArchivePage() {
   const handleEditSave = async () => {
     if (!editTaskId) return;
     try {
-      // priority를 string으로 변환해서 저장
-      const priorityStr = editPriority === 1 ? 'must' : editPriority === 2 ? 'should' : 'remind';
+      // priority를 string으로 변환해서 저장 (항상 string 타입으로)
+      let priorityStr: 'must' | 'should' | 'remind' = 'must';
+      if (editPriority === 1) priorityStr = 'must';
+      else if (editPriority === 2) priorityStr = 'should';
+      else priorityStr = 'remind';
       await updateArchiveTask(Number(editTaskId), { title: editTitle, priority: priorityStr });
       setIsEditModalOpen(false);
       setForceUpdate(v => v + 1);

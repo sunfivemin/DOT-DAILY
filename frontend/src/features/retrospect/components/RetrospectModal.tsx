@@ -58,11 +58,11 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
 
       {/* 하단 버튼 */}
       <div className="flex-none px-4 pb-6 pt-2 bg-white">
-        <Button
+      <Button
           size="lg"
           variant="primary"
           className="w-full rounded-full"
-          onClick={onSubmit}
+        onClick={onSubmit}
         >
           오늘 회고 등록하기
         </Button>

@@ -1,11 +1,5 @@
 // 임시 데이터가 수정될 수 있도록 let으로 변경하고, 외부에서 직접 접근하지 못하도록 숨깁니다.
-const tasksData: { [date: string]: Task[] } = {
-  '2024-06-30': [
-    // { id: 1, title: '예시', priority: 'must', date: '2024-06-30', done: false, retryCount: 0 },
-    { id: 2, title: '건전지 사기', priority: 'should', date: '2024-06-30', done: false, retryCount: 0 },
-    { id: 3, title: '엄마한테 전화하기', priority: 'remind', date: '2024-06-30', done: false, retryCount: 0 },
-  ],
-};
+const tasksData: { [date: string]: Task[] } = {};
 
 // 보류함(archive) 데이터
 export let archiveTasks: Task[] = [];
@@ -33,6 +27,8 @@ export interface UpdateTaskRequest {
   date?: string;
   done?: boolean;
 }
+
+let globalId = 1; // 전역적으로 유일한 id 생성
 
 /**
  * 특정 날짜의 할 일 목록을 가져오는 가짜 API 함수.
@@ -62,9 +58,7 @@ export const createTask = async (taskData: CreateTaskRequest): Promise<Task> => 
   await new Promise(resolve => setTimeout(resolve, 500));
 
   const dateString = taskData.date;
-  const existingIds = (tasksData[dateString] || []).map(task => task.id);
-  const newId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
-  const newTask: Task = { id: newId, ...taskData, done: false, retryCount: 0 };
+  const newTask: Task = { id: globalId++, ...taskData, done: false, retryCount: 0 };
   if (!tasksData[dateString]) tasksData[dateString] = [];
   tasksData[dateString].push(newTask);
   
@@ -140,9 +134,16 @@ export const toggleTaskStatus = async (id: number): Promise<Task> => {
   for (const date in tasksData) {
     const idx = tasksData[date].findIndex(task => task.id === id);
     if (idx !== -1) {
-      tasksData[date][idx].done = !tasksData[date][idx].done;
-      console.log('상태 토글 성공!', tasksData[date][idx]);
-      return tasksData[date][idx];
+      const updatedTask = { ...tasksData[date][idx], done: !tasksData[date][idx].done };
+      // 배열 자체도 새로 할당 (불변성 보장)
+      tasksData[date] = [
+        ...tasksData[date].slice(0, idx),
+        updatedTask,
+        ...tasksData[date].slice(idx + 1)
+      ];
+      console.log('상태 토글 성공!', updatedTask);
+      console.log('tasksData 전체:', JSON.stringify(tasksData, null, 2));
+      return updatedTask;
     }
   }
   throw new Error('해당 할 일을 찾을 수 없습니다.');
@@ -194,8 +195,9 @@ export const moveToArchive = async (id: number): Promise<Task> => {
 /**
  * 보류함에서 오늘 할 일로 이동시키는 함수
  */
-export const moveToTodayFromArchive = async (id: number): Promise<Task> => {
-  const idx = archiveTasks.findIndex(task => task.id === id);
+export const moveToTodayFromArchive = async (id: number | string): Promise<Task> => {
+  const numId = Number(id);
+  const idx = archiveTasks.findIndex(task => Number(task.id) === numId);
   if (idx !== -1) {
     const task = archiveTasks[idx];
     // 오늘 날짜로 이동
@@ -230,7 +232,11 @@ export const deleteArchiveTask = async (id: number): Promise<void> => {
 export const updateArchiveTask = async (id: number, data: Partial<Task>): Promise<Task> => {
   const idx = archiveTasks.findIndex(task => task.id === id);
   if (idx !== -1) {
-    archiveTasks[idx] = { ...archiveTasks[idx], ...data };
+    // id가 data에 있으면 제거
+    const { id: _ignore, ...rest } = data;
+    const updated = { ...archiveTasks[idx], ...rest };
+    updated.id = Number(archiveTasks[idx].id); // 원본 id를 number로 강제
+    archiveTasks[idx] = updated;
     return archiveTasks[idx];
   }
   throw new Error('해당 할 일을 찾을 수 없습니다.');
