@@ -1,4 +1,5 @@
 // src/components/ui/Radio/RadioButton.stories.tsx
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import RadioButton from './RadioButton';
