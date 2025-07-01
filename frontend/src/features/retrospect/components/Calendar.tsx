@@ -5,12 +5,12 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { DayCellContentArg } from '@fullcalendar/core';
+import Image from 'next/image';
 import './Calendar.css';
 import { getDailyEmotionMemos } from '../api';
 import { formatDateToString } from '../utils';
 import { useDateStore } from '@/store/useDateStore';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
-import Image from 'next/image';
 
 interface CalendarProps {
   onDateModalOpen: () => void;
@@ -78,7 +78,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
         className='flex gap-2 items-center text-xl font-bold mb-8'
       >
         {selectedYearMonth.year}. {selectedYearMonth.month}
-        <Image src="/dropdown.svg" alt="달력 선택" width={12} height={12} />
+        <Image src="/dropdown.svg" alt="달력 선택" width={20} height={20} style={{ width: 20, height: 20 }} />
       </button>
       <FullCalendar
         ref={calendarRef}

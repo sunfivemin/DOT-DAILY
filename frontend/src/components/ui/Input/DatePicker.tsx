@@ -99,7 +99,7 @@ export function DatePicker({
             mode="single"
             selected={selected ?? undefined}
             onSelect={handleSelect}
-            className="text-sm text-gray-800"
+            className="text-sm text-gray-800 flex justify-center"
             classNames={{
               nav_button: 'text-indigo-600 hover:text-indigo-400 transition-colors',
               day_selected: 'bg-indigo-600 text-white',

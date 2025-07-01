@@ -38,19 +38,25 @@ export const Checked: Story = {
   },
 };
 
+interface InteractiveComponentProps {
+  checked?: boolean;
+}
+
+const InteractiveComponent = (args: InteractiveComponentProps) => {
+  const [checked, setChecked] = useState(args.checked);
+  return (
+    <div className="flex flex-col items-start gap-4">
+      <Checkbox
+        {...args}
+        checked={checked}
+        onCheckedChange={setChecked}
+      />
+      <p className="text-sm">현재 상태: {checked ? 'Checked' : 'Unchecked'}</p>
+    </div>
+  );
+};
+
 export const Interactive: Story = {
   name: '인터랙티브 예제',
-  render: args => {
-    const [checked, setChecked] = useState(args.checked);
-    return (
-      <div className="flex flex-col items-start gap-4">
-        <Checkbox
-          {...args}
-          checked={checked}
-          onCheckedChange={setChecked}
-        />
-        <p className="text-sm">현재 상태: {checked ? 'Checked' : 'Unchecked'}</p>
-      </div>
-    );
-  },
+  render: (args) => <InteractiveComponent {...args} />,
 }; 

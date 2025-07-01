@@ -1,6 +1,6 @@
 import { Emotion, EMOTIONS } from '@/constants/emotion';
-import Image from 'next/image';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function EmotionSelector() {
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion['id'] | ''>('');
@@ -18,10 +18,11 @@ export default function EmotionSelector() {
             onClick={() => setSelectedEmotion(emotion.id)}
             className="flex flex-col items-center gap-2"
           >
-            <Image src={selectedEmotion === emotion.id ? `/${emotion.id}-on.svg` : `/${emotion.id}-off.svg`}
+            <Image
               alt={emotion.label}
-              width={32}
-              height={32}
+              src={selectedEmotion === emotion.id ? `/${emotion.id}-on.svg` : `/${emotion.id}-off.svg`}
+              width={48}
+              height={48}
             />
             <span className="text-xs text-gray-600">
               {emotion.label}

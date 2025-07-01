@@ -29,6 +29,7 @@
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "prisma": "^6.9.0",
+    "supabase": "^2.26.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
@@ -39,7 +40,13 @@
     "db:migrate:dev": "npm run with-env prisma migrate dev --skip-generate",
     "db:migrate:reset": "npm run with-env prisma migrate reset",
     "db:studio": "npm run with-env prisma studio",
+    "supabase:init": "supabase init", 
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "db:push": "npm run with-env prisma db push",
     "seed": "ts-node prisma/seed.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "postbuild": "npm run db:generate"
   }
 }

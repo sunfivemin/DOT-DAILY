@@ -1,8 +1,8 @@
 'use client';
 
 import { useRetrospectStore } from '@/store/useRestrospectStore';
-import Image from 'next/image';
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface DateNavigationModalProps {
   onClose: () => void;
@@ -27,7 +27,7 @@ export default function DateNavigationModal({
   };
 
   return (
-    <>
+    <div>
       <div className="flex items-center justify-between pb-4 border-b border-gray-100">
         <h2 className="text-lg font-semibold">월 선택</h2>
         <button
@@ -56,26 +56,26 @@ export default function DateNavigationModal({
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-2 w-full">
         {months.map((month) => (
-          <div key={month} className="h-16">
+          <div key={month}>
             <button
               onClick={() => onDateSelect(month)}
               className={`
-                w-full h-12
-                rounded-full 
-                font-medium
-                ${selectedYear === selectedYearMonth.year && selectedMonth === month
+              w-full h-12
+              rounded-full 
+              font-medium
+              ${selectedYear === selectedYearMonth.year && selectedMonth === month
                   ? 'bg-brand-primary text-white'
                   : 'text-gray-900 hover:bg-gray-100'
                 }
-              `}
+            `}
             >
               {month}월
             </button>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
-}
+} 
