@@ -15,9 +15,11 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const showToast = (message: string) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message }]);
-    setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
-    }, 2000);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+      }, 2000);
+    });
   };
 
   return (

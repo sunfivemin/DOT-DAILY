@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import MobileLayout from '@/components/layout/MobileLayout';
 import {
   TaskItem,
@@ -12,18 +12,13 @@ import {
 import { Plus } from 'lucide-react';
 import Fab from '@/components/ui/Fab/Fab';
 import { useDateStore } from '@/store/useDateStore';
-import {
-  getTasksByDate,
-  updateTaskStatus,
-  TaskPriority,
-  Tasks,
-} from '@/lib/api/tasks';
+import { getTasksByDate, Task } from '@/lib/api/tasks';
 import FullScreenModal from '@/components/ui/Modal/components/FullScreenModal';
 import { useState } from 'react';
 
 export default function MyDayPage() {
   const { selectedDate } = useDateStore();
-  const queryClient = useQueryClient();
+  const [editTask, setEditTask] = useState<Task | null>(null);
   const [open, setOpen] = useState(false);
 
   const queryKey = ['tasks', selectedDate.toISOString().split('T')[0]];
@@ -33,44 +28,23 @@ export default function MyDayPage() {
     queryFn: () => getTasksByDate(selectedDate),
   });
 
-  const { mutate: toggleTaskStatus } = useMutation({
-    mutationFn: updateTaskStatus,
-    onMutate: async (variables) => {
-      console.log('--- 낙관적 업데이트 시작 ---');
-      console.log('1. 이전 쿼리 취소');
-      await queryClient.cancelQueries({ queryKey });
+  // 우선순위별로 할 일 그룹화
+  const groupedTasks = tasks?.reduce((acc, task) => {
+    if (!acc[task.priority]) {
+      acc[task.priority] = [];
+    }
+    acc[task.priority].push(task);
+    return acc;
+  }, {} as Record<string, Task[]>) || {};
 
-      const previousTasks = queryClient.getQueryData<Tasks>(queryKey);
-      console.log('2. UI 즉시 업데이트 (setQueryData)');
+  const handleEdit = (task: Task) => {
+    setEditTask(task);
+    setOpen(true);
+  };
 
-      if (previousTasks) {
-        const newTasks = JSON.parse(JSON.stringify(previousTasks));
-        const taskList: any[] = newTasks[variables.priority];
-        const taskIndex = taskList.findIndex(task => task.id === variables.id);
-        if (taskIndex !== -1) {
-          taskList[taskIndex].done = variables.done;
-        }
-        queryClient.setQueryData<Tasks>(queryKey, newTasks);
-      }
-      
-      console.log('3. 이전 데이터 저장 (롤백 대비)');
-      return { previousTasks };
-    },
-    onError: (err, variables, context) => {
-      console.error('--- 🚨 낙관적 업데이트 실패! 롤백 실행 ---', err);
-      if (context?.previousTasks) {
-        queryClient.setQueryData(queryKey, context.previousTasks);
-      }
-    },
-    onSettled: () => {
-      console.log('4. 최종 데이터 동기화 (invalidateQueries)');
-      console.log('--- 낙관적 업데이트 종료 ---');
-      queryClient.invalidateQueries({ queryKey });
-    },
-  });
-
-  const handleToggle = (priority: TaskPriority, id: string, done: boolean) => {
-    toggleTaskStatus({ priority, id, done: !done });
+  const handleClose = () => {
+    setOpen(false);
+    setEditTask(null);
   };
 
   return (
@@ -91,38 +65,31 @@ export default function MyDayPage() {
         {tasks && (
           <>
             <TaskGroup priority="must" title="오늘 무조건">
-              {tasks.must.map(task => (
+              {groupedTasks.must?.map(task => (
                 <TaskItem
                   key={task.id}
-                  {...task}
-                  priority="must"
-                  onToggleStatus={() => handleToggle('must', task.id, task.done)}
+                  task={task}
+                  onEdit={handleEdit}
                 />
               ))}
             </TaskGroup>
 
             <TaskGroup priority="should" title="오늘이면 굿">
-              {tasks.should.map(task => (
+              {groupedTasks.should?.map(task => (
                 <TaskItem
                   key={task.id}
-                  {...task}
-                  priority="should"
-                  onToggleStatus={() =>
-                    handleToggle('should', task.id, task.done)
-                  }
+                  task={task}
+                  onEdit={handleEdit}
                 />
               ))}
             </TaskGroup>
 
             <TaskGroup priority="remind" title="잊지말자">
-              {tasks.remind.map(task => (
+              {groupedTasks.remind?.map(task => (
                 <TaskItem
                   key={task.id}
-                  {...task}
-                  priority="remind"
-                  onToggleStatus={() =>
-                    handleToggle('remind', task.id, task.done)
-                  }
+                  task={task}
+                  onEdit={handleEdit}
                 />
               ))}
             </TaskGroup>
@@ -135,8 +102,12 @@ export default function MyDayPage() {
           <Plus className="w-6 h-6" />
         </Fab>
       </div>
-      <FullScreenModal open={open} onClose={() => setOpen(false)}>
-        <TaskFormModal onClose={() => setOpen(false)} defaultDate={selectedDate.toISOString().split('T')[0]} />
+      <FullScreenModal open={open} onClose={handleClose}>
+        <TaskFormModal
+          onClose={handleClose}
+          defaultDate={selectedDate.toISOString().split('T')[0]}
+          task={editTask}
+        />
       </FullScreenModal>
     </MobileLayout>
   );

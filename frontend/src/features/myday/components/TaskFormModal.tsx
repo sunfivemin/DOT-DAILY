@@ -8,45 +8,70 @@ import { Button } from '@/components/ui/Button/Button';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import RadioButton from '@/components/ui/Radio/RadioButton';
+import { createTask, updateTask, Task } from '@/lib/api/tasks';
+import { useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 
 interface TaskFormModalProps {
   onClose: () => void;
   defaultDate?: string;
+  task?: Task | null;
 }
-
-const priorities = [
-  {
-    value: 'must',
-    label: '오늘 무조건',
-    color: 'text-red-500',
-    circle: 'bg-red-500',
-  },
-  {
-    value: 'should',
-    label: '오늘이면 굿',
-    color: 'text-emerald-500',
-    circle: 'bg-emerald-500',
-  },
-  {
-    value: 'remind',
-    label: '잊지말자',
-    color: 'text-blue-500',
-    circle: 'bg-blue-500',
-  },
-] as const;
 
 const inputSize: Size = 'md';
 
 export default function TaskFormModal({
   onClose,
   defaultDate,
+  task,
 }: TaskFormModalProps) {
-  const [label, setLabel] = useState('');
-  const [priority, setPriority] =
-    useState<'must' | 'should' | 'remind'>('must');
-  const [date, setDate] = useState<Date | null>(
-    defaultDate ? new Date(defaultDate) : new Date()
-  );
+  const [label, setLabel] = useState(task ? task.title : '');
+  const [priority, setPriority] = useState<'must' | 'should' | 'remind'>(task ? task.priority : 'must');
+  const [date, setDate] = useState<Date | null>(task ? new Date(task.date) : (defaultDate ? new Date(defaultDate) : new Date()));
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const queryClient = useQueryClient();
+  const dateKey = date ? format(date, 'yyyy-MM-dd') : '';
+
+  const handleSubmit = async () => {
+    if (!label.trim() || !date) {
+      alert('할 일과 날짜를 입력해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      let newOrUpdatedTask: Task;
+      if (task) {
+        // 수정 모드
+        newOrUpdatedTask = await updateTask(task.id, {
+          title: label.trim(),
+          priority,
+          date: format(date, 'yyyy-MM-dd'),
+        });
+        queryClient.setQueryData(['tasks', dateKey], (old: Task[] | undefined) => {
+          return old ? old.map((t: Task) => t.id === task.id ? newOrUpdatedTask : t) : [newOrUpdatedTask];
+        });
+      } else {
+        // 등록 모드
+        newOrUpdatedTask = await createTask({
+          title: label.trim(),
+          priority,
+          date: format(date, 'yyyy-MM-dd'),
+        });
+        queryClient.setQueryData(['tasks', dateKey], (old: Task[] | undefined) => {
+          return old ? [...old, newOrUpdatedTask] : [newOrUpdatedTask];
+        });
+      }
+      onClose();
+    } catch (error) {
+      console.error('할 일 저장 실패:', error);
+      alert('할 일 저장에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -59,7 +84,7 @@ export default function TaskFormModal({
     >
       <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <button onClick={onClose} aria-label="뒤로가기">
-          <Image src="/back.svg" alt="back" width={24} height={24} />
+          <Image src="/back.svg" alt="back" width={20} height={20} style={{ width: 20, height: 20 }} />
         </button>
         <h2 className="text-sm text-gray-400">오늘 할 일</h2>
         <div className="w-6" />
@@ -129,8 +154,14 @@ export default function TaskFormModal({
       </div>
 
       <div className="flex-none px-4 pb-6 pt-2 bg-white">
-        <Button size="lg" variant="primary" className="w-full rounded-full">
-          할 일 등록하기
+        <Button 
+          size="lg" 
+          variant="primary" 
+          className="w-full rounded-full"
+          onClick={handleSubmit}
+          disabled={isLoading || !label.trim()}
+        >
+          {isLoading ? (task ? '수정 중...' : '등록 중...') : (task ? '수정하기' : '할 일 등록하기')}
         </Button>
       </div>
     </motion.div>

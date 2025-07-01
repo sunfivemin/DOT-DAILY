@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useDateStore } from '@/store/useDateStore';
 import { formatDisplayDate } from '../utils';
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface RetrospectModalProps {
   onClose: () => void;
@@ -31,7 +32,7 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
         <button onClick={onClose} aria-label="뒤로가기">
-          <img src="/back.svg" alt="back" width={24} height={24} />
+          <Image src="/back.svg" alt="back" width={24} height={24} />
         </button>
         <h2 className="text-sm text-gray-400">오늘 회고</h2>
         <div className="w-6" />
@@ -46,12 +47,7 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
             onChange={onTextChange}
             placeholder="오늘 하루는 어떠셨나요? 자유롭게 작성해보세요."
             maxLength={3000}
-            className="
-              font-kkonghae 
-              w-full h-40 p-4 mt-2
-              border border-gray-200 rounded-lg
-              resize-none
-            "
+            className="font-kkonghae w-full h-40 p-4 mt-2 border border-gray-200 rounded-lg resize-none"
           />
           <div className="text-right text-xs text-gray-400">
             {retrospectText.length}/3000

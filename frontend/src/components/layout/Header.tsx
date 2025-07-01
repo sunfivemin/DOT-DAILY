@@ -18,6 +18,7 @@ export default function Header({ title }: HeaderProps) {
             width={100}
             height={24}
             priority
+            style={{ width: 'auto', height: 'auto' }}
           />
         </Link>
         <h1 className="text-lg font-bold text-text-strong">{title}</h1>

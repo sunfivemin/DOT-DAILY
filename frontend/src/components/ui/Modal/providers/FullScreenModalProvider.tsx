@@ -89,20 +89,20 @@ const FullScreenModalRenderer = () => {
     <AnimatePresence>
       {modalName === 'taskForm' && (
         <FullScreenModal open={true} onClose={closeModal} variant="card">
-          <TaskFormModal onClose={closeModal} {...modalProps} />
+        <TaskFormModal onClose={closeModal} {...modalProps} />
         </FullScreenModal>
       )}
       {modalName === 'retrospectForm' && (
         <FullScreenModal open={true} onClose={closeModal} variant="card">
-          <RetrospectModal
-            onClose={retrospectModal.closeModal}
-            onSubmit={retrospectModal.onSubmit}
-          />
+        <RetrospectModal
+          onClose={retrospectModal.closeModal}
+          onSubmit={retrospectModal.onSubmit}
+        />
         </FullScreenModal>
       )}
       {modalName === 'dateNavigationForm' && (
         <BottomSheetModal open={true} onClose={closeModal}>
-          <DateNavigationModal onClose={closeModal} />
+        <DateNavigationModal onClose={closeModal} />
         </BottomSheetModal>
       )}
     </AnimatePresence>

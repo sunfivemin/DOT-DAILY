@@ -5,6 +5,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { DayCellContentArg } from '@fullcalendar/core';
+import Image from 'next/image';
 import './Calendar.css';
 import { getDailyEmotionMemos } from '../api';
 import { formatDateToString } from '../utils';
@@ -60,7 +61,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
       setEmotionMemoList(data);
     };
     getEmotionMemos();
-  }, []);
+  }, [setEmotionMemoList]);
 
   useEffect(() => {
     if (calendarRef.current) {
@@ -77,7 +78,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
         className='flex gap-2 items-center text-xl font-bold mb-8'
       >
         {selectedYearMonth.year}. {selectedYearMonth.month}
-        <img src="/dropdown.svg" alt="달력 선택" />
+        <Image src="/dropdown.svg" alt="달력 선택" width={20} height={20} style={{ width: 20, height: 20 }} />
       </button>
       <FullCalendar
         ref={calendarRef}

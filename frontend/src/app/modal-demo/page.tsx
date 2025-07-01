@@ -4,9 +4,7 @@ import { useState } from 'react';
 import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
 import { useModal } from '@/components/ui/Modal/providers/ModalProvider';
 import BottomSheetModal from '@/components/ui/Modal/components/BottomSheetModal';
-import FullScreenModal from '@/components/ui/Modal/components/FullScreenModal';
 import { Button } from '@/components/ui/Button/Button';
-import TaskFormModal from '@/features/myday/components/TaskFormModal';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { FullScreenModalProvider } from '@/components/ui/Modal/providers/FullScreenModalProvider';
 
@@ -17,8 +15,6 @@ export default function ModalDemoPage() {
   const { showModal, closeModal } = useModal();
   // 바텀시트
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
-  // FullScreenModal 직접 사용
-  const [fullScreenOpen, setFullScreenOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
