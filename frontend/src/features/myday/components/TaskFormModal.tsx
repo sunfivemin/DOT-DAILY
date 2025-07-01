@@ -11,34 +11,12 @@ import RadioButton from '@/components/ui/Radio/RadioButton';
 import { createTask, updateTask, Task } from '@/lib/api/tasks';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useDateStore } from '@/store/useDateStore';
 
 interface TaskFormModalProps {
   onClose: () => void;
   defaultDate?: string;
   task?: Task | null;
 }
-
-const priorities = [
-  {
-    value: 'must',
-    label: '오늘 무조건',
-    color: 'text-red-500',
-    circle: 'bg-red-500',
-  },
-  {
-    value: 'should',
-    label: '오늘이면 굿',
-    color: 'text-emerald-500',
-    circle: 'bg-emerald-500',
-  },
-  {
-    value: 'remind',
-    label: '잊지말자',
-    color: 'text-blue-500',
-    circle: 'bg-blue-500',
-  },
-] as const;
 
 const inputSize: Size = 'md';
 
@@ -53,7 +31,6 @@ export default function TaskFormModal({
   const [isLoading, setIsLoading] = useState(false);
   
   const queryClient = useQueryClient();
-  const { selectedDate } = useDateStore();
   const dateKey = date ? format(date, 'yyyy-MM-dd') : '';
 
   const handleSubmit = async () => {
@@ -73,7 +50,7 @@ export default function TaskFormModal({
           priority,
           date: format(date, 'yyyy-MM-dd'),
         });
-        queryClient.setQueryData(['tasks', dateKey], (old: any) => {
+        queryClient.setQueryData(['tasks', dateKey], (old: Task[] | undefined) => {
           return old ? old.map((t: Task) => t.id === task.id ? newOrUpdatedTask : t) : [newOrUpdatedTask];
         });
       } else {
@@ -83,7 +60,7 @@ export default function TaskFormModal({
           priority,
           date: format(date, 'yyyy-MM-dd'),
         });
-        queryClient.setQueryData(['tasks', dateKey], (old: any) => {
+        queryClient.setQueryData(['tasks', dateKey], (old: Task[] | undefined) => {
           return old ? [...old, newOrUpdatedTask] : [newOrUpdatedTask];
         });
       }
@@ -107,7 +84,7 @@ export default function TaskFormModal({
     >
       <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <button onClick={onClose} aria-label="뒤로가기">
-          <Image src="/back.svg" alt="back" width={24} height={24} />
+          <Image src="/back.svg" alt="back" width={20} height={20} style={{ width: 20, height: 20 }} />
         </button>
         <h2 className="text-sm text-gray-400">오늘 할 일</h2>
         <div className="w-6" />

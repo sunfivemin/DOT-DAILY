@@ -5,15 +5,22 @@ import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useDateStore } from '@/store/useDateStore';
 
+interface ArchiveTask {
+  id: string;
+  title: string;
+  priority: 1 | 2 | 3;
+  retryCount: number;
+  dueDate: string;
+}
+
 interface Props {
-  tasks: any[]; // ArchiveTask[]에서 any[]로 임시 대체
-  onMenuClick: (id: string) => void;
+  tasks: ArchiveTask[];
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onMoveToToday?: (id: string) => void;
 }
 
-export default function ArchiveList({ tasks, onMenuClick, onEdit, onDelete, onMoveToToday }: Props) {
+export default function ArchiveList({ tasks, onEdit, onDelete, onMoveToToday }: Props) {
   const queryClient = useQueryClient();
   const { selectedDate } = useDateStore();
   const todayKey = format(selectedDate, 'yyyy-MM-dd');
@@ -31,7 +38,6 @@ export default function ArchiveList({ tasks, onMenuClick, onEdit, onDelete, onMo
         <ArchiveItem
           key={task.id + '-' + task.dueDate}
           task={task}
-          onMenuClick={onMenuClick}
           onEdit={onEdit ? () => onEdit(task.id) : undefined}
           onDelete={onDelete ? () => onDelete(task.id) : undefined}
           onMoveToToday={() => handleMoveToToday(task.id)}

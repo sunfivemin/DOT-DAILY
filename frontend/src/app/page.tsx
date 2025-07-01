@@ -47,11 +47,6 @@ export default function MyDayPage() {
     setEditTask(null);
   };
 
-  const handlePostpone = (task: Task) => {
-    // TODO: 보류 기능 구현
-    console.log('보류할 할 일:', task);
-  };
-
   return (
     <MobileLayout headerTitle="나의 하루">
       <div className="sticky top-0 z-10 bg-surface-base">
@@ -75,7 +70,6 @@ export default function MyDayPage() {
                   key={task.id}
                   task={task}
                   onEdit={handleEdit}
-                  onPostpone={handlePostpone}
                 />
               ))}
             </TaskGroup>
@@ -86,7 +80,6 @@ export default function MyDayPage() {
                   key={task.id}
                   task={task}
                   onEdit={handleEdit}
-                  onPostpone={handlePostpone}
                 />
               ))}
             </TaskGroup>
@@ -97,7 +90,6 @@ export default function MyDayPage() {
                   key={task.id}
                   task={task}
                   onEdit={handleEdit}
-                  onPostpone={handlePostpone}
                 />
               ))}
             </TaskGroup>

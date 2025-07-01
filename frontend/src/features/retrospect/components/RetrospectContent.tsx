@@ -3,6 +3,7 @@ import { useDateStore } from '@/store/useDateStore';
 import { formatDateToString, formatDisplayDate } from '../utils';
 import { useMemo } from 'react';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
+import Image from 'next/image';
 
 const RetrospectContent = () => {
   const { selectedDate } = useDateStore();
@@ -31,12 +32,12 @@ const RetrospectContent = () => {
 
       {emotion ? (
         <figure className="flex gap-2 items-center">
-          <img src={`/${emotion}-on.svg`} alt={`${emotionLabel} 이모션`} />
+          <Image src={`/${emotion}-on.svg`} alt={`${emotionLabel} 이모션`} width={48} height={48} />
           <figcaption className='font-kkonghae'>{memo || emotionLabel}</figcaption>
         </figure>
       ) : (
         <figure className="flex flex-col gap-2 items-center">
-          <img src="/good-off.svg" alt="회고 이모션" />
+          <Image src="/good-off.svg" alt="회고 이모션" width={48} height={48} />
           <figcaption className="font-kkonghae text-zinc-400 ">
             작성된 회고가 없어요
           </figcaption>

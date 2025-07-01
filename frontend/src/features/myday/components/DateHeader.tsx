@@ -21,12 +21,10 @@ function DateItem({
   const queryClient = useQueryClient();
 
   const prefetchTasks = async () => {
-    console.log(`Prefetching tasks for ${date.toLocaleDateString()}`);
     await queryClient.prefetchQuery({
       queryKey: ['tasks', date.toISOString().split('T')[0]],
       queryFn: () => getTasksByDate(date),
     });
-    console.log(`Prefetching complete for ${date.toLocaleDateString()}`);
   };
 
   return (

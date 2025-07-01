@@ -3,7 +3,6 @@
 import { clsx } from 'clsx';
 import { Menu } from '@headlessui/react';
 import {
-  Check,
   MoreHorizontal,
   Pencil,
   Trash2,
@@ -18,13 +17,11 @@ import { format } from 'date-fns';
 interface TaskItemProps {
   task: Task;
   onEdit?: (task: Task) => void;
-  onPostpone?: (task: Task) => void;
 }
 
 export default function TaskItem({
   task,
   onEdit = () => {},
-  onPostpone = () => {},
 }: TaskItemProps) {
   const queryClient = useQueryClient();
   const { selectedDate } = useDateStore();
@@ -76,7 +73,7 @@ export default function TaskItem({
         return old.filter(t => t.id !== task.id);
       });
       // (보류함 캐시는 archiveTasks를 사용하는 컴포넌트에서 직접 불러오도록)
-    } catch (error) {
+    } catch {
       alert('보류(보류함 이동)에 실패했습니다.');
     }
   };

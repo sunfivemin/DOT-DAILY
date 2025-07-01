@@ -3,13 +3,12 @@
 import React, { useState } from 'react';
 import { ArchiveList } from '@/features/archive/components';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { archiveTasks, moveToTodayFromArchive, deleteArchiveTask, updateArchiveTask } from '@/lib/api/tasks';
+import { getArchiveTasks, moveToTodayFromArchive, deleteArchiveTask, updateArchiveTask } from '@/lib/api/tasks';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useDateStore } from '@/store/useDateStore';
 import BottomSheetModal from '@/components/ui/Modal/components/BottomSheetModal';
 
-// 파일 상단에 직접 타입 정의
 interface ArchiveTask {
   id: string;
   title: string;
@@ -19,17 +18,15 @@ interface ArchiveTask {
 }
 
 export default function ArchivePage() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { selectedDate } = useDateStore();
-  const [forceUpdate, setForceUpdate] = useState(0);
   const [editTaskId, setEditTaskId] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editPriority, setEditPriority] = useState<1 | 2 | 3>(1);
 
   const handleEdit = async (id: string) => {
-    setSelectedId(id);
+    const archiveTasks = getArchiveTasks();
     const task = archiveTasks.find(t => String(t.id) === id);
     if (!task) return;
     setEditTaskId(id);
@@ -49,45 +46,38 @@ export default function ArchivePage() {
   const handleEditSave = async () => {
     if (!editTaskId) return;
     try {
-      // priority를 string으로 변환해서 저장 (항상 string 타입으로)
       let priorityStr: 'must' | 'should' | 'remind' = 'must';
       if (editPriority === 1) priorityStr = 'must';
       else if (editPriority === 2) priorityStr = 'should';
       else priorityStr = 'remind';
       await updateArchiveTask(Number(editTaskId), { title: editTitle, priority: priorityStr });
       setIsEditModalOpen(false);
-      setForceUpdate(v => v + 1);
-    } catch (error) {
+    } catch {
       alert('수정에 실패했습니다.');
     }
   };
 
   const handleDelete = async (id: string) => {
-    setSelectedId(id);
     try {
       await deleteArchiveTask(Number(id));
-      // 강제로 리렌더링 (archiveTasks는 메모리라 상태 변화 감지가 안 됨)
-      setForceUpdate(v => v + 1);
-    } catch (error) {
+    } catch {
       alert('삭제에 실패했습니다.');
     }
   };
+
   const handleMoveToToday = async (id: string) => {
-    setSelectedId(id);
     try {
       const movedTask = await moveToTodayFromArchive(Number(id));
-      // 오늘 날짜 캐시 갱신
       const todayKey = format(selectedDate, 'yyyy-MM-dd');
-      queryClient.setQueryData(['tasks', todayKey], (old: any[] = []) => {
+      queryClient.setQueryData(['tasks', todayKey], (old: ArchiveTask[] = []) => {
         return [...old, movedTask];
       });
-      // 보류함 캐시는 자동으로 반영됨 (archiveTasks 배열 사용)
-    } catch (error) {
+    } catch {
       alert('오늘 할 일로 이동에 실패했습니다.');
     }
   };
 
-  // archiveTasks를 ArchiveTask[]로 변환
+  const archiveTasks = getArchiveTasks();
   const archiveTaskList: ArchiveTask[] = archiveTasks.map(task => ({
     id: String(task.id),
     title: task.title,
@@ -101,7 +91,6 @@ export default function ArchivePage() {
       <div className="px-4 py-6 space-y-2 pb-24">
         <ArchiveList
           tasks={archiveTaskList}
-          onMenuClick={() => {}}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onMoveToToday={handleMoveToToday}

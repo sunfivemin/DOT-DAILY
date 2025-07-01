@@ -31,19 +31,18 @@ export default function FullScreenModal({ open, onClose, children, variant = 'ca
 
   if (variant === 'full') {
     modalClass = 'relative w-full h-full flex flex-col bg-white overflow-hidden';
-    overlay = null; // 딤드 없음
+    overlay = null;
   } else if (variant === 'card') {
     modalClass = 'relative w-full h-full max-w-md mx-auto flex flex-col bg-white overflow-hidden';
-    overlay = null; // 딤드 없음
+    overlay = null;
   } else if (variant === 'bottomSheet') {
     modalClass = 'relative w-full max-w-md mx-auto flex flex-col bg-white rounded-t-2xl overflow-hidden h-[60vh]';
     overlay = (
       <motion.div
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/40 z-40"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        style={{ zIndex: 0 }}
       />
     );
   }

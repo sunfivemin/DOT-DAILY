@@ -6,17 +6,21 @@ import {
   Trash2,
   CalendarClock,
 } from 'lucide-react';
-import { ArchiveTask } from '../types';
 
 interface Props {
-  task: ArchiveTask;
-  onMenuClick: (id: string) => void;
+  task: {
+    id: string;
+    title: string;
+    priority: 1 | 2 | 3;
+    retryCount: number;
+    dueDate: string;
+  };
   onEdit?: () => void;
   onDelete?: () => void;
   onMoveToToday?: () => void;
 }
 
-export default function ArchiveItem({ task, onMenuClick, onEdit = () => {}, onDelete = () => {}, onMoveToToday = () => {} }: Props) {
+export default function ArchiveItem({ task, onEdit = () => {}, onDelete = () => {}, onMoveToToday = () => {} }: Props) {
   const priorityClass =
     task.priority === 1
       ? 'bg-priority-must text-priority-must'
