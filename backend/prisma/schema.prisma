@@ -1,6 +1,7 @@
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -8,9 +9,9 @@ generator client {
 }
 
 model User {
-    id            String          @id @default(cuid())
+    id            Int             @id @default(autoincrement())
     name          String?
-    username      String?         @unique
+    username      String?
     password_hash String?
     email         String?         @unique
     emailVerified DateTime?
@@ -28,8 +29,8 @@ model User {
 }
 
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String  @unique
+    id                       Int     @id @default(autoincrement())
+    userId                   Int     @unique
     type                     String
     provider                 String
     providerAccountId        String
@@ -51,9 +52,9 @@ model Account {
 }
 
 model Session {
-    id           String   @id @default(cuid())
+    Int          Int      @id @default(autoincrement())
     sessionToken String   @unique
-    userId       String
+    userId       Int
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id])
 
@@ -74,7 +75,7 @@ model VerificationToken {
 // Optional for WebAuthn support
 model Authenticator {
     credentialID         String  @unique
-    userId               String
+    userId               Int
     providerAccountId    String
     credentialPublicKey  String
     counter              Int
@@ -99,14 +100,14 @@ model Stickers {
 
 //  ✅ 투두 리스트
 model Todos {
-    id        Int      @id @default(autoincrement())
-    userId    String
+    id        Int       @id @default(autoincrement())
+    userId    Int
     title     String
-    date      DateTime
-    status    Status   @default(pending)
-    priority  Priority @default(GOOD_TODAY)
-    createdAt DateTime @default(now())
-    updatedAt DateTime
+    date      String
+    status    Status    @default(pending)
+    priority  Priority  @default(must)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime?
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -121,14 +122,14 @@ enum Status {
 
 // 우선순위 
 enum Priority {
-    MUST_TODAY // 오늘 무조건!
-    GOOD_TODAY // 오늘이면 좋음
-    DONT_FORGET //잊지 말자 !
+    must // 오늘 무조건!
+    should // 오늘이면 좋음
+    remind //잊지 말자 !
 }
 
 model DailyReviews {
     id          Int      @id @default(autoincrement())
-    userId      String
+    userId      Int
     date        DateTime
     stickerId   Int
     memo        String   @db.Text

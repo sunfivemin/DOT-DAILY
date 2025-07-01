@@ -69,7 +69,7 @@ export default function DateNavigationModal({
                   ? 'bg-brand-primary text-white'
                   : 'text-gray-900 hover:bg-gray-100'
                 }
-            `}
+              `}
             >
               {month}월
             </button>
