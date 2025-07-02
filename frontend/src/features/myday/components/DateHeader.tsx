@@ -4,69 +4,15 @@ import { format, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { clsx } from 'clsx';
 import { useDateStore } from '@/store/useDateStore';
-import { useQueryClient } from '@tanstack/react-query';
-import { getTasksByDate } from '@/lib/api/tasks';
 import { motion, useMotionValue, useAnimation } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import React from 'react';
-
-// 각 날짜 아이템을 렌더링하는 내부 컴포넌트
-function DateItem({
-  date,
-  isSelected,
-  onSelect,
-}: {
-  date: Date;
-  isSelected: boolean;
-  onSelect: () => void;
-}) {
-  const isToday = isSameDay(date, new Date());
-  const queryClient = useQueryClient();
-
-  const prefetchTasks = async () => {
-    await queryClient.prefetchQuery({
-      queryKey: ['tasks', date.toISOString().split('T')[0]],
-      queryFn: () => getTasksByDate(date),
-    });
-  };
-
-  return (
-    <div
-      onClick={onSelect}
-      onMouseEnter={prefetchTasks}
-      className={clsx(
-        'flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-all cursor-pointer',
-        isSelected
-          ? 'bg-surface-card shadow-sm' // 선택되면 흰색 배경 + 그림자
-          : 'bg-transparent' // 선택되지 않으면 투명
-      )}
-    >
-      <span
-        className={clsx(
-          'text-xl font-bold',
-          isSelected ? 'text-text-strong' : 'text-text-weak' // 선택 여부에 따라 텍스트 색상 변경
-        )}
-      >
-        {format(date, 'd')}
-      </span>
-      <span
-        className={clsx(
-          'text-xs font-medium',
-          isSelected ? 'text-text-strong' : 'text-text-weak'
-        )}
-      >
-        {isToday ? '오늘' : format(date, 'E', { locale: ko })}
-      </span>
-    </div>
-  );
-}
 
 export default function DateHeader() {
   const { selectedDate, setSelectedDate } = useDateStore();
 
   const itemWidth = 100;
   const gap = 60;
-  const totalDates = 7;
   const centerIndex = 3;
   // 7개 날짜 배열 생성 (선택일 기준 앞뒤 3일)
   const getDates = () => {
@@ -96,7 +42,7 @@ export default function DateHeader() {
   useEffect(() => {
     controls.start({ x: 0 });
     x.set(0);
-  }, [selectedDate]);
+  }, [selectedDate, controls, x]);
 
   return (
     <div className="relative w-full flex justify-center items-center py-3 px-2 overflow-x-hidden">
