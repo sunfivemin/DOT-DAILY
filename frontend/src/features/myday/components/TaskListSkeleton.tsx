@@ -8,24 +8,12 @@ const TaskItemSkeleton = () => (
   </div>
 );
 
-const TaskGroupSkeleton = ({ count = 3 }: { count?: number }) => (
-  <div className="space-y-4">
-    <div className="h-6 w-32 bg-surface-base rounded-md animate-pulse mb-4"></div>
+export const TaskListSkeleton = ({ count = 2 }: { count?: number }) => {
+  return (
     <div className="space-y-2">
       {Array.from({ length: count }, (_, i) => (
         <TaskItemSkeleton key={i} />
       ))}
-    </div>
-  </div>
-);
-
-
-export const TaskListSkeleton = () => {
-  return (
-    <div className="px-4 py-6 space-y-8 pb-24">
-        <TaskGroupSkeleton count={3} />
-        <TaskGroupSkeleton count={4} />
-        <TaskGroupSkeleton count={2} />
     </div>
   );
 };

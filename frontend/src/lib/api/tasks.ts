@@ -44,6 +44,7 @@ export const getTasksByDate = async (date: Date): Promise<Task[]> => {
   // console.log(`${date.toLocaleDateString()}의 할 일 데이터를 "서버"에서 가져오는 중...`);
   // await new Promise(resolve => setTimeout(resolve, 1000)); // 딜레이 제거
   const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD
+  console.log('getTasksByDate - tasksData:', tasksData);
   const filteredTasks = tasksData[dateString] || [];
   return JSON.parse(JSON.stringify(filteredTasks));
 }
@@ -179,6 +180,7 @@ export const moveToTodayFromArchive = async (id: number | string): Promise<Task>
     archiveTasks.splice(idx, 1);
     if (!tasksData[todayStr]) tasksData[todayStr] = [];
     tasksData[todayStr].push(movedTask);
+    console.log('moveToTodayFromArchive - tasksData:', tasksData);
     return movedTask;
   }
   throw new Error('해당 할 일을 찾을 수 없습니다.');

@@ -67,11 +67,10 @@ export default function ArchivePage() {
 
   const handleMoveToToday = async (id: string) => {
     try {
-      const movedTask = await moveToTodayFromArchive(Number(id));
+      await moveToTodayFromArchive(Number(id));
       const todayKey = format(selectedDate, 'yyyy-MM-dd');
-      queryClient.setQueryData(['tasks', todayKey], (old: ArchiveTask[] = []) => {
-        return [...old, movedTask];
-      });
+      await queryClient.invalidateQueries({ queryKey: ['tasks', todayKey] });
+      await queryClient.invalidateQueries({ queryKey: ['archiveTasks'] });
     } catch {
       alert('오늘 할 일로 이동에 실패했습니다.');
     }
