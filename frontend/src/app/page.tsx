@@ -20,26 +20,41 @@ export default function MyDayPage() {
   const { selectedDate } = useDateStore();
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [open, setOpen] = useState(false);
+  const [defaultPriority, setDefaultPriority] = useState<'must' | 'should' | 'remind'>('must');
 
   const queryKey = ['tasks', selectedDate.toISOString().split('T')[0]];
 
   const { data: tasks, isLoading, isError, error } = useQuery({
     queryKey,
     queryFn: () => getTasksByDate(selectedDate),
+    refetchOnWindowFocus: true,
   });
 
+  // 디버깅용 콘솔
+  const todayKey = new Date().toISOString().split('T')[0];
+  console.log('selectedDate:', selectedDate);
+  console.log('todayKey:', todayKey);
+  console.log('queryKey:', queryKey);
+  console.log('tasks:', tasks);
+
   // 우선순위별로 할 일 그룹화
-  const groupedTasks = tasks?.reduce((acc, task) => {
-    if (!acc[task.priority]) {
-      acc[task.priority] = [];
-    }
-    acc[task.priority].push(task);
-    return acc;
-  }, {} as Record<string, Task[]>) || {};
+  const groupedTasks: Record<'must' | 'should' | 'remind', Task[]> = {
+    must: [],
+    should: [],
+    remind: [],
+    ...(tasks?.reduce((acc, task) => {
+      if (!acc[task.priority]) {
+        acc[task.priority] = [];
+      }
+      acc[task.priority].push(task);
+      return acc;
+    }, {} as Record<'must' | 'should' | 'remind', Task[]>) || {})
+  };
 
   const handleEdit = (task: Task) => {
     setEditTask(task);
     setOpen(true);
+    setDefaultPriority(task.priority);
   };
 
   const handleClose = () => {
@@ -54,44 +69,83 @@ export default function MyDayPage() {
       </div>
 
       <div className="px-4 py-6 space-y-8 pb-24">
-        {isLoading && <TaskListSkeleton />}
-        {isError && (
-          <div className="text-center py-10">
-            <p className="text-danger-solid">
-              오류가 발생했습니다: {error.message}
-            </p>
-          </div>
-        )}
-        {tasks && (
+        {isLoading ? (
           <>
             <TaskGroup priority="must" title="오늘 무조건">
-              {groupedTasks.must?.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onEdit={handleEdit}
-                />
-              ))}
+              <TaskListSkeleton />
             </TaskGroup>
-
             <TaskGroup priority="should" title="오늘이면 굿">
-              {groupedTasks.should?.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onEdit={handleEdit}
-                />
-              ))}
+              <TaskListSkeleton />
             </TaskGroup>
-
             <TaskGroup priority="remind" title="잊지말자">
-              {groupedTasks.remind?.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onEdit={handleEdit}
-                />
-              ))}
+              <TaskListSkeleton />
+            </TaskGroup>
+          </>
+        ) : (
+          <>
+            {isError && (
+              <div className="text-center py-10">
+                <p className="text-danger-solid">
+                  오류가 발생했습니다: {error.message}
+                </p>
+              </div>
+            )}
+            <TaskGroup
+              priority="must"
+              title="오늘 무조건"
+              onEmptyClick={() => {
+                setEditTask(null);
+                setDefaultPriority('must');
+                setOpen(true);
+              }}
+            >
+              {groupedTasks.must.length > 0
+                ? groupedTasks.must.map(task => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onEdit={handleEdit}
+                    />
+                  ))
+                : null}
+            </TaskGroup>
+            <TaskGroup
+              priority="should"
+              title="오늘이면 굿"
+              onEmptyClick={() => {
+                setEditTask(null);
+                setDefaultPriority('should');
+                setOpen(true);
+              }}
+            >
+              {groupedTasks.should.length > 0
+                ? groupedTasks.should.map(task => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onEdit={handleEdit}
+                    />
+                  ))
+                : null}
+            </TaskGroup>
+            <TaskGroup
+              priority="remind"
+              title="잊지말자"
+              onEmptyClick={() => {
+                setEditTask(null);
+                setDefaultPriority('remind');
+                setOpen(true);
+              }}
+            >
+              {groupedTasks.remind.length > 0
+                ? groupedTasks.remind.map(task => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onEdit={handleEdit}
+                    />
+                  ))
+                : null}
             </TaskGroup>
           </>
         )}
@@ -107,6 +161,7 @@ export default function MyDayPage() {
           onClose={handleClose}
           defaultDate={selectedDate.toISOString().split('T')[0]}
           task={editTask}
+          defaultPriority={defaultPriority}
         />
       </FullScreenModal>
     </MobileLayout>

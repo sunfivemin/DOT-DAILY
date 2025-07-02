@@ -16,6 +16,7 @@ interface TaskFormModalProps {
   onClose: () => void;
   defaultDate?: string;
   task?: Task | null;
+  defaultPriority?: 'must' | 'should' | 'remind';
 }
 
 const inputSize: Size = 'md';
@@ -24,9 +25,10 @@ export default function TaskFormModal({
   onClose,
   defaultDate,
   task,
+  defaultPriority = 'must',
 }: TaskFormModalProps) {
   const [label, setLabel] = useState(task ? task.title : '');
-  const [priority, setPriority] = useState<'must' | 'should' | 'remind'>(task ? task.priority : 'must');
+  const [priority, setPriority] = useState<'must' | 'should' | 'remind'>(task ? task.priority : defaultPriority);
   const [date, setDate] = useState<Date | null>(task ? new Date(task.date) : (defaultDate ? new Date(defaultDate) : new Date()));
   const [isLoading, setIsLoading] = useState(false);
   
