@@ -7,15 +7,17 @@ import { useDateStore } from '@/store/useDateStore';
 import { formatDisplayDate } from '../utils';
 import { useState } from 'react';
 import Image from 'next/image';
+import { Emotion } from '@/constants/emotion';
 
 interface RetrospectModalProps {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (emotion: Emotion['id'] | '', retrospectText: string) => void;
 }
 
 export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalProps) {
   const { selectedDate } = useDateStore();
   const [retrospectText, setRetrospectText] = useState<string>(''); // 추후 zustand
+  const [selectedEmotion, setSelectedEmotion] = useState<Emotion['id'] | ''>('');
 
   const onTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRetrospectText(e.target.value);
@@ -39,7 +41,7 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
       </div>
 
       <div className="flex-1 px-6 py-4">
-        <EmotionSelector />
+        <EmotionSelector selectedEmotion={selectedEmotion} setSelectedEmotion={setSelectedEmotion} />
         <section aria-label="회고 작성">
           <label className="font-kkonghae">{formatDisplayDate(selectedDate)}</label>
           <textarea
@@ -60,7 +62,7 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
           label="오늘 회고 등록하기"
           size="lg"
           variant="primary"
-          // disabled={!selectedEmotion || !retrospectText.trim()}
+          disabled={!selectedEmotion || !retrospectText.trim()}
           className="
             w-full 
             rounded-full
@@ -68,7 +70,7 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
             disabled:border-none
             disabled:cursor-not-allowed
           "
-          onClick={onSubmit}
+          onClick={() => onSubmit(selectedEmotion, retrospectText)}
         />
       </div>
     </motion.div>

@@ -6,8 +6,10 @@ import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button/Button';
 import RetrospectContent from '@/features/retrospect/components/RetrospectContent';
 import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
+import { useRouter } from 'next/navigation';
 
 export default function RetrospectPage() {
+  const router = useRouter();
   const { openModal } = useFullScreenModal();
 
   const onTodayRetrospect = () => {
@@ -36,6 +38,7 @@ export default function RetrospectPage() {
           label="선택한 날짜로 이동"
           variant="outline"
           className="flex-1 max-w-[160px]"
+          onClick={() => router.push('/')}
         />
         <Button
           label="오늘 회고 작성하기"
