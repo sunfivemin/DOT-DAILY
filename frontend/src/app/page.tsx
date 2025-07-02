@@ -15,7 +15,6 @@ import { useDateStore } from '@/store/useDateStore';
 import { getTasksByDate, Task } from '@/lib/api/tasks';
 import FullScreenModal from '@/components/ui/Modal/components/FullScreenModal';
 import { useState } from 'react';
-import type { Task as TaskType } from '@/lib/api/tasks';
 
 export default function MyDayPage() {
   const { selectedDate } = useDateStore();
