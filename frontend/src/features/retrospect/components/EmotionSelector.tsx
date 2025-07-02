@@ -1,10 +1,12 @@
 import { Emotion, EMOTIONS } from '@/constants/emotion';
-import { useState } from 'react';
 import Image from 'next/image';
 
-export default function EmotionSelector() {
-  const [selectedEmotion, setSelectedEmotion] = useState<Emotion['id'] | ''>('');
+interface EmotionSelectorProps {
+  selectedEmotion: Emotion['id'] | '';
+  setSelectedEmotion: (emotionId: Emotion['id'] | '') => void;
+}
 
+export default function EmotionSelector({ selectedEmotion, setSelectedEmotion }: EmotionSelectorProps) {
   return (
     <section aria-label="감정 선택">
       <h3 className="my-4">
