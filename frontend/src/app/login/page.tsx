@@ -49,7 +49,7 @@ function LoginPage() {
       console.log('로그인 성공:', response.data);
       localStorage.setItem('accessToken', response.data.data.accessToken);
       router.push('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error('로그인 실패:', error);
       alert('로그인 실패했습니다.');
     }
