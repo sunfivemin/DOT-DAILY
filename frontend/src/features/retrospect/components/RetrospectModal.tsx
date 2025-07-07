@@ -63,13 +63,8 @@ export default function RetrospectModal({ onClose, onSubmit }: RetrospectModalPr
           size="lg"
           variant="primary"
           disabled={!selectedEmotion || !retrospectText.trim()}
-          className="
-            w-full 
-            rounded-full
-            disabled:bg-gray-400 
-            disabled:border-none
-            disabled:cursor-not-allowed
-          "
+          rounded="full"
+          fullWidth={true}
           onClick={() => onSubmit(selectedEmotion, retrospectText)}
         />
       </div>

@@ -6,6 +6,9 @@ import {
   useFullScreenModal,
 } from './providers/FullScreenModalProvider';
 import { Button } from '../Button/Button';
+import { ToastProvider } from '../Toast/ToastProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
 const meta: Meta = {
   title: 'Components/FullScreenModal',
@@ -14,11 +17,18 @@ const meta: Meta = {
     layout: 'fullscreen',
   },
   decorators: [
-    (StoryFn) => (
-      <FullScreenModalProvider>
-        <StoryFn />
-      </FullScreenModalProvider>
-    ),
+    (StoryFn) => {
+      const [queryClient] = useState(() => new QueryClient());
+      return (
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <FullScreenModalProvider>
+              <StoryFn />
+            </FullScreenModalProvider>
+          </ToastProvider>
+        </QueryClientProvider>
+      );
+    },
   ],
 };
 
