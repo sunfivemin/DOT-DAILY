@@ -16,18 +16,28 @@ interface TaskFormModalProps {
   onClose: () => void;
   defaultDate?: string;
   task?: Task | null;
+  defaultPriority?: 'must' | 'should' | 'remind';
 }
 
 const inputSize: Size = 'md';
+
+// 타임존 이슈 없이 YYYY-MM-DD를 Date 객체로 변환
+const parseDate = (dateStr: string) => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
 
 export default function TaskFormModal({
   onClose,
   defaultDate,
   task,
+  defaultPriority = 'must',
 }: TaskFormModalProps) {
   const [label, setLabel] = useState(task ? task.title : '');
-  const [priority, setPriority] = useState<'must' | 'should' | 'remind'>(task ? task.priority : 'must');
-  const [date, setDate] = useState<Date | null>(task ? new Date(task.date) : (defaultDate ? new Date(defaultDate) : new Date()));
+  const [priority, setPriority] = useState<'must' | 'should' | 'remind'>(task ? task.priority : defaultPriority);
+  const [date, setDate] = useState<Date | null>(
+    task ? new Date(task.date) : (defaultDate ? parseDate(defaultDate) : new Date())
+  );
   const [isLoading, setIsLoading] = useState(false);
   
   const queryClient = useQueryClient();
@@ -76,13 +86,24 @@ export default function TaskFormModal({
   return (
     <motion.div
       key="task-form-modal"
-      initial={{ y: '100%', opacity: 0 }}
+      initial={{ y: 80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      exit={{ y: '100%', opacity: 0 }}
-      transition={{ type: 'tween', duration: 0.3 }}
+      exit={{ y: 80, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30, ease: 'easeOut' }}
       className="flex flex-col w-full flex-1"
+      drag="y"
+      dragElastic={0.2}
+      dragListener={true}
+      dragPropagation={true}
+      style={{ touchAction: 'pan-y' }}
+      onDragEnd={(_, info) => {
+        console.log('drag offset y:', info.offset.y);
+        if (info.offset.y > 60) {
+          onClose();
+        }
+      }}
     >
-      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 cursor-grab">
         <button onClick={onClose} aria-label="뒤로가기">
           <Image src="/back.svg" alt="back" width={20} height={20} style={{ width: 20, height: 20 }} />
         </button>
