@@ -19,7 +19,7 @@ httpClient.interceptors.request.use(
     if (isBrowser()) {
       const token = localStorage.getItem('accessToken');
       if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+        config.headers['Authorization'] = `${token}`;
       }
     }
 
