@@ -7,7 +7,7 @@ interface ITodo {
   status: 'pending' | 'success' | 'retry' | 'archive';
   priority: 'must' | 'should' | 'remind';
 }
-
+// 투두 저장
 export const createTodoService = async (input: ITodo) => {
   return await prisma.todos.create({
     data: {
@@ -20,23 +20,45 @@ export const createTodoService = async (input: ITodo) => {
   });
 };
 
+// 투두 전체 조회
+export const getAllTodosService = async (userId: number) => {
+  return await prisma.todos.findMany({
+    where: { userId },
+    orderBy: { date: 'asc' },
+  });
+};
+
+//투두 특정 날짜 조회
+export const getTodosByDateService = async (userId: number, date: string) => {
+  return await prisma.todos.findMany({
+    where: { userId, date },
+    orderBy: { createdAt: 'asc' },
+  });
+};
+
+//투두 업데이트
 export const updateTodoService = async (
-  id: number,
+  todoId: number,
   userId: number,
-  update: Partial<Omit<ITodo, 'userId'>>
+  data: {
+    title?: string;
+    date?: string;
+    status?: 'pending' | 'success' | 'retry' | 'archive';
+    priority?: 'must' | 'should' | 'remind';
+  }
 ) => {
   return await prisma.todos.updateMany({
-    where: { id, userId },
+    where: { id: todoId, userId },
     data: {
-      ...update,
-      // date: update.date? new Date(update.date) : undefined,
-      updatedAt: new Date(),
+      ...data,
+      date: data.date ? data.date : undefined,
     },
   });
 };
 
-export const deleteTodoService = async (id: number, userId: number) => {
+// 투두 삭제
+export const deleteTodoService = async (todoId: number, userId: number) => {
   return await prisma.todos.deleteMany({
-    where: { id, userId },
+    where: { id: todoId, userId },
   });
 };
