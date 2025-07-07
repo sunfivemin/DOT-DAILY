@@ -2,8 +2,12 @@
 
 import { Button } from "@/components/ui/Button/Button";
 import { Input } from "@/components/ui/Input/Input";
+import { useToast } from "@/components/ui/Toast/ToastProvider";
+import { httpClient } from "@/lib/api/http";
+import { validateConfirmPassword, validateEmail, validateName, validatePassword } from "@/utils/vaildation";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 interface FormData {
@@ -27,42 +31,49 @@ function SignupPage() {
     password: "",
     confirmPassword: ""
   });
+  const router = useRouter();
   const [errors, setErrors] = useState<FormErrors>({});
+  const { showToast } = useToast();
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "이름이 입력되지 않았습니다.";
-    }
+    const nameError = validateName(formData.name);
+    if (nameError) newErrors.name = nameError;
 
-    if (!formData.email.trim()) {
-      newErrors.email = "이메일이 입력되지 않았습니다.";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "올바른 이메일 형식이 아닙니다.";
-    }
+    const emailError = validateEmail(formData.email);
+    if (emailError) newErrors.email = emailError;
 
-    if (!formData.password.trim()) {
-      newErrors.password = "비밀번호가가 입력되지 않았습니다.";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "비밀번호는 8자 이상이어야 합니다.";
-    }
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) newErrors.password = passwordError;
 
-    if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = "비밀번호가가 입력되지 않았습니다.";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
-    }
+    const confirmPasswordError = validateConfirmPassword(formData.password, formData.confirmPassword);
+    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const onSignup = (e: FormEvent<HTMLFormElement>) => {
+  const onSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      console.log("회원가입 제출", formData);
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const response = await httpClient.post('/auth/signup', {
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirm_password: formData.confirmPassword
+      });
+
+      showToast('회원가입에 성공했습니다.');
+      router.push('/login');
+    } catch (error) {
+      console.error('회원가입 실패: ', error);
+      showToast('회원가입에 실패했습니다.');
     }
   };
 
