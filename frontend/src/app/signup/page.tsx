@@ -62,7 +62,7 @@ function SignupPage() {
     }
 
     try {
-      const response = await httpClient.post('/auth/signup', {
+      await httpClient.post('/auth/signup', {
         username: formData.name,
         email: formData.email,
         password: formData.password,
