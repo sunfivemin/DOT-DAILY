@@ -1,6 +1,7 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import { authSwagger } from './auth.swagger';
 import { todoSwagger } from './todo.swagger';
+import { archiveSwagger } from './archive.swagger';
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -26,6 +27,7 @@ const swaggerDefinition = {
   paths: {
     ...authSwagger,
     ...todoSwagger,
+    ...archiveSwagger,
   },
 };
 
