@@ -10,7 +10,7 @@ export const archiveSwagger = {
     },
   },
   '/api/v1/archive/{id}': {
-    patch: {
+    put: {
       summary: '보관함 투두 수정',
       tags: ['Archive'],
       parameters: [
@@ -53,7 +53,7 @@ export const archiveSwagger = {
     },
   },
   '/api/v1/archive/{id}/restore': {
-    patch: {
+    put: {
       summary: '보관함 투두를 오늘의 할일로 복구 (오늘 날짜로 이관)',
       tags: ['Archive'],
       parameters: [
