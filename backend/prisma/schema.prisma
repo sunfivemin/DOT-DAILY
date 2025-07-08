@@ -90,15 +90,16 @@ model Stickers {
 }
 
 model Todos {
-  id        Int       @id @default(autoincrement())
-  userId    Int
-  title     String
-  date      String
-  status    Status    @default(pending)
-  priority  Priority  @default(must)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  title      String
+  date       String
+  status     Status    @default(pending)
+  priority   Priority  @default(must)
+  retryCount Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DailyReviews {

@@ -1,8 +1,7 @@
-/**
 import { prisma } from '../prisma/client';
 import { addDays } from 'date-fns';
 
- *  만료된 투두를 retry로 변경하고 다음날로 이관
+// 만료된 투두를 retry로 변경하고 다음날로 이관
 
 export const processExpiredTodos = async () => {
   const now = new Date();
@@ -33,4 +32,3 @@ export const processExpiredTodos = async () => {
 
   return { updatedCount: expiredTodos.length };
 };
- */

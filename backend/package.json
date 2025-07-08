@@ -39,8 +39,8 @@
   "scripts": {
     "dev": "nodemon app.ts",
     "with-env": "dotenv -e .env --",
-    "db:generate": "npm run with-env prisma generate",
     "db:migrate:dev": "npm run with-env prisma migrate dev --skip-generate",
+    "db:generate": "npm run with-env prisma generate",
     "db:migrate:reset": "npm run with-env prisma migrate reset",
     "db:studio": "npm run with-env prisma studio",
     "supabase:init": "supabase init",
@@ -50,6 +50,7 @@
     "seed": "ts-node prisma/seed.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "postbuild": "npm run db:generate"
+    "postbuild": "npm run db:generate",
+    "prisma:unlock": "powershell -ExecutionPolicy Bypass -File unlock-prisma.ps1"
   }
 }
