@@ -5,7 +5,7 @@ import { errorNotFoundHandler, errorHandler } from './middlewares/errorHandler';
 import { swaggerSpec } from './docs';
 import swaggerUi from 'swagger-ui-express';
 import routers from './router/index';
-import { startBatchJobs } from './jobs/cron';
+// import { startBatchJobs } from './jobs/cron';
 
 const app = express();
 const port = 3000;
@@ -29,7 +29,7 @@ app.get('/healthz', (req, res) => {
 });
 
 //서버 시작 시 배치 스케줄 등록
-startBatchJobs();
+// startBatchJobs();
 
 // swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
