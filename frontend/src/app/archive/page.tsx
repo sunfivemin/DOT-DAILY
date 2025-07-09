@@ -87,13 +87,13 @@ export default function ArchivePage() {
       await moveToTodayFromArchive(Number(id));
       const todayKey = selectedDate.toISOString().split("T")[0];
       // 1. 보류함 캐시에서 즉시 제거 (optimistic)
-      queryClient.setQueryData(["archiveTasks"], (old: any[] = []) =>
+      queryClient.setQueryData(["archiveTasks"], (old: ArchiveTask[] = []) =>
         old.filter((task) => String(task.id) !== id)
       );
       // 2. MyDay만 invalidate (archive는 setQueryData로 이미 반영됨)
       await queryClient.invalidateQueries({ queryKey: ["tasks", todayKey] });
       showToast("오늘 할 일로 이동했습니다 📅");
-    } catch (error) {
+    } catch {
       showToast("오늘 할 일로 이동에 실패했습니다 😞");
     }
   };
