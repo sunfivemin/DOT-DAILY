@@ -1,64 +1,62 @@
-'use client';
+"use client";
 
-import { clsx } from 'clsx';
-import { Check } from 'lucide-react';
-import { checkboxVariants } from '@/lib/styles/checkboxVariants';
-import type { VariantProps } from 'class-variance-authority';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { Check } from "lucide-react";
+import { motion } from "framer-motion";
+import clsx from "clsx";
 
-export interface CheckboxProps
-  extends Omit<VariantProps<typeof checkboxVariants>, 'checked'> {
-  /**
-   * 체크 여부 상태
-   */
-  checked?: boolean;
-  /**
-   * 상태 변경 시 호출되는 콜백
-   */
-  onCheckedChange?: (checked: boolean) => void;
-  /**
-   * 사용자 정의 클래스 이름
-   */
+interface CheckboxProps {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  variant?: "must" | "should" | "remind";
   className?: string;
 }
 
-export default function Checkbox({
-  checked = false,
+const Checkbox: React.FC<CheckboxProps> = ({
+  checked,
   onCheckedChange,
-  variant,
+  variant = "must",
   className,
-}: CheckboxProps) {
+}) => {
+  const variantStyles = {
+    must: "border-priority-must data-[state=checked]:bg-priority-must",
+    should: "border-priority-should data-[state=checked]:bg-priority-should",
+    remind: "border-priority-remind data-[state=checked]:bg-priority-remind",
+  };
+
   return (
-    <motion.button
+    <button
       type="button"
       role="checkbox"
       aria-checked={checked}
-      onClick={() => onCheckedChange?.(!checked)}
-      className={clsx(className, checkboxVariants({ variant, checked }))}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      data-state={checked ? "checked" : "unchecked"}
+      className={clsx(
+        // 고정 사이즈 설정으로 layout shift 방지
+        "w-6 h-6 flex-shrink-0",
+        "flex items-center justify-center",
+        "border-2 rounded-full",
+        "transition-all duration-200 ease-in-out",
+        "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+        "active:scale-95",
+        variantStyles[variant],
+        checked
+          ? "border-current text-white transform-gpu"
+          : "border-current text-transparent bg-white hover:bg-gray-50",
+        className
+      )}
+      onClick={() => onCheckedChange(!checked)}
     >
-      <AnimatePresence mode="wait">
-        {checked && (
-          <motion.div
-            key="check"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ 
-              scale: 1, 
-              opacity: 1
-            }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 500, 
-              damping: 25
-            }}
-          >
-            <Check className="w-4 h-4 text-white" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.button>
+      <motion.div
+        initial={false}
+        animate={
+          checked ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }
+        }
+        transition={{ duration: 0.15, ease: "easeInOut" }}
+      >
+        <Check className="w-4 h-4" strokeWidth={3} />
+      </motion.div>
+    </button>
   );
-}
+};
+
+export default Checkbox;

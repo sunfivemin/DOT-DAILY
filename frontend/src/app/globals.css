@@ -41,3 +41,63 @@ a {
 .font-kkonghae {
   font-family: var(--font-kkonghae), cursive;
 }
+
+/* 성능 최적화 */
+* {
+  will-change: auto;
+}
+
+/* Layout shift 방지 */
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 애니메이션 성능 최적화 */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-smooth {
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  }
+}
+
+/* 애니메이션 최적화 - GPU 가속 사용 */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* 고성능 애니메이션을 위한 transform 최적화 */
+.transform-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+}
+
+/* 리페인트 최적화 */
+.contain-layout {
+  contain: layout style paint;
+}
+
+.contain-strict {
+  contain: strict;
+}
+
+/* 폰트 로딩 최적화 */
+@font-face {
+  font-display: swap;
+}
