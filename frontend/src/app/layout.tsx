@@ -1,5 +1,5 @@
 // src/app/layout.tsx
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import Providers from './providers';
@@ -19,6 +19,13 @@ const kkonghae = localFont({
 export const metadata: Metadata = {
   title: 'DOT.DAILY',
   description: '투두 + 회고 기록 앱',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

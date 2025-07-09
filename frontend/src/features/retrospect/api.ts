@@ -1,7 +1,7 @@
 import { DailyEmotionMemo } from './types/retrospect';
 
 // 임시 Mock 데이터 (추후 실제 API로 교체)
-const MOCK_DATA: DailyEmotionMemo[] = [
+let MOCK_DATA: DailyEmotionMemo[] = [
   { date: new Date('2025-07-23'), emotion: 'great', memo: '오늘은 정말 좋은 하루였다!' },
   { date: new Date('2025-07-24'), emotion: 'bad', memo: '새로운 프로젝트를 시작했다.' },
   { date: new Date('2025-06-25'), emotion: 'appreciate', memo: '친구와 맛있는 저녁을 먹었다.' },
@@ -24,5 +24,34 @@ export const getDailyEmotionMemos = async (): Promise<DailyEmotionMemo[]> => {
 };
 
 export const addDailyEmotionMemo = async (memo: DailyEmotionMemo): Promise<void> => {
-  MOCK_DATA.push(memo);
+  // 기존 데이터에서 같은 날짜의 회고가 있으면 교체, 없으면 추가
+  const existingIndex = MOCK_DATA.findIndex(item => 
+    item.date.toDateString() === memo.date.toDateString()
+  );
+  
+  if (existingIndex !== -1) {
+    MOCK_DATA[existingIndex] = memo;
+  } else {
+    MOCK_DATA.push(memo);
+  }
+};
+
+export const updateDailyEmotionMemo = async (memo: DailyEmotionMemo): Promise<void> => {
+  // const response = await axios.put(`/api/retrospect/entries/${dateString}`, memo);
+  
+  const existingIndex = MOCK_DATA.findIndex(item => 
+    item.date.toDateString() === memo.date.toDateString()
+  );
+  
+  if (existingIndex !== -1) {
+    MOCK_DATA[existingIndex] = memo;
+  }
+};
+
+export const deleteDailyEmotionMemo = async (date: Date): Promise<void> => {
+  // const response = await axios.delete(`/api/retrospect/entries/${dateString}`);
+  
+  MOCK_DATA = MOCK_DATA.filter(item => 
+    item.date.toDateString() !== date.toDateString()
+  );
 };

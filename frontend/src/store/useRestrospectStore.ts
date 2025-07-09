@@ -7,6 +7,8 @@ interface RetrospectState {
   emotionMemoList: DailyEmotionMemo[];
   setEmotionMemoList: (list: DailyEmotionMemo[]) => void;
   addEmotionMemo: (item: DailyEmotionMemo) => void;
+  updateEmotionMemo: (item: DailyEmotionMemo) => void;
+  deleteEmotionMemo: (date: Date) => void;
 }
 
 export const useRetrospectStore = create<RetrospectState>((set) => ({
@@ -22,5 +24,17 @@ export const useRetrospectStore = create<RetrospectState>((set) => ({
   addEmotionMemo: (item) =>
     set((state) => ({
       emotionMemoList: [...state.emotionMemoList, item]
+    })),
+  updateEmotionMemo: (item) =>
+    set((state) => ({
+      emotionMemoList: state.emotionMemoList.map(memo =>
+        memo.date.toDateString() === item.date.toDateString() ? item : memo
+      )
+    })),
+  deleteEmotionMemo: (date) =>
+    set((state) => ({
+      emotionMemoList: state.emotionMemoList.filter(memo =>
+        memo.date.toDateString() !== date.toDateString()
+      )
     })),
 }));

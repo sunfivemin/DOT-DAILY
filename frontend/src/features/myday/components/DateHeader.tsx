@@ -11,8 +11,8 @@ import React from 'react';
 export default function DateHeader() {
   const { selectedDate, setSelectedDate } = useDateStore();
 
-  const itemWidth = 100;
-  const gap = 60;
+  const itemWidth = 80;
+  const gap = 50;
   const centerIndex = 3;
   // 7개 날짜 배열 생성 (선택일 기준 앞뒤 3일)
   const getDates = () => {

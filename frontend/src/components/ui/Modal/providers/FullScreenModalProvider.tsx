@@ -97,6 +97,8 @@ const FullScreenModalRenderer = () => {
         <RetrospectModal
           onClose={retrospectModal.closeModal}
           onSubmit={retrospectModal.onSubmit}
+          onUpdate={retrospectModal.onUpdate}
+          onDelete={retrospectModal.onDelete}
         />
         </FullScreenModal>
       )}

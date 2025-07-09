@@ -14,6 +14,7 @@ interface Props {
     priority: 1 | 2 | 3;
     retryCount: number;
     dueDate: string;
+    archivedDate?: string; // 보류된 시기 추가
   };
   onEdit?: () => void;
   onDelete?: () => void;
@@ -31,13 +32,18 @@ export default function ArchiveItem({ task, onEdit = () => {}, onDelete = () => 
   return (
     <div className="flex items-center p-5 min-h-[64px] rounded-xl shadow-sm bg-surface-card">
       <span className={`w-7 h-7 flex items-center justify-center rounded-full text-lg font-bold text-white ${priorityClass}`}>{task.priority}</span>
-      <div className="flex-1 ml-5 flex items-center gap-2">
-        <p className="text-text-strong font-medium break-words whitespace-normal">{task.title}</p>
-        {task.retryCount > 0 && (
-          <span className="text-xs font-semibold text-tag-retryStrong bg-tag-retryBg px-2 py-0.5 rounded-full">
-            RETRY {task.retryCount}
-          </span>
-        )}
+      <div className="flex-1 ml-5">
+        <div className="flex items-center gap-2 mb-1">
+          <p className="text-text-strong font-medium break-words whitespace-normal">{task.title}</p>
+          {task.retryCount > 0 && (
+            <span className="text-xs font-semibold text-blue-800 bg-blue-100 px-2 py-0.5 rounded-full">
+              RETRY {task.retryCount}
+            </span>
+          )}
+        </div>
+        <div className="text-xs text-text-weak">
+          {task.archivedDate ? `보류됨: ${task.archivedDate}` : `마감: ${task.dueDate}`}
+        </div>
       </div>
       <Menu as="div" className="relative">
         <Menu.Button className="p-1 rounded-full hover:bg-surface-hover">

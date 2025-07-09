@@ -8,18 +8,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useDateStore } from '@/store/useDateStore';
 import BottomSheetModal from '@/components/ui/Modal/components/BottomSheetModal';
+import { useToast } from '@/components/ui/Toast/ToastProvider';
 
 interface ArchiveTask {
   id: string;
   title: string;
   priority: 1 | 2 | 3;
-  retryCount: number;
-  dueDate: string; // 'YY.MM.DD'
+  retryCount: number;  // 📝 UI용 필드 (백엔드에는 없음)
+  dueDate: string;     // 'YY.MM.DD'
+  archivedDate?: string; // 보류된 시기 추가
 }
 
 export default function ArchivePage() {
   const queryClient = useQueryClient();
   const { selectedDate } = useDateStore();
+  const { showToast } = useToast();
   const [editTaskId, setEditTaskId] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editTitle, setEditTitle] = useState('');
@@ -31,14 +34,9 @@ export default function ArchivePage() {
     if (!task) return;
     setEditTaskId(id);
     setEditTitle(task.title);
+    // ✅ Task 인터페이스의 priority는 이미 string이므로 변환 필요
     setEditPriority(
-      typeof task.priority === 'number'
-        ? task.priority
-        : task.priority === 'must'
-        ? 1
-        : task.priority === 'should'
-        ? 2
-        : 3
+      task.priority === 'must' ? 1 : task.priority === 'should' ? 2 : 3
     );
     setIsEditModalOpen(true);
   };
@@ -52,16 +50,18 @@ export default function ArchivePage() {
       else priorityStr = 'remind';
       await updateArchiveTask(Number(editTaskId), { title: editTitle, priority: priorityStr });
       setIsEditModalOpen(false);
+      showToast('보류함 할 일이 수정되었습니다 ✏️');
     } catch {
-      alert('수정에 실패했습니다.');
+      showToast('보류함 할 일 수정에 실패했습니다 😞');
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await deleteArchiveTask(Number(id));
+      showToast('보류함 할 일이 삭제되었습니다 🗑️');
     } catch {
-      alert('삭제에 실패했습니다.');
+      showToast('보류함 할 일 삭제에 실패했습니다 😞');
     }
   };
 
@@ -71,23 +71,26 @@ export default function ArchivePage() {
       const todayKey = format(selectedDate, 'yyyy-MM-dd');
       await queryClient.invalidateQueries({ queryKey: ['tasks', todayKey] });
       await queryClient.invalidateQueries({ queryKey: ['archiveTasks'] });
+      showToast('오늘 할 일로 이동했습니다 📅');
     } catch {
-      alert('오늘 할 일로 이동에 실패했습니다.');
+      showToast('오늘 할 일로 이동에 실패했습니다 😞');
     }
   };
 
   const archiveTasks = getArchiveTasks();
+  const today = new Date();
   const archiveTaskList: ArchiveTask[] = archiveTasks.map(task => ({
     id: String(task.id),
     title: task.title,
     priority: task.priority === 'must' ? 1 : task.priority === 'should' ? 2 : 3,
-    retryCount: task.retryCount,
+    retryCount: 0,  // 📝 임시값 (백엔드에 retryCount 필드가 없음)
     dueDate: task.date.slice(2).replace(/-/g, '.'),
+    archivedDate: today.toISOString().slice(2, 10).replace(/-/g, '.'), // 현재 날짜를 보류된 시기로 설정
   }));
 
   return (
     <MobileLayout headerTitle="보류함">
-      <div className="px-4 py-6 space-y-2 pb-24">
+      <div className="px-4 py-6 space-y-2">
         <ArchiveList
           tasks={archiveTaskList}
           onEdit={handleEdit}

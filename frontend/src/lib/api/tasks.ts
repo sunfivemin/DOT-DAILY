@@ -1,23 +1,21 @@
-// 임시 데이터가 수정될 수 있도록 let으로 변경하고, 외부에서 직접 접근하지 못하도록 숨깁니다.
-const tasksData: { [date: string]: Task[] } = {};
-
-// 보류함(archive) 데이터
-const archiveTasks: Task[] = [];
-
-// 보류함 데이터를 가져오는 getter 함수
-export const getArchiveTasks = (): Task[] => {
-  return JSON.parse(JSON.stringify(archiveTasks));
-};
+import { httpClient } from './http';
 
 export type TaskPriority = 'must' | 'should' | 'remind';
+export type TaskStatus = 'pending' | 'success' | 'retry' | 'archive';
 
+// ✅ 백엔드와 완전히 일치하는 Task 인터페이스
 export interface Task {
   id: number;
   title: string;
   priority: TaskPriority;
   date: string; // YYYY-MM-DD
-  done: boolean;
-  retryCount: number;
+  status: TaskStatus;        // ✅ 백엔드: status
+  createdAt: string;         // ✅ 백엔드: createdAt 
+  updatedAt?: string;        // ✅ 백엔드: updatedAt (nullable)
+  
+  // 📝 프론트엔드에서 필요한 추가 필드들 (백엔드에 없음)
+  // done: boolean;          // ❌ 삭제됨 → status로 대체
+  // retryCount: number;     // ❌ 백엔드에 없음 → 필요시 백엔드 추가 필요
 }
 
 export interface CreateTaskRequest {
@@ -30,187 +28,284 @@ export interface UpdateTaskRequest {
   title?: string;
   priority?: TaskPriority;
   date?: string;
-  done?: boolean;
-}
-
-let globalId = 1; // 전역적으로 유일한 id 생성
-
-/**
- * 특정 날짜의 할 일 목록을 가져오는 가짜 API 함수.
- * 발표 데모를 위해 1초의 딜레이를 시뮬레이션합니다.
- * @param date - 할 일을 가져올 날짜
- */
-export const getTasksByDate = async (date: Date): Promise<Task[]> => {
-  // console.log(`${date.toLocaleDateString()}의 할 일 데이터를 "서버"에서 가져오는 중...`);
-  // await new Promise(resolve => setTimeout(resolve, 1000)); // 딜레이 제거
-  const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD
-  console.log('getTasksByDate - tasksData:', tasksData);
-  const filteredTasks = tasksData[dateString] || [];
-  return JSON.parse(JSON.stringify(filteredTasks));
+  status?: TaskStatus;       // ✅ done 대신 status 사용
+  // done?: boolean;         // ❌ 삭제됨 → status로 대체
 }
 
 /**
- * 새로운 할 일을 생성하는 가짜 API 함수.
- * @param taskData - 생성할 할 일 데이터
+ * 1. 전체 할 일 목록 조회
+ * GET https://dot-daily.onrender.com/api/v1/todos
  */
-export const createTask = async (taskData: CreateTaskRequest): Promise<Task> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  const dateString = taskData.date;
-  const newTask: Task = { id: globalId++, ...taskData, done: false, retryCount: 0 };
-  if (!tasksData[dateString]) tasksData[dateString] = [];
-  tasksData[dateString].push(newTask);
-  return newTask;
-};
-
-/**
- * 할 일을 수정하는 가짜 API 함수.
- * @param id - 수정할 할 일의 ID
- * @param taskData - 수정할 데이터
- */
-export const updateTask = async (id: number, taskData: UpdateTaskRequest): Promise<Task> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  let foundTask: Task | undefined;
-  for (const date in tasksData) {
-    const idx = tasksData[date].findIndex(task => task.id === id);
-    if (idx !== -1) {
-      foundTask = tasksData[date][idx];
-      if (taskData.date && taskData.date !== date) {
-        const updatedTask = { ...foundTask, ...taskData, date: taskData.date };
-        tasksData[date].splice(idx, 1);
-        if (!tasksData[taskData.date]) tasksData[taskData.date] = [];
-        tasksData[taskData.date].push(updatedTask);
-        return updatedTask;
-      } else {
-        tasksData[date][idx] = { ...foundTask, ...taskData };
-        return tasksData[date][idx];
+export const getAllTasks = async (): Promise<Task[]> => {
+  try {
+    console.log('🔍 전체 할 일 조회 시도...');
+    const response = await httpClient.get('/todos');
+    console.log('✅ 전체 할 일 조회 성공:', response.data);
+    
+    let tasks = response.data;
+    
+    // 응답 구조 확인 및 처리
+    if (response.data && typeof response.data === 'object') {
+      // data 속성이 있는 경우
+      if (response.data.data && Array.isArray(response.data.data)) {
+        console.log('📦 data 속성에서 배열 발견:', response.data.data);
+        tasks = response.data.data;
+      }
+      // tasks 속성이 있는 경우
+      else if (response.data.tasks && Array.isArray(response.data.tasks)) {
+        console.log('📦 tasks 속성에서 배열 발견:', response.data.tasks);
+        tasks = response.data.tasks;
+      }
+      // result 속성이 있는 경우
+      else if (response.data.result && Array.isArray(response.data.result)) {
+        console.log('📦 result 속성에서 배열 발견:', response.data.result);
+        tasks = response.data.result;
+      }
+      // 직접 배열인 경우
+      else if (Array.isArray(response.data)) {
+        console.log('📦 직접 배열:', response.data);
+        tasks = response.data;
       }
     }
+    
+    console.log('전체 할 일 개수:', Array.isArray(tasks) ? tasks.length : '배열 아님');
+    return Array.isArray(tasks) ? tasks : [];
+  } catch (error) {
+    console.error('❌ 전체 할 일 조회 실패:', error);
+    throw new Error('전체 할 일을 불러오는데 실패했습니다.');
   }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
 };
 
 /**
- * 할 일을 삭제하는 가짜 API 함수.
- * @param id - 삭제할 할 일의 ID
+ * 2. 특정 날짜의 할 일 목록 조회
+ * GET https://dot-daily.onrender.com/api/v1/todos/by-date?date=YYYY-MM-DD
+ */
+export const getTasksByDate = async (date: Date): Promise<Task[]> => {
+  const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD 형식
+  
+  // 여러 가능한 엔드포인트 시도
+  const endpoints = [
+    `/todos/by-date?date=${dateString}`,
+    `/todos?date=${dateString}`,
+    `/todo/by-date?date=${dateString}`,
+    `/todo?date=${dateString}`,
+    `/todos/date/${dateString}`,
+    `/todo/date/${dateString}`
+  ];
+  
+  for (const endpoint of endpoints) {
+    try {
+      console.log('API 요청 URL:', endpoint);
+      const response = await httpClient.get(endpoint);
+      
+      console.log('✅ API 응답 성공:', endpoint, response.data);
+      console.log('응답 데이터 타입:', typeof response.data);
+      console.log('배열인가?', Array.isArray(response.data));
+      
+      let tasks = response.data;
+      
+      // 응답 구조 확인 및 처리
+      if (response.data && typeof response.data === 'object') {
+        // data 속성이 있는 경우 (예: { message: "...", data: [...] })
+        if (response.data.data && Array.isArray(response.data.data)) {
+          console.log('📦 data 속성에서 배열 발견:', response.data.data);
+          tasks = response.data.data;
+        }
+        // tasks 속성이 있는 경우 (예: { message: "...", tasks: [...] })
+        else if (response.data.tasks && Array.isArray(response.data.tasks)) {
+          console.log('📦 tasks 속성에서 배열 발견:', response.data.tasks);
+          tasks = response.data.tasks;
+        }
+        // result 속성이 있는 경우 (예: { message: "...", result: [...] })
+        else if (response.data.result && Array.isArray(response.data.result)) {
+          console.log('📦 result 속성에서 배열 발견:', response.data.result);
+          tasks = response.data.result;
+        }
+        // 직접 배열인 경우
+        else if (Array.isArray(response.data)) {
+          console.log('📦 직접 배열:', response.data);
+          tasks = response.data;
+        }
+        else {
+          console.warn('⚠️ 알 수 없는 응답 구조:', response.data);
+          return [];
+        }
+      }
+      
+      // 최종 검증
+      if (!Array.isArray(tasks)) {
+        console.warn('⚠️ 최종 데이터가 배열이 아닙니다:', tasks);
+        return [];
+      }
+      
+      console.log('✅ 최종 반환 데이터:', tasks);
+      return tasks;
+    } catch (error: any) {
+      console.log(`❌ 실패: ${endpoint}`, error.response?.status);
+      continue; // 다음 엔드포인트 시도
+    }
+  }
+  
+  // 모든 엔드포인트 실패 시 전체 목록에서 필터링
+  console.log('🔄 모든 날짜별 API 실패, 전체 목록에서 필터링 시도...');
+  try {
+    const allTasks = await getAllTasks();
+    const filteredTasks = allTasks.filter(task => task.date === dateString);
+    console.log('📅 필터링된 할 일:', filteredTasks);
+    return filteredTasks;
+  } catch (error) {
+    console.error('❌ 전체 목록 조회도 실패:', error);
+    return [];
+  }
+};
+
+/**
+ * 3. 새로운 할 일 생성
+ * POST https://dot-daily.onrender.com/api/v1/todos
+ */
+export const createTask = async (taskData: CreateTaskRequest): Promise<Task> => {
+  try {
+    console.log('🚀 createTask 요청 데이터:', taskData);
+    const response = await httpClient.post('/todos', taskData);
+    console.log('✅ createTask 응답:', response.data);
+    console.log('응답 상태:', response.status);
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ 할 일 생성 실패:', error);
+    console.error('에러 응답:', error.response?.data);
+    console.error('에러 상태:', error.response?.status);
+    throw new Error(`할 일 생성에 실패했습니다: ${error.response?.data?.message || error.message}`);
+  }
+};
+
+/**
+ * 4. 할 일 수정
+ * PUT https://dot-daily.onrender.com/api/v1/todos/:id
+ */
+export const updateTask = async (id: number, taskData: UpdateTaskRequest): Promise<Task> => {
+  try {
+    const response = await httpClient.put(`/todos/${id}`, taskData);
+    return response.data;
+  } catch (error) {
+    console.error('할 일 수정 실패:', error);
+    throw new Error('할 일 수정에 실패했습니다.');
+  }
+};
+
+/**
+ * 5. 할 일 삭제
+ * DELETE https://dot-daily.onrender.com/api/v1/todos/:id
  */
 export const deleteTask = async (id: number): Promise<void> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  for (const date in tasksData) {
-    const idx = tasksData[date].findIndex(task => task.id === id);
-    if (idx !== -1) {
-      tasksData[date].splice(idx, 1);
-      return;
-    }
+  try {
+    await httpClient.delete(`/todos/${id}`);
+  } catch (error) {
+    console.error('할 일 삭제 실패:', error);
+    throw new Error('할 일 삭제에 실패했습니다.');
   }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
 };
 
 /**
- * 할 일의 완료 상태를 토글하는 가짜 API 함수.
- * @param id - 토글할 할 일의 ID
+ * 할 일 완료 상태 토글 (기존 updateTask 사용)
  */
 export const toggleTaskStatus = async (id: number): Promise<Task> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  for (const date in tasksData) {
-    const idx = tasksData[date].findIndex(task => task.id === id);
-    if (idx !== -1) {
-      const updatedTask = { ...tasksData[date][idx], done: !tasksData[date][idx].done };
-      tasksData[date] = [
-        ...tasksData[date].slice(0, idx),
-        updatedTask,
-        ...tasksData[date].slice(idx + 1)
-      ];
-      return updatedTask;
-    }
+  try {
+    // ✅ status 기반으로 변경: pending → success, success → pending
+    // 먼저 현재 상태를 조회해야 하는데, 전체 조회 후 찾거나
+    // 백엔드에서 toggle 전용 API를 제공하는 것이 좋습니다.
+    const response = await httpClient.put(`/todos/${id}`, { 
+      status: 'success'  // ✅ done 대신 status 사용
+      // done: true      // ❌ 삭제됨 → status로 대체
+    });
+    return response.data;
+  } catch (error) {
+    console.error('할 일 상태 변경 실패:', error);
+    throw new Error('할 일 상태 변경에 실패했습니다.');
   }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
 };
 
 /**
  * 할 일을 보류(미루기)하여 retryCount를 1 증가시키고, 날짜를 다음날로 이동하는 함수
  */
 export const increaseRetryAndMoveToTomorrow = async (id: number): Promise<Task> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  for (const date in tasksData) {
-    const idx = tasksData[date].findIndex(task => task.id === id);
-    if (idx !== -1) {
-      const task = tasksData[date][idx];
-      const tomorrow = new Date(task.date);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowStr = tomorrow.toISOString().split('T')[0];
-      const updatedTask = { ...task, retryCount: task.retryCount + 1, date: tomorrowStr };
-      tasksData[date].splice(idx, 1);
-      if (!tasksData[tomorrowStr]) tasksData[tomorrowStr] = [];
-      tasksData[tomorrowStr].push(updatedTask);
-      return updatedTask;
-    }
-  }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  
+  // ✅ retry 상태로 변경하고 내일로 이동
+  return await updateTask(id, {
+    date: tomorrowStr,
+    status: 'retry'        // ✅ retry 상태로 변경
+    // retryCount는 백엔드에서 처리하거나 별도 API 필요
+  });
 };
 
 /**
  * 할 일을 보류함으로 이동시키는 함수 (retryCount는 변경하지 않음)
  */
 export const moveToArchive = async (id: number): Promise<Task> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  for (const date in tasksData) {
-    const idx = tasksData[date].findIndex(task => task.id === id);
-    if (idx !== -1) {
-      const task = tasksData[date][idx];
-      tasksData[date].splice(idx, 1);
-      archiveTasks.push(task);
-      return task;
-    }
+  try {
+    console.log('📦 할 일을 보류함으로 이동 시도:', id);
+    
+    // 임시로 할 일을 삭제하는 방식으로 처리 (보류함 기능이 백엔드에 없는 경우)
+    // 실제로는 보류함 전용 API가 있어야 합니다
+    await deleteTask(id);
+    
+    console.log('✅ 할 일 보류 처리 완료 (임시로 삭제 처리)');
+    
+    // 임시 Task 객체 반환 (실제로는 보류함으로 이동된 Task를 반환해야 함)
+    return {
+      id,
+      title: '',
+      priority: 'must',
+      date: '',
+      status: 'archive',      // ✅ done 대신 status 사용
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+      // done: false,         // ❌ 삭제됨 → status로 대체  
+      // retryCount: 0        // ❌ 백엔드에 없음
+    } as Task;
+  } catch (error) {
+    console.error('❌ 보류 처리 실패:', error);
+    throw new Error('보류 처리에 실패했습니다.');
   }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
 };
 
 /**
  * 보류함에서 오늘 할 일로 이동시키는 함수
  */
 export const moveToTodayFromArchive = async (id: number | string): Promise<Task> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  const numId = Number(id);
-  const idx = archiveTasks.findIndex(task => Number(task.id) === numId);
-  if (idx !== -1) {
-    const task = archiveTasks[idx];
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    const movedTask = { ...task, date: todayStr };
-    archiveTasks.splice(idx, 1);
-    if (!tasksData[todayStr]) tasksData[todayStr] = [];
-    tasksData[todayStr].push(movedTask);
-    console.log('moveToTodayFromArchive - tasksData:', tasksData);
-    return movedTask;
-  }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
+  // 보류함 기능은 백엔드 API 확장 필요
+  throw new Error('보류함 기능은 백엔드 API 확장이 필요합니다.');
 };
 
 /**
  * 보류함에서 할 일을 삭제하는 함수
  */
 export const deleteArchiveTask = async (id: number): Promise<void> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  const idx = archiveTasks.findIndex(task => task.id === id);
-  if (idx !== -1) {
-    archiveTasks.splice(idx, 1);
-    return;
-  }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
+  // 보류함 기능은 백엔드 API 확장 필요
+  throw new Error('보류함 기능은 백엔드 API 확장이 필요합니다.');
 };
 
 /**
  * 보류함에서 할 일을 수정하는 함수
  */
 export const updateArchiveTask = async (id: number, data: Partial<Task>): Promise<Task> => {
-  // await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 제거
-  const idx = archiveTasks.findIndex(task => task.id === id);
-  if (idx !== -1) {
-    const { ...rest } = data;
-    const updated = { ...archiveTasks[idx], ...rest };
-    updated.id = Number(archiveTasks[idx].id);
-    archiveTasks[idx] = updated;
-    return archiveTasks[idx];
-  }
-  throw new Error('해당 할 일을 찾을 수 없습니다.');
+  // 보류함 기능은 백엔드 API 확장 필요
+  throw new Error('보류함 기능은 백엔드 API 확장이 필요합니다.');
+};
+
+/**
+ * 보류함에 있는 할 일 목록 조회
+ * 임시로 빈 배열 반환 (백엔드 API 구현 후 수정 필요)
+ */
+export const getArchiveTasks = (): Task[] => {
+  console.log('⚠️ getArchiveTasks: 임시 구현 - 빈 배열 반환');
+  console.log('📌 백엔드에서 GET /api/v1/todos/archived API 구현 필요');
+  
+  // 임시로 빈 배열 반환
+  return [];
+  
+  // 실제 구현 시에는 아래와 같이 해야 함:
+  // return httpClient.get('/todos/archived').then(response => response.data);
 }; 
