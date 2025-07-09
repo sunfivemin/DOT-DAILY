@@ -22,6 +22,7 @@ interface BaseProps {
   readOnly?: boolean;
   loading?: boolean;
   placeholder?: string;
+  type: string;
 }
 
 // 👇 HTML 기본 size 속성과 충돌 방지용 Omit
@@ -60,6 +61,7 @@ export const Input = forwardRef<
     readOnly = false,
     loading = false,
     placeholder = ' ',
+    type = 'text'
   } = props;
 
   const isTextarea = variant === 'textarea';
@@ -142,6 +144,7 @@ export const Input = forwardRef<
         <>
           <input
             id={id}
+            type={type}
             ref={ref as React.Ref<HTMLInputElement>}
             placeholder={placeholder}
             className={baseClass}

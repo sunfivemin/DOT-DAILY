@@ -10,6 +10,7 @@ import { getDailyEmotionMemos } from '../api';
 import { formatDateToString } from '../utils';
 import { useDateStore } from '@/store/useDateStore';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
+import Image from 'next/image';
 
 interface CalendarProps {
   onDateModalOpen: () => void;
@@ -24,8 +25,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
     setSelectedDate(dateInfo.date);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDateModalOpen = () => {
+  const onDateNavigation = () => {
     onDateModalOpen();
   };
 
@@ -72,21 +72,30 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
   }, [selectedYearMonth]);
 
   return (
-    <div className="calendar-container">
-      <FullCalendar
-        ref={calendarRef}
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        locale="ko"
-        height={320}
-        headerToolbar={false}
-        dateClick={onDateClick}
-        dayCellClassNames={onDayCellClassNames}
-        dayCellContent={onDayCellContent}
-        showNonCurrentDates={false}
-        fixedWeekCount={false}
-      />
-    </div>
+    <section aria-label="회고 캘린더">
+      <button
+        onClick={onDateNavigation}
+        className='flex gap-2 items-center text-xl font-bold mb-8'
+      >
+        {selectedYearMonth.year}. {selectedYearMonth.month}
+        <Image src="/dropdown.svg" alt="달력 선택" width={20} height={20} style={{ width: 20, height: 20 }} />
+      </button>
+      <div className="calendar-container">
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[dayGridPlugin, interactionPlugin]}
+          initialView="dayGridMonth"
+          locale="ko"
+          height={320}
+          headerToolbar={false}
+          dateClick={onDateClick}
+          dayCellClassNames={onDayCellClassNames}
+          dayCellContent={onDayCellContent}
+          showNonCurrentDates={false}
+          fixedWeekCount={false}
+        />
+      </div>
+    </section>
   );
 };
 
