@@ -41,29 +41,30 @@ function LoginPage() {
     }
 
     try {
-      const response = await httpClient.post('/auth/login', {
+      const response = await httpClient.post("/auth/login", {
         email,
-        password
+        password,
       });
 
-      console.log('로그인 성공:', response.data);
-      
+      console.log("로그인 성공:", response.data);
+
       // 백엔드 응답 구조에 따라 토큰 경로 확인
-      const accessToken = response.data.data?.accessToken || response.data.accessToken;
+      const accessToken =
+        response.data.data?.accessToken || response.data.accessToken;
       if (accessToken) {
         // Bearer 접두사가 있는지 확인하고 순수 토큰만 저장
-        const cleanToken = accessToken.startsWith('Bearer ') 
-          ? accessToken.substring(7) 
+        const cleanToken = accessToken.startsWith("Bearer ")
+          ? accessToken.substring(7)
           : accessToken;
-        localStorage.setItem('accessToken', cleanToken);
-        router.push('/');
+        localStorage.setItem("accessToken", cleanToken);
+        router.push("/");
       } else {
-        console.error('토큰을 찾을 수 없습니다:', response.data);
-        alert('로그인 처리 중 오류가 발생했습니다.');
+        console.error("토큰을 찾을 수 없습니다:", response.data);
+        alert("로그인 처리 중 오류가 발생했습니다.");
       }
     } catch (error) {
-      console.error('로그인 실패:', error);
-      alert('로그인 실패했습니다.');
+      console.error("로그인 실패:", error);
+      alert("로그인 실패했습니다.");
     }
   };
 
@@ -76,6 +77,7 @@ function LoginPage() {
           width={60}
           height={60}
           priority
+          style={{ width: "60px", height: "60px" }}
         />
       </header>
 
@@ -88,7 +90,7 @@ function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             error={errors.email}
-            state={errors.email ? 'error' : 'default'}
+            state={errors.email ? "error" : "default"}
             required
           />
           <Input
@@ -98,31 +100,39 @@ function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={errors.password}
-            state={errors.password ? 'error' : 'default'}
+            state={errors.password ? "error" : "default"}
             required
           />
           <Button label="로그인" className="mt-4" />
         </form>
       </section>
 
-      <section aria-label="소셜 로그인" className="flex items-center justify-center gap-6 my-8">
+      <section
+        aria-label="소셜 로그인"
+        className="flex items-center justify-center gap-6 my-8"
+      >
         <Image
           src="/kakao.svg"
           alt="kakao login"
           width={48}
           height={48}
-          className="cursor-pointer hover:scale-110"
+          className="cursor-pointer hover:scale-110 transition-transform"
+          style={{ width: "48px", height: "48px" }}
         />
         <Image
           src="/google.svg"
           alt="google login"
           width={48}
           height={48}
-          className="cursor-pointer hover:scale-110"
+          className="cursor-pointer hover:scale-110 transition-transform"
+          style={{ width: "48px", height: "48px" }}
         />
       </section>
 
-      <nav className="flex justify-center gap-2 text-sm text-gray-600" aria-label="로그인 관련 링크">
+      <nav
+        className="flex justify-center gap-2 text-sm text-gray-600"
+        aria-label="로그인 관련 링크"
+      >
         <Link href="/find-password">비밀번호 찾기</Link>
         <span>|</span>
         <Link href="/find-email">이메일 찾기</Link>
