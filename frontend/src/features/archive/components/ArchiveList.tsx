@@ -1,9 +1,9 @@
-import React from 'react';
-import ArchiveItem from './ArchiveItem';
+import React from "react";
+import ArchiveItem from "./ArchiveItem";
 // import { ArchiveTask } from '../types'; // 삭제
-import { useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { useDateStore } from '@/store/useDateStore';
+import { useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { useDateStore } from "@/store/useDateStore";
 
 interface ArchiveTask {
   id: string;
@@ -20,16 +20,20 @@ interface Props {
   onMoveToToday?: (id: string) => void;
 }
 
-export default function ArchiveList({ tasks, onEdit, onDelete, onMoveToToday }: Props) {
+export default function ArchiveList({
+  tasks,
+  onEdit,
+  onDelete,
+  onMoveToToday,
+}: Props) {
   const queryClient = useQueryClient();
   const { selectedDate } = useDateStore();
-  const todayKey = format(selectedDate, 'yyyy-MM-dd');
+  const todayKey = format(selectedDate, "yyyy-MM-dd");
 
   // 래핑하여 invalidateQueries 호출
   const handleMoveToToday = (id: string) => {
     if (onMoveToToday) onMoveToToday(id);
-    queryClient.invalidateQueries({ queryKey: ['tasks', todayKey] });
-    queryClient.invalidateQueries({ queryKey: ['archiveTasks'] });
+    // 불필요한 invalidateQueries 제거
   };
 
   return (
@@ -37,7 +41,10 @@ export default function ArchiveList({ tasks, onEdit, onDelete, onMoveToToday }: 
       {tasks.length === 0 ? (
         <div
           className="flex flex-col items-center justify-center py-8 rounded-xl border border-dashed"
-          style={{ background: 'rgba(188, 232, 241, 0.12)', borderColor: '#bce8f1' }}
+          style={{
+            background: "rgba(188, 232, 241, 0.12)",
+            borderColor: "#bce8f1",
+          }}
         >
           <span className="mb-2 text-2xl">📂</span>
           <p className="font-kkonghae text-zinc-400 text-base">
@@ -45,16 +52,16 @@ export default function ArchiveList({ tasks, onEdit, onDelete, onMoveToToday }: 
           </p>
         </div>
       ) : (
-        tasks.map(task => (
-        <ArchiveItem
-          key={task.id + '-' + task.dueDate}
-          task={task}
-          onEdit={onEdit ? () => onEdit(task.id) : undefined}
-          onDelete={onDelete ? () => onDelete(task.id) : undefined}
-          onMoveToToday={() => handleMoveToToday(task.id)}
-        />
+        tasks.map((task) => (
+          <ArchiveItem
+            key={task.id + "-" + task.dueDate}
+            task={task}
+            onEdit={onEdit ? () => onEdit(task.id) : undefined}
+            onDelete={onDelete ? () => onDelete(task.id) : undefined}
+            onMoveToToday={() => handleMoveToToday(task.id)}
+          />
         ))
       )}
     </div>
   );
-} 
+}

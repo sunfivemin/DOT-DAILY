@@ -12,7 +12,7 @@ import {
   toggleTaskStatus,
   moveToArchive,
 } from "@/lib/api/tasks";
-import { format } from "date-fns";
+
 import { useDateStore } from "@/store/useDateStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
@@ -106,7 +106,7 @@ const TaskItem = React.memo(function TaskItem({
         newStatus: updatedTask.status,
       });
 
-      const dateKey = format(selectedDate, "yyyy-MM-dd");
+      const dateKey = selectedDate.toISOString().split("T")[0];
       queryClient.invalidateQueries({ queryKey: ["tasks", dateKey] });
 
       if (updatedTask.status === "success") {
@@ -130,7 +130,7 @@ const TaskItem = React.memo(function TaskItem({
     try {
       await deleteTask(task.id);
 
-      const dateKey = format(selectedDate, "yyyy-MM-dd");
+      const dateKey = selectedDate.toISOString().split("T")[0];
       queryClient.setQueryData(["tasks", dateKey], (old: Task[]) => {
         return old?.filter((t) => t.id !== task.id) || [];
       });
@@ -143,25 +143,22 @@ const TaskItem = React.memo(function TaskItem({
   };
 
   const handlePostpone = async () => {
-    if (!confirm("이 할 일을 보류함으로 이동하시겠습니까?")) {
-      return;
-    }
+    if (!confirm("이 할 일을 보류함으로 이동하시겠습니까?")) return;
 
     try {
-      console.log("📦 보류 처리 시작:", task.title);
       await moveToArchive(task.id);
 
-      const dateKey = format(selectedDate, "yyyy-MM-dd");
-      queryClient.setQueryData(["tasks", dateKey], (old: Task[] = []) => {
-        return old.filter((t) => t.id !== task.id);
-      });
+      const dateKey = selectedDate.toISOString().split("T")[0];
+      // 1. MyDay 캐시에서 즉시 제거 (optimistic)
+      queryClient.setQueryData(["tasks", dateKey], (old: Task[] = []) =>
+        old.filter((t) => t.id !== task.id)
+      );
 
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      // 2. 보류함만 invalidate (MyDay는 setQueryData로 이미 반영됨)
+      await queryClient.invalidateQueries({ queryKey: ["archiveTasks"] });
 
-      console.log("✅ 보류 처리 완료");
       showToast("할 일이 보류함으로 이동되었습니다 📦");
     } catch (error) {
-      console.error("❌ 보류 처리 실패:", error);
       showToast("할 일 보류에 실패했습니다 😞");
     }
   };
