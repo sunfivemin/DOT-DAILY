@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Menu } from '@headlessui/react';
 import { MoreHorizontal, Pencil, Trash2, CalendarClock } from 'lucide-react';
 import clsx from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import { deleteTask, Task, toggleTaskStatus, moveToArchive } from '@/lib/api/tasks';
 import { format } from 'date-fns';
@@ -16,6 +17,60 @@ interface TaskItemProps {
   onEdit?: (task: Task) => void;
 }
 
+// 완료 시 파티클 효과 컴포넌트
+const CompletionParticles = ({ show }: { show: boolean }) => {
+  const particles = Array.from({ length: 6 }, (_, i) => i);
+  
+  return (
+    <AnimatePresence>
+      {show && (
+        <div className="absolute inset-0 pointer-events-none">
+          {particles.map((index) => {
+            const randomX = (Math.random() - 0.5) * 100;
+            const randomY = (Math.random() - 0.5) * 100;
+            const randomRotate = Math.random() * 360;
+            const emojis = ['✨', '🎉', '⭐'];
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            return (
+              <motion.div
+                key={index}
+                className="absolute text-sm"
+                style={{ 
+                  left: '50%', 
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}
+                initial={{ 
+                  x: 0, 
+                  y: 0, 
+                  opacity: 1, 
+                  scale: 0,
+                  rotate: 0 
+                }}
+                animate={{ 
+                  x: randomX, 
+                  y: randomY, 
+                  opacity: 0, 
+                  scale: 1,
+                  rotate: randomRotate 
+                }}
+                transition={{ 
+                  duration: 1, 
+                  delay: index * 0.1,
+                  ease: "easeOut" 
+                }}
+              >
+                {emoji}
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 export default function TaskItem({
   task,
   onEdit = () => {},
@@ -23,21 +78,41 @@ export default function TaskItem({
   const queryClient = useQueryClient();
   const { selectedDate } = useDateStore();
   const { showToast } = useToast();
+  const [showParticles, setShowParticles] = useState(false);
 
   const handleToggleStatus = async () => {
+    // 현재 상태를 미리 저장 (클로저로 보존)
+    const originalStatus = task.status;
+    
     try {
-      const updatedTask = await toggleTaskStatus(task.id);
-      
-      const dateKey = format(selectedDate, 'yyyy-MM-dd');
-      queryClient.setQueryData(['tasks', dateKey], (old: Task[]) => {
-        return old?.map(t => {
-          if (t.id === task.id) {
-            console.log('교체 전 priority:', t.priority, '교체 후 priority:', updatedTask.priority);
-            return updatedTask;
-          }
-          return t;
-        }) || [];
+      console.log('🔄 체크박스 클릭:', {
+        taskId: task.id,
+        currentStatus: originalStatus,
+        title: task.title
       });
+      
+      // 서버에 실제 요청 (원래 상태 전달)
+      const updatedTask = await toggleTaskStatus(task.id, originalStatus);
+      
+      console.log('✅ 서버 응답:', {
+        id: updatedTask.id,
+        title: updatedTask.title,
+        newStatus: updatedTask.status
+      });
+      
+      // 해당 날짜의 모든 할 일 목록 새로고침
+      const dateKey = format(selectedDate, 'yyyy-MM-dd');
+      queryClient.invalidateQueries({ queryKey: ['tasks', dateKey] });
+      
+      // 상태에 따른 토스트 메시지와 파티클 효과
+      if (updatedTask.status === 'success') {
+        // 완료 시 파티클 효과 트리거
+        setShowParticles(true);
+        setTimeout(() => setShowParticles(false), 1000);
+        showToast('할 일을 완료했습니다! 🎉');
+      } else {
+        showToast('할 일을 미완료로 변경했습니다 📝');
+      }
     } catch (error) {
       console.error('상태 변경 실패:', error);
       showToast('상태 변경에 실패했습니다 😞');
@@ -91,7 +166,15 @@ export default function TaskItem({
   };
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+    <motion.div 
+      className="relative flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-sm"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* 완료 시 파티클 효과 */}
+      <CompletionParticles show={showParticles} />
+      
       <Checkbox
         checked={task.status === 'success'}
         onCheckedChange={handleToggleStatus}
@@ -100,16 +183,31 @@ export default function TaskItem({
       
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h3 className={clsx(
-            'text-sm font-medium',
-            task.status === 'success' ? 'line-through text-gray-500' : 'text-gray-900'
-          )}>
+          <motion.h3 
+            className={clsx(
+              'text-sm font-medium transition-all duration-300',
+              task.status === 'success' ? 'line-through text-gray-500' : 'text-gray-900'
+            )}
+            animate={task.status === 'success' ? { 
+              scale: 1.02,
+              opacity: 0.6
+            } : { 
+              scale: 1,
+              opacity: 1
+            }}
+            transition={{ duration: 0.5, type: "tween" }}
+          >
             {task.title}
-          </h3>
+          </motion.h3>
           {task.status === 'retry' && (
-            <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-semibold">
+            <motion.span 
+              className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-semibold"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            >
               RETRY
-            </span>
+            </motion.span>
           )}
         </div>
       </div>
@@ -165,6 +263,6 @@ export default function TaskItem({
           </div>
         </Menu.Items>
       </Menu>
-    </div>
+    </motion.div>
   );
 }

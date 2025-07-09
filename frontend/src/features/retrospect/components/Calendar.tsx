@@ -5,7 +5,6 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { DayCellContentArg } from '@fullcalendar/core';
-import Image from 'next/image';
 import './Calendar.css';
 import { getDailyEmotionMemos } from '../api';
 import { formatDateToString } from '../utils';
@@ -21,12 +20,13 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
   const { emotionMemoList, setEmotionMemoList, selectedYearMonth } = useRetrospectStore();
   const calendarRef = useRef<FullCalendar>(null);
 
-  const onDateNavigation = () => {
-    onDateModalOpen();
-  }
-
   const onDateClick = (dateInfo: DateClickArg) => {
     setSelectedDate(dateInfo.date);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleDateModalOpen = () => {
+    onDateModalOpen();
   };
 
   const emotionByDateMap = useMemo(() => {
