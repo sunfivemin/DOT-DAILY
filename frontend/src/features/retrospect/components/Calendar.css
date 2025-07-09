@@ -1,5 +1,30 @@
 .fc-direction-ltr {
   padding-bottom: 2.5rem;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 스크롤바 제거 */
+.fc-scroller {
+  overflow: hidden !important;
+}
+
+.fc-scroller-liquid-absolute {
+  overflow: hidden !important;
+}
+
+/* 전체 캘린더 컨테이너 스크롤바 제거 */
+.calendar-container {
+  overflow: hidden;
+}
+
+.calendar-container * {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.calendar-container *::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 
 .fc-theme-standard .fc-scrollgrid,
@@ -37,9 +62,9 @@
   margin: 10px;
 }
 
-/* dateClick 이벤트 비활성화 */
+/* 터치 이벤트 최적화 */
 .fc-daygrid-body {
-  pointer-events: none;
+  touch-action: pan-y;
 }
 
 .fc-daygrid-day {

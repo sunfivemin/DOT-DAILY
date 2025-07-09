@@ -47,8 +47,20 @@ function LoginPage() {
       });
 
       console.log('로그인 성공:', response.data);
-      localStorage.setItem('accessToken', response.data.data.accessToken);
-      router.push('/');
+      
+      // 백엔드 응답 구조에 따라 토큰 경로 확인
+      const accessToken = response.data.data?.accessToken || response.data.accessToken;
+      if (accessToken) {
+        // Bearer 접두사가 있는지 확인하고 순수 토큰만 저장
+        const cleanToken = accessToken.startsWith('Bearer ') 
+          ? accessToken.substring(7) 
+          : accessToken;
+        localStorage.setItem('accessToken', cleanToken);
+        router.push('/');
+      } else {
+        console.error('토큰을 찾을 수 없습니다:', response.data);
+        alert('로그인 처리 중 오류가 발생했습니다.');
+      }
     } catch (error) {
       console.error('로그인 실패:', error);
       alert('로그인 실패했습니다.');

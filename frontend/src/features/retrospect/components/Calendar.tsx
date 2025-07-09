@@ -72,20 +72,13 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
   }, [selectedYearMonth]);
 
   return (
-    <section aria-label="회고 캘린더">
-      <button
-        onClick={onDateNavigation}
-        className='flex gap-2 items-center text-xl font-bold mb-8'
-      >
-        {selectedYearMonth.year}. {selectedYearMonth.month}
-        <Image src="/dropdown.svg" alt="달력 선택" width={20} height={20} style={{ width: 20, height: 20 }} />
-      </button>
+    <div className="calendar-container">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         locale="ko"
-        height="auto"
+        height={320}
         headerToolbar={false}
         dateClick={onDateClick}
         dayCellClassNames={onDayCellClassNames}
@@ -93,7 +86,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
         showNonCurrentDates={false}
         fixedWeekCount={false}
       />
-    </section>
+    </div>
   );
 };
 

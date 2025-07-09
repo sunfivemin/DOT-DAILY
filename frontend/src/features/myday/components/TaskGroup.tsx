@@ -42,9 +42,6 @@ export default function TaskGroup({
   const hasChildren = childrenArray.length > 0;
 
   const showEmptyMessage = !hasChildren;
-  if (showEmptyMessage) {
-    console.log('EMPTY MESSAGE RENDER:', title, emptyMessage);
-  }
 
   return (
     <section className="space-y-3">

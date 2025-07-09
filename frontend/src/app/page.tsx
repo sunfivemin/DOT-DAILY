@@ -28,28 +28,25 @@ export default function MyDayPage() {
     queryKey,
     queryFn: () => getTasksByDate(selectedDate),
     refetchOnWindowFocus: true,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  // 디버깅용 콘솔
-  const todayKey = new Date().toISOString().split('T')[0];
-  console.log('selectedDate:', selectedDate);
-  console.log('todayKey:', todayKey);
-  console.log('queryKey:', queryKey);
-  console.log('tasks:', tasks);
-
-  // 우선순위별로 할 일 그룹화
+  // 우선순위별로 할 일 그룹화 (안전하게 처리)
   const groupedTasks: Record<'must' | 'should' | 'remind', Task[]> = {
     must: [],
     should: [],
     remind: [],
-    ...(tasks?.reduce((acc, task) => {
-      if (!acc[task.priority]) {
-        acc[task.priority] = [];
-      }
-      acc[task.priority].push(task);
-      return acc;
-    }, {} as Record<'must' | 'should' | 'remind', Task[]>) || {})
   };
+
+  // tasks가 배열인지 확인하고 그룹화
+  if (Array.isArray(tasks)) {
+    tasks.forEach(task => {
+      if (task.priority && groupedTasks[task.priority]) {
+        groupedTasks[task.priority].push(task);
+      }
+    });
+  }
 
   const handleEdit = (task: Task) => {
     setEditTask(task);
@@ -62,13 +59,57 @@ export default function MyDayPage() {
     setEditTask(null);
   };
 
+  // 로딩 중일 때
+  if (isLoading) {
+    return (
+      <MobileLayout headerTitle="나의 하루" showFab={false}>
+        <div className="px-4 py-6">
+          <DateHeader />
+          <TaskListSkeleton />
+        </div>
+      </MobileLayout>
+    );
+  }
+
+  // 에러 발생 시
+  if (isError) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isTimeoutError = errorMessage.includes('timeout') || errorMessage.includes('ECONNABORTED');
+    
+    return (
+      <MobileLayout headerTitle="나의 하루" showFab={false}>
+        <div className="px-4 py-6">
+          <DateHeader />
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {isTimeoutError ? '서버 연결 중...' : '데이터를 불러올 수 없습니다'}
+            </h3>
+            <p className="text-gray-500 mb-4 text-sm leading-relaxed whitespace-pre-line">
+              {isTimeoutError 
+                ? '서버가 시작되고 있습니다.\n첫 접속 시 1-2분 정도 걸릴 수 있어요.' 
+                : '네트워크 연결을 확인하고\n다시 시도해주세요.'
+              }
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              다시 시도
+            </button>
+          </div>
+        </div>
+      </MobileLayout>
+    );
+  }
+
   return (
     <MobileLayout headerTitle="나의 하루">
       <div className="sticky top-0 z-10 bg-surface-base">
         <DateHeader />
       </div>
 
-      <div className="px-4 py-6 space-y-8 pb-24">
+      <div className="px-4 py-6 space-y-8 ">
         {isLoading ? (
           <>
             <TaskGroup priority="must" title="오늘 무조건">
@@ -83,13 +124,13 @@ export default function MyDayPage() {
           </>
         ) : (
           <>
-            {isError && (
-              <div className="text-center py-10">
-                <p className="text-danger-solid">
-                  오류가 발생했습니다: {error.message}
-                </p>
-              </div>
-            )}
+        {isError && (
+          <div className="text-center py-10">
+            <p className="text-danger-solid">
+              데이터를 불러올 수 없습니다. 다시 시도해주세요.
+            </p>
+          </div>
+        )}
             <TaskGroup
               priority="must"
               title="오늘 무조건"
@@ -101,11 +142,11 @@ export default function MyDayPage() {
             >
               {groupedTasks.must.length > 0
                 ? groupedTasks.must.map(task => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onEdit={handleEdit}
-                    />
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onEdit={handleEdit}
+                />
                   ))
                 : null}
             </TaskGroup>
@@ -120,11 +161,11 @@ export default function MyDayPage() {
             >
               {groupedTasks.should.length > 0
                 ? groupedTasks.should.map(task => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onEdit={handleEdit}
-                    />
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onEdit={handleEdit}
+                />
                   ))
                 : null}
             </TaskGroup>
@@ -139,11 +180,11 @@ export default function MyDayPage() {
             >
               {groupedTasks.remind.length > 0
                 ? groupedTasks.remind.map(task => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onEdit={handleEdit}
-                    />
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onEdit={handleEdit}
+                />
                   ))
                 : null}
             </TaskGroup>
@@ -160,7 +201,7 @@ export default function MyDayPage() {
         <TaskFormModal
           onClose={handleClose}
           defaultDate={selectedDate.toISOString().split('T')[0]}
-          task={editTask}
+          task={editTask || undefined}
           defaultPriority={defaultPriority}
         />
       </FullScreenModal>

@@ -10,21 +10,25 @@ import { motion } from 'framer-motion';
 import RadioButton from '@/components/ui/Radio/RadioButton';
 import { createTask, updateTask, Task } from '@/lib/api/tasks';
 import { useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import { useToast } from '@/components/ui/Toast/ToastProvider';
 
 interface TaskFormModalProps {
   onClose: () => void;
   defaultDate?: string;
-  task?: Task | null;
+  task?: Task;
   defaultPriority?: 'must' | 'should' | 'remind';
 }
 
 const inputSize: Size = 'md';
 
-// 타임존 이슈 없이 YYYY-MM-DD를 Date 객체로 변환
-const parseDate = (dateStr: string) => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  return new Date(year, month - 1, day);
+// 날짜 파싱 헬퍼 함수
+const parseDate = (dateString: string): Date => {
+  try {
+    return parseISO(dateString);
+  } catch {
+    return new Date();
+  }
 };
 
 export default function TaskFormModal({
@@ -41,6 +45,7 @@ export default function TaskFormModal({
   const [isLoading, setIsLoading] = useState(false);
   
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const dateKey = date ? format(date, 'yyyy-MM-dd') : '';
 
   const handleSubmit = async () => {
@@ -52,32 +57,36 @@ export default function TaskFormModal({
     setIsLoading(true);
     
     try {
+      const taskData = {
+        title: label.trim(),
+        priority,
+        date: format(date, 'yyyy-MM-dd'),
+      };
+      
+      console.log('📝 할 일 저장 시도:', taskData);
+      
       let newOrUpdatedTask: Task;
       if (task) {
         // 수정 모드
-        newOrUpdatedTask = await updateTask(task.id, {
-          title: label.trim(),
-          priority,
-          date: format(date, 'yyyy-MM-dd'),
-        });
-        queryClient.setQueryData(['tasks', dateKey], (old: Task[] | undefined) => {
-          return old ? old.map((t: Task) => t.id === task.id ? newOrUpdatedTask : t) : [newOrUpdatedTask];
-        });
+        console.log('✏️ 수정 모드:', task.id);
+        newOrUpdatedTask = await updateTask(task.id, taskData);
+        showToast('할 일이 수정되었습니다! ✏️');
       } else {
         // 등록 모드
-        newOrUpdatedTask = await createTask({
-          title: label.trim(),
-          priority,
-          date: format(date, 'yyyy-MM-dd'),
-        });
-        queryClient.setQueryData(['tasks', dateKey], (old: Task[] | undefined) => {
-          return old ? [...old, newOrUpdatedTask] : [newOrUpdatedTask];
-        });
+        console.log('➕ 등록 모드');
+        newOrUpdatedTask = await createTask(taskData);
+        showToast('새로운 할 일이 등록되었습니다! ✅');
       }
+      
+      console.log('✅ 할 일 저장 성공:', newOrUpdatedTask);
+      
+      // React Query 캐시 무효화 (모든 tasks 쿼리 새로고침)
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      
       onClose();
     } catch (error) {
-      console.error('할 일 저장 실패:', error);
-      alert('할 일 저장에 실패했습니다. 다시 시도해주세요.');
+      console.error('❌ 할 일 저장 실패:', error);
+      showToast('할 일 저장에 실패했습니다 😭');
     } finally {
       setIsLoading(false);
     }
@@ -91,25 +100,25 @@ export default function TaskFormModal({
       exit={{ y: 80, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, ease: 'easeOut' }}
       className="flex flex-col w-full flex-1"
-      drag="y"
-      dragElastic={0.2}
-      dragListener={true}
-      dragPropagation={true}
-      style={{ touchAction: 'pan-y' }}
-      onDragEnd={(_, info) => {
-        console.log('drag offset y:', info.offset.y);
-        if (info.offset.y > 60) {
-          onClose();
-        }
-      }}
     >
-      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 cursor-grab">
+      <motion.div 
+        className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 cursor-grab"
+        drag="y"
+        dragElastic={0.1}
+        dragConstraints={{ top: 0, bottom: 150 }}
+        dragMomentum={false}
+        onDragEnd={(_, info) => {
+          if (info.offset.y > 80) {
+            onClose();
+          }
+        }}
+      >
         <button onClick={onClose} aria-label="뒤로가기">
           <Image src="/back.svg" alt="back" width={20} height={20} style={{ width: 20, height: 20 }} />
         </button>
         <h2 className="text-sm text-gray-400">오늘 할 일</h2>
         <div className="w-6" />
-      </div>
+      </motion.div>
 
       <div className="flex-1 px-6 py-4 space-y-6 overflow-y-auto">
         <div>

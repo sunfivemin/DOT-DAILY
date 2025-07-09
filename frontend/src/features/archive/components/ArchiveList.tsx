@@ -46,13 +46,13 @@ export default function ArchiveList({ tasks, onEdit, onDelete, onMoveToToday }: 
         </div>
       ) : (
         tasks.map(task => (
-          <ArchiveItem
-            key={task.id + '-' + task.dueDate}
-            task={task}
-            onEdit={onEdit ? () => onEdit(task.id) : undefined}
-            onDelete={onDelete ? () => onDelete(task.id) : undefined}
-            onMoveToToday={() => handleMoveToToday(task.id)}
-          />
+        <ArchiveItem
+          key={task.id + '-' + task.dueDate}
+          task={task}
+          onEdit={onEdit ? () => onEdit(task.id) : undefined}
+          onDelete={onDelete ? () => onDelete(task.id) : undefined}
+          onMoveToToday={() => handleMoveToToday(task.id)}
+        />
         ))
       )}
     </div>

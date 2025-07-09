@@ -62,17 +62,46 @@ function SignupPage() {
     }
 
     try {
-      await httpClient.post('/auth/signup', {
+      console.log('회원가입 요청 데이터:', {
         username: formData.name,
         email: formData.email,
         password: formData.password,
         confirm_password: formData.confirmPassword
       });
 
+      const response = await httpClient.post('/auth/signup', {
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirm_password: formData.confirmPassword
+      });
+
+      console.log('회원가입 성공:', response.data);
       showToast('회원가입에 성공했습니다.');
       router.push('/login');
-    } catch (error) {
-      console.error('회원가입 실패: ', error);
+    } catch (error: any) {
+      console.error('회원가입 실패:', error);
+      console.error('응답 데이터:', error.response?.data);
+      console.error('응답 상태:', error.response?.status);
+      
+      // 백엔드에서 온 구체적인 오류 메시지 표시
+      if (error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        let errorMessage = '회원가입 실패:\n';
+        
+        Object.keys(errors).forEach(key => {
+          if (errors[key] && errors[key].length > 0) {
+            errorMessage += `${key}: ${errors[key][0]}\n`;
+          }
+        });
+        
+        alert(errorMessage);
+      } else if (error.response?.data?.message) {
+        alert(`회원가입 실패: ${error.response.data.message}`);
+      } else {
+        alert('회원가입에 실패했습니다. 네트워크 연결을 확인해주세요.');
+      }
+      
       showToast('회원가입에 실패했습니다.');
     }
   };

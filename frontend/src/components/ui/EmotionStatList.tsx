@@ -13,16 +13,27 @@ interface EmotionStatListProps {
 }
 
 export const EmotionStatList: React.FC<EmotionStatListProps> = ({ stats }) => (
-  <div className="bg-gray-50 rounded-xl px-4 py-3 grid grid-cols-3 gap-x-6 gap-y-3">
+  <div className="space-y-3">
     {stats.map((stat) => (
       <div
         key={stat.label}
-        className="flex items-center"
+        className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
       >
-        <Image src={stat.icon} alt={stat.label} width={28} height={28} className={`mr-2 ${stat.color ?? ''}`} />
-        <div>
-          <span className="text-gray-700 whitespace-nowrap">{stat.label}</span>
-          <span className="ml-1 font-bold text-gray-900 whitespace-nowrap">{stat.count}번</span>
+        <div className="flex items-center">
+          <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center mr-3">
+            <Image 
+              src={stat.icon} 
+              alt={stat.label} 
+              width={24} 
+              height={24} 
+              className={stat.color ?? ''} 
+            />
+          </div>
+          <span className="text-gray-700 font-medium">{stat.label}</span>
+        </div>
+        <div className="text-right">
+          <span className="text-lg font-bold text-gray-900">{stat.count}</span>
+          <span className="text-sm text-gray-500 ml-1">번</span>
         </div>
       </div>
     ))}
