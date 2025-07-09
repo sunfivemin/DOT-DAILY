@@ -23,7 +23,7 @@ export const createTodoService = async (input: ITodo) => {
 // 투두 전체 조회
 export const getAllTodosService = async (userId: number) => {
   return await prisma.todos.findMany({
-    where: { userId },
+    where: { userId, status: { in: ['pending', 'retry', 'success'] } },
     orderBy: { date: 'asc' },
   });
 };
@@ -31,7 +31,7 @@ export const getAllTodosService = async (userId: number) => {
 //투두 특정 날짜 조회
 export const getTodosByDateService = async (userId: number, date: string) => {
   return await prisma.todos.findMany({
-    where: { userId, date },
+    where: { userId, date, status: { in: ['pending', 'retry', 'success'] } },
     orderBy: { createdAt: 'asc' },
   });
 };
