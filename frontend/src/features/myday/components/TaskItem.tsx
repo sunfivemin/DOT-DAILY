@@ -16,6 +16,7 @@ import {
 import { useDateStore } from "@/store/useDateStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
+import { useConfirm } from "@/components/ui/Modal/providers/ModalProvider";
 
 interface TaskItemProps {
   task: Task;
@@ -87,6 +88,7 @@ const TaskItem = React.memo(function TaskItem({
   const { selectedDate } = useDateStore();
   const { showToast } = useToast();
   const [showParticles, setShowParticles] = useState(false);
+  const confirm = useConfirm();
 
   const handleToggleStatus = async () => {
     const originalStatus = task.status;
@@ -123,9 +125,8 @@ const TaskItem = React.memo(function TaskItem({
   };
 
   const handleDelete = async () => {
-    if (!confirm("정말로 이 할 일을 삭제하시겠습니까?")) {
-      return;
-    }
+    const confirmed = await confirm("정말로 이 할 일을 삭제하시겠습니까?");
+    if (!confirmed) return;
 
     try {
       await deleteTask(task.id);
@@ -143,7 +144,8 @@ const TaskItem = React.memo(function TaskItem({
   };
 
   const handlePostpone = async () => {
-    if (!confirm("이 할 일을 보류함으로 이동하시겠습니까?")) return;
+    const confirmed = await confirm("이 할 일을 보류함으로 이동하시겠습니까?");
+    if (!confirmed) return;
 
     try {
       await moveToArchive(task.id);
@@ -202,7 +204,7 @@ const TaskItem = React.memo(function TaskItem({
           <Menu.Button className="p-1 rounded-full hover:bg-gray-100 transition-colors">
             <MoreHorizontal className="w-5 h-5 text-gray-500" />
           </Menu.Button>
-          <Menu.Items className="absolute right-0 z-10 mt-2 w-28 origin-top-right bg-surface-card rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="absolute right-0 z-50 mt-2 min-w-[120px] w-32 max-w-[90vw] origin-top-right bg-surface-card rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="py-1">
               <Menu.Item>
                 {({ active }) => (
