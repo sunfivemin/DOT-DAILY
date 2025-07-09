@@ -1,7 +1,7 @@
 import express from 'express';
 import authRouter from './auth.router';
 import todoRouter from './todo.router';
-import archiveRouter from './todo.router';
+import archiveRouter from './archive.router';
 
 const routers = express.Router();
 
