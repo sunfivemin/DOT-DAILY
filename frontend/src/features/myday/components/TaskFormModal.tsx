@@ -46,7 +46,6 @@ export default function TaskFormModal({
   
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const dateKey = date ? format(date, 'yyyy-MM-dd') : '';
 
   const handleSubmit = async () => {
     if (!label.trim() || !date) {

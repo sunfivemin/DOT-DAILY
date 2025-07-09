@@ -71,11 +71,14 @@ export const autoLogin = async () => {
     const result = await login(testCredentials);
     console.log('✅ 자동 로그인 성공:', result);
     return result;
-  } catch (error: any) {
-    console.error('❌ 자동 로그인 실패:', error);
-    
-    // 만약 계정이 없다면 회원가입 시도
-    if (error.response?.status === 401 || error.response?.status === 404) {
+      } catch (error: unknown) {
+      console.error('❌ 자동 로그인 실패:', error);
+      
+      // 에러 타입 체크 및 변환
+      const axiosError = error as { response?: { status?: number } };
+      
+      // 만약 계정이 없다면 회원가입 시도
+      if (axiosError.response?.status === 401 || axiosError.response?.status === 404) {
       try {
         console.log('📝 계정이 없어서 회원가입 시도...');
         await register({

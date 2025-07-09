@@ -140,8 +140,9 @@ export const getTasksByDate = async (date: Date): Promise<Task[]> => {
       
       console.log('✅ 최종 반환 데이터:', tasks);
       return tasks;
-    } catch (error: any) {
-      console.log(`❌ 실패: ${endpoint}`, error.response?.status);
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { status?: number } };
+      console.log(`❌ 실패: ${endpoint}`, axiosError.response?.status);
       continue; // 다음 엔드포인트 시도
     }
   }
@@ -170,11 +171,13 @@ export const createTask = async (taskData: CreateTaskRequest): Promise<Task> => 
     console.log('✅ createTask 응답:', response.data);
     console.log('응답 상태:', response.status);
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ 할 일 생성 실패:', error);
-    console.error('에러 응답:', error.response?.data);
-    console.error('에러 상태:', error.response?.status);
-    throw new Error(`할 일 생성에 실패했습니다: ${error.response?.data?.message || error.message}`);
+    
+    const axiosError = error as { response?: { data?: { message?: string }; status?: number }; message?: string };
+    console.error('에러 응답:', axiosError.response?.data);
+    console.error('에러 상태:', axiosError.response?.status);
+    throw new Error(`할 일 생성에 실패했습니다: ${axiosError.response?.data?.message || axiosError.message || '알 수 없는 오류'}`);
   }
 };
 
@@ -274,24 +277,27 @@ export const moveToArchive = async (id: number): Promise<Task> => {
 /**
  * 보류함에서 오늘 할 일로 이동시키는 함수
  */
-export const moveToTodayFromArchive = async (id: number | string): Promise<Task> => {
+export const moveToTodayFromArchive = async (taskId: number | string): Promise<Task> => {
   // 보류함 기능은 백엔드 API 확장 필요
+  console.log('moveToTodayFromArchive 호출됨:', taskId);
   throw new Error('보류함 기능은 백엔드 API 확장이 필요합니다.');
 };
 
 /**
  * 보류함에서 할 일을 삭제하는 함수
  */
-export const deleteArchiveTask = async (id: number): Promise<void> => {
+export const deleteArchiveTask = async (taskId: number): Promise<void> => {
   // 보류함 기능은 백엔드 API 확장 필요
+  console.log('deleteArchiveTask 호출됨:', taskId);
   throw new Error('보류함 기능은 백엔드 API 확장이 필요합니다.');
 };
 
 /**
  * 보류함에서 할 일을 수정하는 함수
  */
-export const updateArchiveTask = async (id: number, data: Partial<Task>): Promise<Task> => {
+export const updateArchiveTask = async (taskId: number, taskData: Partial<Task>): Promise<Task> => {
   // 보류함 기능은 백엔드 API 확장 필요
+  console.log('updateArchiveTask 호출됨:', taskId, taskData);
   throw new Error('보류함 기능은 백엔드 API 확장이 필요합니다.');
 };
 

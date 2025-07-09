@@ -41,8 +41,6 @@ export default function TaskGroup({
   const childrenArray = React.Children.toArray(children);
   const hasChildren = childrenArray.length > 0;
 
-  const showEmptyMessage = !hasChildren;
-
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2">
