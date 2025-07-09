@@ -209,17 +209,24 @@ export const deleteTask = async (id: number): Promise<void> => {
 };
 
 /**
- * 할 일 완료 상태 토글 (기존 updateTask 사용)
+ * 할 일 완료 상태 토글 (pending ↔ success)
  */
-export const toggleTaskStatus = async (id: number): Promise<Task> => {
+export const toggleTaskStatus = async (id: number, currentStatus: TaskStatus): Promise<Task> => {
   try {
-    // ✅ status 기반으로 변경: pending → success, success → pending
-    // 먼저 현재 상태를 조회해야 하는데, 전체 조회 후 찾거나
-    // 백엔드에서 toggle 전용 API를 제공하는 것이 좋습니다.
-    const response = await httpClient.put(`/todos/${id}`, { 
-      status: 'success'  // ✅ done 대신 status 사용
-      // done: true      // ❌ 삭제됨 → status로 대체
+    // 현재 상태에 따라 토글: pending → success, success → pending
+    const newStatus = currentStatus === 'success' ? 'pending' : 'success';
+    
+    console.log('🔄 상태 토글:', {
+      id,
+      currentStatus,
+      newStatus
     });
+    
+    const response = await httpClient.put(`/todos/${id}`, { 
+      status: newStatus
+    });
+    
+    console.log('✅ 상태 토글 성공:', response.data);
     return response.data;
   } catch (error) {
     console.error('할 일 상태 변경 실패:', error);

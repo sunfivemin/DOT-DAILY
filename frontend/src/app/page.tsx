@@ -14,7 +14,15 @@ import Fab from '@/components/ui/Fab/Fab';
 import { useDateStore } from '@/store/useDateStore';
 import { getTasksByDate, Task } from '@/lib/api/tasks';
 import FullScreenModal from '@/components/ui/Modal/components/FullScreenModal';
+import { useTaskCompletion } from '@/hooks/useTaskCompletion';
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
+
+// 클라이언트 사이드에서만 로드
+const CelebrationEffect = dynamic(
+  () => import('@/components/ui/CelebrationEffect/CelebrationEffect'),
+  { ssr: false }
+);
 
 export default function MyDayPage() {
   const { selectedDate } = useDateStore();
@@ -30,6 +38,11 @@ export default function MyDayPage() {
     refetchOnWindowFocus: true,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  // 완료 축하 효과 훅
+  const { showCelebration, hideCelebration } = useTaskCompletion({
+    tasks: tasks || []
   });
 
   // 우선순위별로 할 일 그룹화 (안전하게 처리)
@@ -205,6 +218,12 @@ export default function MyDayPage() {
           defaultPriority={defaultPriority}
         />
       </FullScreenModal>
+
+      {/* 모든 할 일 완료 축하 효과 */}
+      <CelebrationEffect 
+        show={showCelebration} 
+        onComplete={hideCelebration}
+      />
     </MobileLayout>
   );
 }
