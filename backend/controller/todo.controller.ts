@@ -69,11 +69,13 @@ export const getAllTodosController = async (req: Request, res: Response) => {
 export const getTodosByDateController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
-    const date = req.query.date as string;
+    const { date } = req.query as { date: string };
     if (!date) {
       res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: '날짜 쿼리 파라미터가 필요합니다.' });
+        .json({
+          message: '날짜(date)를 query로 전달해주세요 (예: ?date=2025-07-04)',
+        });
       return;
     }
     const todos = await getTodosByDateService(userId, date);
