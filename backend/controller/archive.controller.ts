@@ -63,16 +63,16 @@ export const deleteArchivedTodoController = async (
     const userId = req.user?.id;
     const todoId = Number(req.params.id);
 
-    const deldeleted = await deleteArchivedTodo(todoId, userId);
+    const deleleted = await deleteArchivedTodo(todoId, userId);
 
     res.status(StatusCodes.OK).json({
       message: '보관함 투두가 삭제 되었습니다.',
-      data: deldeleted,
+      data: deleleted,
     });
     return;
   } catch (err) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: '보관함 툳두 삭제 중 오류가 발생헀습니다.',
+      message: '보관함 투두 삭제 중 오류가 발생헀습니다.',
     });
     return;
   }
