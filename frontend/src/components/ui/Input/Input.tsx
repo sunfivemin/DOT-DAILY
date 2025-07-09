@@ -22,7 +22,7 @@ interface BaseProps {
   readOnly?: boolean;
   loading?: boolean;
   placeholder?: string;
-  type: string;
+  type?: string;
 }
 
 // 👇 HTML 기본 size 속성과 충돌 방지용 Omit
