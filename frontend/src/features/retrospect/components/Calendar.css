@@ -4,13 +4,17 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* 스크롤바 제거 */
-.fc-scroller {
-  overflow: hidden !important;
+/* 스크롤바 제거 - 더 구체적인 선택자 사용 */
+.calendar-container .fc-scroller,
+.calendar-container .fc-scroller-liquid-absolute {
+  overflow: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-.fc-scroller-liquid-absolute {
-  overflow: hidden !important;
+.calendar-container .fc-scroller::-webkit-scrollbar,
+.calendar-container .fc-scroller-liquid-absolute::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 
 /* 전체 캘린더 컨테이너 스크롤바 제거 */
@@ -85,6 +89,7 @@
 
   pointer-events: auto;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .fc-daygrid-day-number:hover {
@@ -116,7 +121,7 @@
 
 .fc-daygrid-day.selected::after {
   content: "선택";
-  background: #262C33;
+  background: #262c33;
   color: #fff;
 }
 
@@ -127,7 +132,7 @@
 
 /* 오늘 선택시 라벨 */
 .fc-daygrid-day.fc-day-today.selected::after {
-  background: #262C33;
+  background: #262c33;
   color: #fff;
 }
 
@@ -137,6 +142,7 @@
 
 [class*="emotion-"]:hover {
   opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
 [class*="emotion-"] {
@@ -155,6 +161,11 @@
   background-repeat: no-repeat;
   pointer-events: auto;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+[class*="emotion-"]::before:hover {
+  transform: translateX(-50%) scale(1.05);
 }
 
 .emotion-good::before {
