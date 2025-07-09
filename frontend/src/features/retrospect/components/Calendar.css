@@ -69,6 +69,7 @@
 /* 터치 이벤트 최적화 */
 .fc-daygrid-body {
   touch-action: pan-y;
+  pointer-events: none;
 }
 
 .fc-daygrid-day {

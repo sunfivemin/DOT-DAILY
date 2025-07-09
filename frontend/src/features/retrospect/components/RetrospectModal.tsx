@@ -21,16 +21,16 @@ interface RetrospectModalProps {
 export default function RetrospectModal({ onClose, onSubmit, onUpdate, onDelete }: RetrospectModalProps) {
   const { selectedDate } = useDateStore();
   const { emotionMemoList } = useRetrospectStore();
-  
+
   // 현재 선택된 날짜의 기존 회고 데이터 찾기
   const existingMemo = useMemo(() => {
-    return emotionMemoList.find(item => 
+    return emotionMemoList.find(item =>
       formatDateToString(item.date) === formatDateToString(selectedDate)
     );
   }, [emotionMemoList, selectedDate]);
 
   const isEditMode = !!existingMemo;
-  
+
   const [retrospectText, setRetrospectText] = useState<string>('');
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion['id'] | ''>('');
 
@@ -46,7 +46,7 @@ export default function RetrospectModal({ onClose, onSubmit, onUpdate, onDelete 
     setRetrospectText(e.target.value);
   }
 
-  const handleSubmit = () => {
+  const onRetrospectSubmit = () => {
     if (isEditMode) {
       onUpdate(selectedEmotion, retrospectText);
     } else {
@@ -107,7 +107,7 @@ export default function RetrospectModal({ onClose, onSubmit, onUpdate, onDelete 
           disabled={!selectedEmotion || !retrospectText.trim()}
           rounded="full"
           fullWidth={true}
-          onClick={handleSubmit}
+          onClick={onRetrospectSubmit}
         />
       </div>
     </motion.div>
