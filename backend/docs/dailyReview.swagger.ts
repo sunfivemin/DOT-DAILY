@@ -44,7 +44,7 @@ export const dailyReviewSwagger = {
         500: { description: '서버 에러' },
       },
     },
-    patch: {
+    put: {
       summary: '특정 날짜의 하루 회고 수정',
       tags: ['DailyReviews'],
       parameters: [
