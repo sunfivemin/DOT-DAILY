@@ -45,7 +45,8 @@ export default function MyDayPage() {
   } = useQuery({
     queryKey,
     queryFn: () => getTasksByDate(selectedDate),
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false, // 🔧 문제 해결: 포커스 시 자동 refetch 비활성화
+    staleTime: 1000 * 60 * 5, // 5분간 fresh 상태 유지
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });

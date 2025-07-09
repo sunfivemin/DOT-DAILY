@@ -10,7 +10,7 @@ import {
   updateArchiveTask,
 } from "@/lib/api/tasks";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+
 import { useDateStore } from "@/store/useDateStore";
 import BottomSheetModal from "@/components/ui/Modal/components/BottomSheetModal";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
@@ -38,6 +38,7 @@ export default function ArchivePage() {
     queryKey: ["archiveTasks"],
     queryFn: getArchiveTasks,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5분간 fresh 상태 유지
   });
 
   const handleEdit = (id: string) => {
@@ -84,11 +85,15 @@ export default function ArchivePage() {
   const handleMoveToToday = async (id: string) => {
     try {
       await moveToTodayFromArchive(Number(id));
-      const todayKey = format(selectedDate, "yyyy-MM-dd");
+      const todayKey = selectedDate.toISOString().split("T")[0];
+      // 1. 보류함 캐시에서 즉시 제거 (optimistic)
+      queryClient.setQueryData(["archiveTasks"], (old: any[] = []) =>
+        old.filter((task) => String(task.id) !== id)
+      );
+      // 2. MyDay만 invalidate (archive는 setQueryData로 이미 반영됨)
       await queryClient.invalidateQueries({ queryKey: ["tasks", todayKey] });
-      await queryClient.invalidateQueries({ queryKey: ["archiveTasks"] });
       showToast("오늘 할 일로 이동했습니다 📅");
-    } catch {
+    } catch (error) {
       showToast("오늘 할 일로 이동에 실패했습니다 😞");
     }
   };

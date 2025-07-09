@@ -289,29 +289,17 @@ export const moveToArchive = async (id: number): Promise<Task> => {
 };
 
 /**
- * 보관함에서 오늘 할 일로 이동시키는 함수 (일반 Todo API 사용)
- * PUT /api/v1/todos/:id
+ * 보관함에서 오늘 할 일로 이동시키는 함수
+ * PUT /api/v1/archive/:id/restore
  */
 export const moveToTodayFromArchive = async (
   taskId: number | string
 ): Promise<Task> => {
   try {
-    console.log(
-      "📅 보관함에서 오늘 할 일로 이동 시도 (Todo API 사용):",
-      taskId
-    );
-
-    // 오늘 날짜 계산
-    const today = new Date().toISOString().split("T")[0];
-
-    // 할 일의 상태를 'pending'으로 변경하고 날짜를 오늘로 설정
-    const restoredTask = await updateTask(Number(taskId), {
-      status: "pending",
-      date: today,
-    });
-
-    console.log("✅ 보관함에서 오늘 할 일로 이동 성공:", restoredTask);
-    return restoredTask;
+    console.log("📅 보관함에서 오늘 할 일로 이동 시도 (Archive API):", taskId);
+    const response = await httpClient.put(`/archive/${taskId}/restore`);
+    console.log("✅ 보관함에서 오늘 할 일로 이동 성공:", response.data);
+    return response.data;
   } catch (error) {
     console.error("❌ 보관함에서 오늘 할 일로 이동 실패:", error);
     throw new Error("보관함에서 오늘 할 일로 이동에 실패했습니다.");
@@ -319,13 +307,13 @@ export const moveToTodayFromArchive = async (
 };
 
 /**
- * 보관함에서 할 일을 삭제하는 함수 (일반 Todo API 사용)
- * DELETE /api/v1/todos/:id
+ * 보관함에서 할 일을 삭제하는 함수
+ * DELETE /api/v1/archive/:id
  */
 export const deleteArchiveTask = async (taskId: number): Promise<void> => {
   try {
-    console.log("🗑️ 보관함 할 일 삭제 시도 (Todo API 사용):", taskId);
-    await deleteTask(taskId);
+    console.log("🗑️ 보관함 할 일 삭제 시도:", taskId);
+    await httpClient.delete(`/archive/${taskId}`);
     console.log("✅ 보관함 할 일 삭제 성공");
   } catch (error) {
     console.error("❌ 보관함 할 일 삭제 실패:", error);
@@ -334,18 +322,18 @@ export const deleteArchiveTask = async (taskId: number): Promise<void> => {
 };
 
 /**
- * 보관함에서 할 일을 수정하는 함수 (일반 Todo API 사용)
- * PUT /api/v1/todos/:id
+ * 보관함에서 할 일을 수정하는 함수
+ * PUT /api/v1/archive/:id
  */
 export const updateArchiveTask = async (
   taskId: number,
   taskData: Partial<Task>
 ): Promise<Task> => {
   try {
-    console.log("🔄 보관함 할 일 수정 시도 (Todo API 사용):", taskId, taskData);
-    const updatedTask = await updateTask(taskId, taskData);
-    console.log("✅ 보관함 할 일 수정 성공:", updatedTask);
-    return updatedTask;
+    console.log("🔄 보관함 할 일 수정 시도:", taskId, taskData);
+    const response = await httpClient.put(`/archive/${taskId}`, taskData);
+    console.log("✅ 보관함 할 일 수정 성공:", response.data);
+    return response.data;
   } catch (error) {
     console.error("❌ 보관함 할 일 수정 실패:", error);
     throw new Error("보관함 할 일 수정에 실패했습니다.");
@@ -353,19 +341,27 @@ export const updateArchiveTask = async (
 };
 
 /**
- * 보관함에 있는 할 일 목록 조회 (일반 Todo API 사용)
- * GET /api/v1/todos (status='archive'로 필터링)
+ * 보관함에 있는 할 일 목록 조회
+ * GET /api/v1/archive/
  */
 export const getArchiveTasks = async (): Promise<Task[]> => {
   try {
-    console.log("🔍 보관함 목록 조회 시도 (Todo API 사용)...");
-    const allTasks = await getAllTasks();
+    console.log("🔍 보관함 목록 조회 시도...");
+    const response = await httpClient.get("/archive");
+    console.log("✅ 보관함 목록 조회 성공:", response.data);
 
-    // status가 'archive'인 할 일들만 필터링
-    const archiveTasks = allTasks.filter((task) => task.status === "archive");
+    let tasks = response.data;
 
-    console.log("✅ 보관함 목록 조회 성공:", archiveTasks);
-    return archiveTasks;
+    // 응답 구조 확인 및 처리
+    if (response.data && typeof response.data === "object") {
+      if (response.data.data && Array.isArray(response.data.data)) {
+        tasks = response.data.data;
+      } else if (Array.isArray(response.data)) {
+        tasks = response.data;
+      }
+    }
+
+    return Array.isArray(tasks) ? tasks : [];
   } catch (error) {
     console.error("❌ 보관함 목록 조회 실패:", error);
     return [];
