@@ -6,11 +6,11 @@
 
 /* 스크롤바 제거 */
 .fc-scroller {
-  overflow: hidden !important;
+  overflow: hidden;
 }
 
 .fc-scroller-liquid-absolute {
-  overflow: hidden !important;
+  overflow: hidden;
 }
 
 /* 전체 캘린더 컨테이너 스크롤바 제거 */
@@ -65,6 +65,7 @@
 /* 터치 이벤트 최적화 */
 .fc-daygrid-body {
   touch-action: pan-y;
+  pointer-events: none;
 }
 
 .fc-daygrid-day {

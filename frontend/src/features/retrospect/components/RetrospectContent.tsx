@@ -24,7 +24,7 @@ const RetrospectContent = () => {
   const memo = selectedEmotionMemo?.memo || '';
   const emotionLabel = EMOTIONS.find(e => e.id === emotion)?.label;
 
-  const handleEdit = () => {
+  const onEdit = () => {
     openModal('retrospectForm');
   };
 
@@ -44,7 +44,7 @@ const RetrospectContent = () => {
         {emotion && (
           <div className="flex gap-2">
             <button
-              onClick={handleEdit}
+              onClick={onEdit}
               className="p-2 rounded-full hover:bg-zinc-200 transition-colors"
               aria-label="회고 수정"
             >
