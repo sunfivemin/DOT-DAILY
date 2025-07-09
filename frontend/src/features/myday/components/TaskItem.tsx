@@ -160,7 +160,7 @@ const TaskItem = React.memo(function TaskItem({
       await queryClient.invalidateQueries({ queryKey: ["archiveTasks"] });
 
       showToast("할 일이 보류함으로 이동되었습니다 📦");
-    } catch (error) {
+    } catch {
       showToast("할 일 보류에 실패했습니다 😞");
     }
   };

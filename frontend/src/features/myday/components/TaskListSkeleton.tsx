@@ -24,7 +24,7 @@ const TaskItemSkeleton = React.memo(() => (
 TaskItemSkeleton.displayName = "TaskItemSkeleton";
 
 export const TaskListSkeleton = React.memo(
-  ({ count = 2 }: { count?: number }) => {
+  ({ count = 4 }: { count?: number }) => {
     return (
       <div className="space-y-2">
         {Array.from({ length: count }, (_, i) => (

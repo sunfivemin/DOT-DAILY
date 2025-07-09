@@ -1,9 +1,6 @@
 import React from "react";
 import ArchiveItem from "./ArchiveItem";
 // import { ArchiveTask } from '../types'; // 삭제
-import { useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { useDateStore } from "@/store/useDateStore";
 
 interface ArchiveTask {
   id: string;
@@ -26,10 +23,6 @@ export default function ArchiveList({
   onDelete,
   onMoveToToday,
 }: Props) {
-  const queryClient = useQueryClient();
-  const { selectedDate } = useDateStore();
-  const todayKey = format(selectedDate, "yyyy-MM-dd");
-
   // 래핑하여 invalidateQueries 호출
   const handleMoveToToday = (id: string) => {
     if (onMoveToToday) onMoveToToday(id);
