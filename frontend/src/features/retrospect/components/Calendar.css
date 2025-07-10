@@ -8,13 +8,13 @@
 .calendar-container .fc-scroller,
 .calendar-container .fc-scroller-liquid-absolute {
   overflow: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .calendar-container .fc-scroller::-webkit-scrollbar,
 .calendar-container .fc-scroller-liquid-absolute::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
 }
 
 /* 전체 캘린더 컨테이너 스크롤바 제거 */
@@ -23,12 +23,12 @@
 }
 
 .calendar-container * {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .calendar-container *::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
 }
 
 .fc-theme-standard .fc-scrollgrid,
@@ -177,14 +177,14 @@
   background-image: url("/bad-on.svg");
 }
 
-.emotion-soso::before {
-  background-image: url("/soso-on.svg");
+.emotion-meh::before {
+  background-image: url("/meh-on.svg");
 }
 
-.emotion-great::before {
-  background-image: url("/great-on.svg");
+.emotion-proud::before {
+  background-image: url("/proud-on.svg");
 }
 
-.emotion-appreciate::before {
-  background-image: url("/appreciate-on.svg");
+.emotion-grateful::before {
+  background-image: url("/grateful-on.svg");
 }
