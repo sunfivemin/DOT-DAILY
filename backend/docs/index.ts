@@ -3,7 +3,7 @@ import { authSwagger } from './auth.swagger';
 import { todoSwagger } from './todo.swagger';
 import { archiveSwagger } from './archive.swagger';
 import { dailyReviewSwagger } from './dailyReview.swagger';
-import { userSwagger } from './user.swagger';
+import { userStatsSwagger } from './userStats.swagger';
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -31,7 +31,7 @@ const swaggerDefinition = {
     ...todoSwagger,
     ...archiveSwagger,
     ...dailyReviewSwagger,
-    ...userSwagger,
+    ...userStatsSwagger,
   },
 };
 
