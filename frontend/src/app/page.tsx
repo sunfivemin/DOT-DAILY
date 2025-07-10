@@ -211,7 +211,7 @@ export default function MyDayPage() {
         <DateHeader />
       </div>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="px-4 py-6 space-y-8">
+        <div className="px-4 py-10 space-y-8">
           <TaskGroup
             priority="must"
             title="오늘 무조건"
