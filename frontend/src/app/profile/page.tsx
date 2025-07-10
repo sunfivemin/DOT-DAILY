@@ -75,11 +75,16 @@ export default function ProfilePage() {
       setUser(response.user);
       setUserStats(response.stickers);
 
-      const total = response.todos.pending + response.todos.success + response.todos.archive;
+      const pending = response.todos.pending || 0;
+      const success = response.todos.success || 0;
+      const archive = response.todos.archive || 0;
+
+      const total = pending + success + archive;
+
       setTotal(total);
-      setPending(response.todos.pending);
-      setSuccess(response.todos.success);
-      setArchive(response.todos.archive);
+      setPending(pending);
+      setSuccess(success);
+      setArchive(archive);
     };
     userProfile();
   }, []);
