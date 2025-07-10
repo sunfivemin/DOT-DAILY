@@ -1,10 +1,10 @@
 import { EMOTIONS } from '@/constants/emotion';
 import { useDateStore } from '@/store/useDateStore';
-import { formatDateToString, formatDisplayDate } from '../utils';
+import { formatDateToString, formatDisplayDate } from '../../../utils/retrospectUtils';
 import { useMemo } from 'react';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
 import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
-import { useRetrospectModal } from '../hooks/useRestrospectModal';
+import { useRetrospectModal } from '../../../hooks/useRestrospectModal';
 import Image from 'next/image';
 import { Pencil, Trash2 } from 'lucide-react';
 

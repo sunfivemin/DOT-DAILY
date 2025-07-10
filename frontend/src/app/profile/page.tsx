@@ -22,9 +22,9 @@ export default function ProfilePage() {
   const emotionStats: EmotionStat[] = [
     { icon: '/good-on.svg', label: '좋음', count: 5, color: 'text-green-500' },
     { icon: '/bad-on.svg', label: '나쁨', count: 2, color: 'text-red-500' },
-    { icon: '/soso-on.svg', label: '그냥그럼', count: 5, color: 'text-yellow-500' },
-    { icon: '/great-on.svg', label: '뿌듯함', count: 10, color: 'text-purple-500' },
-    { icon: '/appreciate-on.svg', label: '감사함', count: 2, color: 'text-pink-500' },
+    { icon: '/meh-on.svg', label: '그냥그럼', count: 5, color: 'text-yellow-500' },
+    { icon: '/proud-on.svg', label: '뿌듯함', count: 10, color: 'text-purple-500' },
+    { icon: '/grateful-on.svg', label: '감사함', count: 2, color: 'text-pink-500' },
   ];
 
   const handleLogout = async () => {

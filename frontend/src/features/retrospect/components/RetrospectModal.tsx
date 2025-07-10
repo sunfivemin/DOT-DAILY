@@ -5,7 +5,7 @@ import EmotionSelector from './EmotionSelector';
 import { motion } from 'framer-motion';
 import { useDateStore } from '@/store/useDateStore';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
-import { formatDateToString, formatDisplayDate } from '../utils';
+import { formatDateToString, formatDisplayDate } from '../../../utils/retrospectUtils';
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { Emotion } from '@/constants/emotion';

@@ -6,8 +6,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { DayCellContentArg } from '@fullcalendar/core';
 import './Calendar.css';
-import { getDailyEmotionMemos } from '../api';
-import { formatDateToString } from '../utils';
+import { getDailyEmotionMemos } from '../../../lib/api/retrospect';
+import { formatDateToString } from '../../../utils/retrospectUtils';
 import { useDateStore } from '@/store/useDateStore';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
 import Image from 'next/image';
@@ -56,14 +56,14 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
   };
 
   useEffect(() => {
+    const { year, month } = selectedYearMonth;
+
     const getEmotionMemos = async () => {
-      const data = await getDailyEmotionMemos();
+      const data = await getDailyEmotionMemos(year, month);
       setEmotionMemoList(data);
     };
     getEmotionMemos();
-  }, [setEmotionMemoList]);
 
-  useEffect(() => {
     if (calendarRef.current) {
       const targetDate = new Date(selectedYearMonth.year, selectedYearMonth.month - 1, 1);
       const calendarApi = calendarRef.current.getApi();

@@ -9,6 +9,7 @@ export interface DailyEmotionMemo {
   date: Date;
   emotion: Emotion['id'];
   memo: string;
+  compareNote?: string;
 }
 
 export interface TitleFormatDate {
