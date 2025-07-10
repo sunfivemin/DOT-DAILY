@@ -116,7 +116,7 @@ const TaskItem = React.memo(function TaskItem({
         setTimeout(() => setShowParticles(false), 1000);
         showToast("할 일을 완료했습니다! 🎉");
       } else {
-        showToast("할 일을 미완료로 변경했습니다 📝");
+        showToast("할 일 완료가 취소되었습니다.");
       }
     } catch (error) {
       console.error("상태 변경 실패:", error);
