@@ -86,6 +86,11 @@ export default function MyDayPage() {
     []
   );
 
+  const handleEdit = useCallback((task: Task) => {
+    setEditTask(task);
+    setOpen(true);
+  }, []);
+
   const handleDragEnd = async (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -206,7 +211,7 @@ export default function MyDayPage() {
         <DateHeader />
       </div>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="px-4 py-6 space-y-8">
+        <div className="px-4 py-10 space-y-8">
           <TaskGroup
             priority="must"
             title="오늘 무조건"
@@ -214,6 +219,7 @@ export default function MyDayPage() {
             droppableId="must"
             onEmptyClick={() => handleEmptyClick("must")}
             isLoading={isLoading}
+            onEdit={handleEdit}
           />
           <TaskGroup
             priority="should"
@@ -222,6 +228,7 @@ export default function MyDayPage() {
             droppableId="should"
             onEmptyClick={() => handleEmptyClick("should")}
             isLoading={isLoading}
+            onEdit={handleEdit}
           />
           <TaskGroup
             priority="remind"
@@ -230,6 +237,7 @@ export default function MyDayPage() {
             droppableId="remind"
             onEmptyClick={() => handleEmptyClick("remind")}
             isLoading={isLoading}
+            onEdit={handleEdit}
           />
         </div>
       </DragDropContext>

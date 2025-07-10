@@ -204,7 +204,7 @@ const TaskItem = React.memo(function TaskItem({
           <Menu.Button className="p-1 rounded-full hover:bg-gray-100 transition-colors">
             <MoreHorizontal className="w-5 h-5 text-gray-500" />
           </Menu.Button>
-          <Menu.Items className="absolute right-0 z-50 mt-2 min-w-[120px] w-32 max-w-[90vw] origin-top-right bg-surface-card rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="absolute right-0 z-[100] mt-2 min-w-[120px] w-32 max-w-[90vw] origin-top-right bg-surface-card rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-48 overflow-y-auto">
             <div className="py-1">
               <Menu.Item>
                 {({ active }) => (
