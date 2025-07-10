@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { useToast } from "@/components/ui/Toast/ToastProvider";
 
 interface FormErrors {
   email?: string;
@@ -21,73 +22,64 @@ function LoginPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { showToast } = useToast();
 
   const toggleShowPassword = () => {
-    setShowPassword(prev => !prev);
+    setShowPassword((prev) => !prev);
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-
     const emailError = validateEmail(email);
     if (emailError) newErrors.email = emailError;
-
     const passwordError = validatePassword(password);
     if (passwordError) newErrors.password = passwordError;
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const onLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     try {
       const response = await httpClient.post("/auth/login", {
         email,
         password,
       });
-
-      console.log("로그인 성공:", response.data);
-
-      // 백엔드 응답 구조에 따라 토큰 경로 확인
       const accessToken =
         response.data.data?.accessToken || response.data.accessToken;
       if (accessToken) {
-        // Bearer 접두사가 있는지 확인하고 순수 토큰만 저장
         const cleanToken = accessToken.startsWith("Bearer ")
           ? accessToken.substring(7)
           : accessToken;
         localStorage.setItem("accessToken", cleanToken);
         router.push("/");
       } else {
-        console.error("토큰을 찾을 수 없습니다:", response.data);
-        alert("로그인 처리 중 오류가 발생했습니다.");
+        showToast("로그인 처리 중 오류가 발생했습니다.");
       }
-    } catch (error) {
-      console.error("로그인 실패:", error);
-      alert("로그인 실패했습니다.");
+    } catch (error: any) {
+      // 서버에서 422 등으로 에러 응답 시
+      if (error?.response?.data?.errors?.email) {
+        showToast(error.response.data.errors.email);
+      } else {
+        showToast("로그인 실패했습니다.");
+      }
     }
   };
 
   return (
-    <main className="min-h-screen flex flex-col px-4 py-6">
-      <header className="flex items-center justify-center h-80">
-        <Image
-          src="/logo-vertical.svg"
-          alt="dot_daily logo"
-          width={60}
-          height={60}
-          priority
-          style={{ width: "60px", height: "60px" }}
-        />
-      </header>
-
-      <section>
+    <main className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-blue-50 to-white px-2">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl px-8 py-10 flex flex-col gap-8">
+        <div className="flex flex-col items-center gap-2">
+          <Image
+            src="/logo-vertical.svg"
+            alt="dot_daily logo"
+            width={60}
+            height={60}
+            priority
+          />
+          {/* <h1 className="text-2xl font-bold text-gray-900 tracking-tight">dot<span className="text-blue-400">.</span>daily</h1> */}
+        </div>
         <form onSubmit={onLogin} className="flex flex-col gap-6">
           <Input
             type="email"
@@ -98,6 +90,7 @@ function LoginPage() {
             error={errors.email}
             state={errors.email ? "error" : "default"}
             required
+            className="rounded-full shadow-sm"
           />
           <div className="relative">
             <Input
@@ -109,6 +102,7 @@ function LoginPage() {
               error={errors.password}
               state={errors.password ? "error" : "default"}
               required
+              className="rounded-full shadow-sm"
             />
             <button
               type="button"
@@ -123,42 +117,41 @@ function LoginPage() {
               )}
             </button>
           </div>
-          <Button label="로그인" className="mt-4" />
+          <Button
+            label="로그인"
+            className="mt-4 w-full rounded-full py-3 text-lg font-bold shadow-md bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 transition"
+          />
         </form>
-      </section>
-
-      <section
-        aria-label="소셜 로그인"
-        className="flex items-center justify-center gap-6 my-8"
-      >
-        <Image
-          src="/kakao.svg"
-          alt="kakao login"
-          width={48}
-          height={48}
-          className="cursor-pointer hover:scale-110 transition-transform"
-          style={{ width: "48px", height: "48px" }}
-        />
-        <Image
-          src="/google.svg"
-          alt="google login"
-          width={48}
-          height={48}
-          className="cursor-pointer hover:scale-110 transition-transform"
-          style={{ width: "48px", height: "48px" }}
-        />
-      </section>
-
-      <nav
-        className="flex justify-center gap-2 text-sm text-gray-600"
-        aria-label="로그인 관련 링크"
-      >
-        <Link href="/find-password">비밀번호 찾기</Link>
-        <span>|</span>
-        <Link href="/find-email">이메일 찾기</Link>
-        <span>|</span>
-        <Link href="/signup">회원가입</Link>
-      </nav>
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 bg-yellow-300 hover:bg-yellow-400 rounded-full py-3 font-bold text-gray-800 shadow transition"
+          >
+            <Image
+              src="/kakao.svg"
+              alt="카카오 로그인"
+              width={24}
+              height={24}
+            />
+            카카오로 로그인
+          </button>
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 bg-white border hover:bg-gray-100 rounded-full py-3 font-bold text-gray-700 shadow transition"
+          >
+            <Image src="/google.svg" alt="구글 로그인" width={24} height={24} />
+            구글로 로그인
+          </button>
+        </div>
+        <div className="flex justify-center pt-2">
+          <Link
+            href="/signup"
+            className="text-blue-500 font-semibold hover:underline"
+          >
+            회원가입
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }
