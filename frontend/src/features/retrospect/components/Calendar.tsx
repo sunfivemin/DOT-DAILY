@@ -79,7 +79,7 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.gotoDate(targetDate);
     }
-  }, [selectedYearMonth]);
+  }, [selectedYearMonth, setEmotionMemoList]);
 
   return (
     <section aria-label="회고 캘린더">
