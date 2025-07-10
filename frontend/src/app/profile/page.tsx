@@ -75,13 +75,13 @@ export default function ProfilePage() {
       setUserStats(response.stickers);
 
       const total =
-        response.todos.pending +
-        response.todos.success +
-        response.todos.archive;
+        Number(response.todos?.pending ?? 0) +
+        Number(response.todos?.success ?? 0) +
+        Number(response.todos?.archive ?? 0);
       setTotal(total);
-      setPending(response.todos.pending);
-      setSuccess(response.todos.success);
-      setArchive(response.todos.archive);
+      setPending(Number(response.todos?.pending ?? 0));
+      setSuccess(Number(response.todos?.success ?? 0));
+      setArchive(Number(response.todos?.archive ?? 0));
     };
     userProfile();
   }, []);
