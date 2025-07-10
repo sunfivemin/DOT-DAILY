@@ -229,21 +229,21 @@ export const toggleTaskStatus = async (
   currentStatus: TaskStatus
 ): Promise<Task> => {
   try {
-    // 현재 상태에 따라 토글: pending → success, success → pending
     const newStatus = currentStatus === "success" ? "pending" : "success";
-
-    console.log("🔄 상태 토글:", {
-      id,
-      currentStatus,
-      newStatus,
-    });
-
-    const response = await httpClient.put(`/todos/${id}`, {
+    await httpClient.put(`/todos/${id}`, {
       status: newStatus,
     });
 
-    console.log("✅ 상태 토글 성공:", response.data);
-    return response.data;
+    // 서버 응답에 status가 없으므로, 프론트에서 직접 newStatus를 반환
+    // 최소한의 Task 정보만 반환 (id, status)
+    return {
+      id,
+      title: "", // 필요하다면 handleToggleStatus에서 task.title을 넘겨서 채울 수 있음
+      priority: "must", // 기본값, 실제로는 사용하지 않음
+      date: "", // 필요하다면 넘겨서 채울 수 있음
+      status: newStatus,
+      createdAt: "",
+    } as Task;
   } catch (error) {
     console.error("할 일 상태 변경 실패:", error);
     throw new Error("할 일 상태 변경에 실패했습니다.");
