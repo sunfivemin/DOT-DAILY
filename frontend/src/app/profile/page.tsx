@@ -4,7 +4,7 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { StatCard } from '@/components/ui/StatCard';
 import { EmotionStatList, EmotionStat } from '@/components/ui/EmotionStatList';
 import { Button } from '@/components/ui/Button/Button';
-import { Settings, LogOut, User, Mail } from 'lucide-react';
+import { LogOut, User, Mail } from 'lucide-react';
 import { logout } from '@/lib/api/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
