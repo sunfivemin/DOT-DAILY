@@ -11,7 +11,7 @@ import React from "react";
 const DateHeader = React.memo(() => {
   const { selectedDate, setSelectedDate } = useDateStore();
 
-  const itemWidth = 80;
+  const itemWidth = 90;
   const gap = 50;
   const centerIndex = 3;
 
@@ -91,7 +91,7 @@ const DateHeader = React.memo(() => {
               <span className="mr-2 whitespace-nowrap">
                 {format(date, "M.d")}
               </span>
-              <span className={isCenter ? "whitespace-nowrap" : ""}>
+              <span className="whitespace-nowrap">
                 {isToday ? "오늘" : format(date, "E", { locale: ko })}
               </span>
             </div>
