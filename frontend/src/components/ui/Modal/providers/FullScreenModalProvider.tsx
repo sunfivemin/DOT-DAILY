@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { TaskFormModal } from '@/features/myday/components';
-import { useRetrospectModal } from '@/features/retrospect/hooks/useRestrospectModal';
+import { useRetrospectModal } from '@/hooks/useRestrospectModal';
 import RetrospectModal from '@/features/retrospect/components/RetrospectModal';
 import FullScreenModal from '@/components/ui/Modal/components/FullScreenModal';
 import BottomSheetModal from '@/components/ui/Modal/components/BottomSheetModal';
