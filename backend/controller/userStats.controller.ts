@@ -11,12 +11,12 @@ export const getUserStatsContoller = async (req: Request, res: Response) => {
       message: '유저 통계 조회 성공',
       data: stats,
     });
-
     return;
   } catch (err) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: '통계 조회 중 오류가 발생 했습니다.',
     });
+
     return;
   }
 };
