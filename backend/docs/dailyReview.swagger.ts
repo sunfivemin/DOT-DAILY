@@ -92,7 +92,7 @@ export const dailyReviewSwagger = {
       },
     },
   },
-  '/api/v1/reviews/month': {
+  '/api/v1/daily-reviews/month': {
     get: {
       summary: '한달치 회고 조회',
       tags: ['DailyReviews'],
