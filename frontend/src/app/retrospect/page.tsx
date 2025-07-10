@@ -8,11 +8,16 @@ import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenMo
 import { useRouter } from 'next/navigation';
 import { useRetrospectStore } from '@/store/useRestrospectStore';
 import { calculateConsecutiveDays } from '@/utils/retrospectUtils';
+import { useMemo } from 'react';
 
 export default function RetrospectPage() {
   const { emotionMemoList } = useRetrospectStore();
   const router = useRouter();
   const { openModal } = useFullScreenModal();
+
+  const consecutiveDays = useMemo(() => {
+    return calculateConsecutiveDays(emotionMemoList);
+  }, [emotionMemoList]);
 
   const onTodayRetrospect = () => {
     openModal('retrospectForm');
@@ -57,7 +62,7 @@ export default function RetrospectPage() {
               <div className="text-xs text-green-700 font-kkonghae">이번 달</div>
             </div>
             <div className="bg-purple-50 rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-purple-600 mb-1">{calculateConsecutiveDays(emotionMemoList)}</div>
+              <div className="text-xl font-bold text-purple-600 mb-1">{consecutiveDays}</div>
               <div className="text-xs text-purple-700 font-kkonghae">연속 기록</div>
             </div>
           </div>
