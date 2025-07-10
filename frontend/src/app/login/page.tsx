@@ -57,13 +57,24 @@ function LoginPage() {
       } else {
         showToast("로그인 처리 중 오류가 발생했습니다.");
       }
-    } catch (error: any) {
-      // 서버에서 422 등으로 에러 응답 시
-      if (error?.response?.data?.errors?.email) {
-        showToast(error.response.data.errors.email);
-      } else {
-        showToast("로그인 실패했습니다.");
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: unknown }).response === "object"
+      ) {
+        const err = error as {
+          response?: {
+            data?: { errors?: { email?: string } };
+          };
+        };
+        if (err.response?.data?.errors?.email) {
+          showToast(err.response.data.errors.email);
+          return;
+        }
       }
+      showToast("로그인 실패했습니다.");
     }
   };
 

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useEffect, useRef } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-import { DayCellContentArg } from '@fullcalendar/core';
-import './Calendar.css';
-import { getDailyEmotionMemos } from '../../../lib/api/retrospect';
-import { formatDateToString } from '../../../utils/retrospectUtils';
-import { useDateStore } from '@/store/useDateStore';
-import { useRetrospectStore } from '@/store/useRestrospectStore';
-import Image from 'next/image';
+import { useCallback, useMemo, useEffect, useRef } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
+import { DayCellContentArg } from "@fullcalendar/core";
+import "./Calendar.css";
+import { getDailyEmotionMemos } from "../../../lib/api/retrospect";
+import { formatDateToString } from "../../../utils/retrospectUtils";
+import { useDateStore } from "@/store/useDateStore";
+import { useRetrospectStore } from "@/store/useRestrospectStore";
+import Image from "next/image";
 
 interface CalendarProps {
   onDateModalOpen: () => void;
@@ -18,7 +18,8 @@ interface CalendarProps {
 
 const Calendar = ({ onDateModalOpen }: CalendarProps) => {
   const { selectedDate, setSelectedDate } = useDateStore();
-  const { emotionMemoList, setEmotionMemoList, selectedYearMonth } = useRetrospectStore();
+  const { emotionMemoList, setEmotionMemoList, selectedYearMonth } =
+    useRetrospectStore();
   const calendarRef = useRef<FullCalendar>(null);
 
   const onDateClick = (dateInfo: DateClickArg) => {
@@ -36,23 +37,28 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
     }, {} as Record<string, string>);
   }, [emotionMemoList]);
 
-  const onDayCellClassNames = useCallback((dayCell: DayCellContentArg) => {
-    const classes = [];
+  const onDayCellClassNames = useCallback(
+    (dayCell: DayCellContentArg) => {
+      const classes = [];
 
-    if (formatDateToString(dayCell.date) === formatDateToString(selectedDate)) {
-      classes.push('selected');
-    }
+      if (
+        formatDateToString(dayCell.date) === formatDateToString(selectedDate)
+      ) {
+        classes.push("selected");
+      }
 
-    const emotionType = emotionByDateMap[formatDateToString(dayCell.date)];
-    if (emotionType) {
-      classes.push(`emotion-${emotionType}`);
-    }
+      const emotionType = emotionByDateMap[formatDateToString(dayCell.date)];
+      if (emotionType) {
+        classes.push(`emotion-${emotionType}`);
+      }
 
-    return classes;
-  }, [selectedDate, emotionByDateMap]);
+      return classes;
+    },
+    [selectedDate, emotionByDateMap]
+  );
 
   const onDayCellContent = (e: DayCellContentArg) => {
-    return e.dayNumberText.replace('일', '');
+    return e.dayNumberText.replace("일", "");
   };
 
   useEffect(() => {
@@ -65,7 +71,11 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
     getEmotionMemos();
 
     if (calendarRef.current) {
-      const targetDate = new Date(selectedYearMonth.year, selectedYearMonth.month - 1, 1);
+      const targetDate = new Date(
+        selectedYearMonth.year,
+        selectedYearMonth.month - 1,
+        1
+      );
       const calendarApi = calendarRef.current.getApi();
       calendarApi.gotoDate(targetDate);
     }
@@ -75,10 +85,16 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
     <section aria-label="회고 캘린더">
       <button
         onClick={onDateNavigation}
-        className='flex gap-2 items-center text-xl font-bold mb-8'
+        className="flex gap-2 items-center text-xl font-bold mb-8"
       >
         {selectedYearMonth.year}. {selectedYearMonth.month}
-        <Image src="/dropdown.svg" alt="달력 선택" width={20} height={20} style={{ width: 20, height: 20 }} />
+        <Image
+          src="/dropdown.svg"
+          alt="달력 선택"
+          width={20}
+          height={20}
+          style={{ width: 20, height: 20 }}
+        />
       </button>
       <div className="calendar-container">
         <FullCalendar
