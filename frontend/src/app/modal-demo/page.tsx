@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenModalProvider';
-import { useModal } from '@/components/ui/Modal/providers/ModalProvider';
-import BottomSheetModal from '@/components/ui/Modal/components/BottomSheetModal';
-import { Button } from '@/components/ui/Button/Button';
-import MobileLayout from '@/components/layout/MobileLayout';
-import { FullScreenModalProvider } from '@/components/ui/Modal/providers/FullScreenModalProvider';
+import { useState } from "react";
+import { useFullScreenModal } from "@/components/ui/Modal/providers/FullScreenModalProvider";
+import { useModal } from "@/components/ui/Modal/providers/ModalProvider";
+import BottomSheetModal from "@/components/ui/Modal/components/BottomSheetModal";
+import { Button } from "@/components/ui/Button/Button";
+import MobileLayout from "@/components/layout/MobileLayout";
+import { FullScreenModalProvider } from "@/components/ui/Modal/providers/Provider";
 
 export default function ModalDemoPage() {
   // FullScreenModalProvider 기반
@@ -25,19 +25,21 @@ export default function ModalDemoPage() {
             <div className="space-y-3">
               <Button
                 variant="primary"
-                onClick={() => openModal('taskForm', { defaultDate: '2025-06-20' })}
+                onClick={() =>
+                  openModal("taskForm", { defaultDate: "2025-06-20" })
+                }
               >
                 FullScreenModal (할 일 추가) 열기
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => openModal('retrospectForm')}
+                onClick={() => openModal("retrospectForm")}
               >
                 FullScreenModal (회고 작성) 열기
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => openModal('dateNavigationForm')}
+                onClick={() => openModal("dateNavigationForm")}
               >
                 FullScreenModal (날짜 네비게이션) 열기
               </Button>
@@ -47,7 +49,9 @@ export default function ModalDemoPage() {
                   showModal(
                     <div className="p-6 text-center">
                       <h2 className="text-lg font-bold mb-2">일반 팝업 모달</h2>
-                      <p className="mb-4">이것은 ModalProvider로 띄운 팝업입니다.</p>
+                      <p className="mb-4">
+                        이것은 ModalProvider로 띄운 팝업입니다.
+                      </p>
                       <Button variant="primary" onClick={closeModal}>
                         닫기
                       </Button>
@@ -63,23 +67,27 @@ export default function ModalDemoPage() {
               >
                 BottomSheetModal (바텀시트) 열기
               </Button>
-              
             </div>
 
             {/* 바텀시트 */}
-            <BottomSheetModal open={bottomSheetOpen} onClose={() => setBottomSheetOpen(false)}>
+            <BottomSheetModal
+              open={bottomSheetOpen}
+              onClose={() => setBottomSheetOpen(false)}
+            >
               <div className="p-6 text-center">
                 <h2 className="text-lg font-bold mb-2">바텀시트 모달</h2>
                 <p className="mb-4">이것은 BottomSheetModal입니다.</p>
-                <Button variant="primary" onClick={() => setBottomSheetOpen(false)}>
+                <Button
+                  variant="primary"
+                  onClick={() => setBottomSheetOpen(false)}
+                >
                   닫기
                 </Button>
               </div>
             </BottomSheetModal>
-
           </div>
         </FullScreenModalProvider>
       </MobileLayout>
     </div>
   );
-} 
+}

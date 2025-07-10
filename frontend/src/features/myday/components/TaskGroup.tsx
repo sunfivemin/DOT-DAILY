@@ -21,6 +21,7 @@ interface TaskGroupProps {
   droppableId: string;
   onEmptyClick?: () => void;
   isLoading?: boolean;
+  onEdit?: (task: Task) => void;
 }
 
 const priorityMap: Record<
@@ -51,6 +52,7 @@ const TaskGroup = ({
   droppableId,
   onEmptyClick,
   isLoading,
+  onEdit,
 }: TaskGroupProps) => {
   const { color, number, emptyMessage } = priorityMap[priority];
 
@@ -97,7 +99,7 @@ const TaskGroup = ({
                           opacity: snapshot.isDragging ? 0.7 : 1,
                         }}
                       >
-                        <TaskItem task={task} />
+                        <TaskItem task={task} onEdit={onEdit} />
                       </div>
                     )}
                   </Draggable>
