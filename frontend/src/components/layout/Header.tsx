@@ -1,8 +1,8 @@
 // src/components/layout/Header.tsx
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 export interface HeaderProps {
   title: string;
@@ -15,11 +15,11 @@ export default function Header({ title }: HeaderProps) {
         <Link href="/">
           <Image
             src="/logo.svg"
-            alt="dot_daily logo"
+            alt="dot_daily 로고"
             width={100}
             height={24}
             priority
-            style={{ width: 'auto', height: 'auto' }}
+            style={{ width: "auto", height: "auto" }}
           />
         </Link>
         <h1 className="text-lg font-bold text-text-strong">{title}</h1>

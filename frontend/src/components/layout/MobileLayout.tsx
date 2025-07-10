@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react';
-import Header from './Header';
-import { Footer } from './Footer';
-import Fab from '../ui/Fab/Fab';
-import { Plus } from 'lucide-react';
+import type { ReactNode } from "react";
+import Header from "./Header";
+import { Footer } from "./Footer";
+import Fab from "../ui/Fab/Fab";
+import { Plus } from "lucide-react";
 
 interface MobileLayoutProps {
   children: ReactNode;
@@ -16,19 +16,17 @@ export default function MobileLayout({
   showFab = false,
 }: MobileLayoutProps) {
   return (
-    <div className="w-full max-w-md mx-auto min-h-screen bg-surface-base shadow-lg">
-      <div className="h-screen flex flex-col relative">
-        <Header title={headerTitle} />
-        <main className="flex-1 overflow-y-auto">{children}</main>
-        <Footer />
-        {showFab && (
-          <div className="absolute bottom-[5.5rem] right-4 z-20">
-            <Fab aria-label="새로운 할 일 추가">
-              <Plus className="w-6 h-6" />
-            </Fab>
-          </div>
-        )}
-      </div>
+    <div className="w-full max-w-md mx-auto min-h-screen bg-surface-base shadow-lg relative">
+      <Header title={headerTitle} />
+      <main className="pb-20">{children}</main>
+      <Footer />
+      {showFab && (
+        <div className="fixed bottom-24 right-4 z-50 max-w-md w-full mx-auto">
+          <Fab aria-label="새로운 할 일 추가">
+            <Plus className="w-6 h-6" />
+          </Fab>
+        </div>
+      )}
     </div>
   );
-} 
+}

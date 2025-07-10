@@ -1,7 +1,7 @@
 import React from "react";
 
 const TaskItemSkeleton = React.memo(() => (
-  <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+  <div className="flex mt-10 items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
     {/* 체크박스 스켈레톤 - 고정 사이즈 */}
     <div className="w-6 h-6 flex-shrink-0 bg-gray-200 rounded-full animate-pulse" />
 

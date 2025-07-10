@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import MobileLayout from "@/components/layout/MobileLayout";
 import {
-  TaskItem,
   TaskGroup,
   DateHeader,
   TaskListSkeleton,
@@ -12,11 +11,12 @@ import {
 import { Plus } from "lucide-react";
 import Fab from "@/components/ui/Fab/Fab";
 import { useDateStore } from "@/store/useDateStore";
-import { getTasksByDate, Task } from "@/lib/api/tasks";
+import { getTasksByDate, Task, updateTask } from "@/lib/api/tasks";
 import FullScreenModal from "@/components/ui/Modal/components/FullScreenModal";
 import { useTaskCompletion } from "@/hooks/useTaskCompletion";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 
 // 클라이언트 사이드에서만 로드
 const CelebrationEffect = dynamic(
@@ -51,36 +51,24 @@ export default function MyDayPage() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
+  // DnD를 위한 그룹별 상태 관리
+  const [mustTasks, setMustTasks] = useState<Task[]>([]);
+  const [shouldTasks, setShouldTasks] = useState<Task[]>([]);
+  const [remindTasks, setRemindTasks] = useState<Task[]>([]);
+
+  // tasks가 변경될 때마다 그룹별 상태 동기화
+  useEffect(() => {
+    if (Array.isArray(tasks)) {
+      setMustTasks(tasks.filter((t) => t.priority === "must"));
+      setShouldTasks(tasks.filter((t) => t.priority === "should"));
+      setRemindTasks(tasks.filter((t) => t.priority === "remind"));
+    }
+  }, [tasks]);
+
   // 완료 축하 효과 훅
   const { showCelebration, hideCelebration } = useTaskCompletion({
     tasks: tasks || [],
   });
-
-  // 우선순위별로 할 일 그룹화 (메모이제이션 적용)
-  const groupedTasks = useMemo(() => {
-    const result: Record<"must" | "should" | "remind", Task[]> = {
-      must: [],
-      should: [],
-      remind: [],
-    };
-
-    // tasks가 배열인지 확인하고 그룹화
-    if (Array.isArray(tasks)) {
-      tasks.forEach((task) => {
-        if (task.priority && result[task.priority]) {
-          result[task.priority].push(task);
-        }
-      });
-    }
-
-    return result;
-  }, [tasks]);
-
-  const handleEdit = useCallback((task: Task) => {
-    setEditTask(task);
-    setOpen(true);
-    setDefaultPriority(task.priority);
-  }, []);
 
   const handleClose = useCallback(() => {
     setOpen(false);
@@ -97,6 +85,67 @@ export default function MyDayPage() {
     },
     []
   );
+
+  const handleDragEnd = async (result: DropResult) => {
+    const { source, destination } = result;
+    if (!destination) return;
+
+    // 같은 그룹 내 이동
+    if (source.droppableId === destination.droppableId) {
+      if (source.droppableId === "must") {
+        const reordered = Array.from(mustTasks);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        setMustTasks(reordered);
+      } else if (source.droppableId === "should") {
+        const reordered = Array.from(shouldTasks);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        setShouldTasks(reordered);
+      } else if (source.droppableId === "remind") {
+        const reordered = Array.from(remindTasks);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        setRemindTasks(reordered);
+      }
+    } else {
+      // 그룹 간 이동
+      let sourceTasks, setSourceTasks, destTasks, setDestTasks, newPriority;
+      if (source.droppableId === "must") {
+        sourceTasks = mustTasks;
+        setSourceTasks = setMustTasks;
+      } else if (source.droppableId === "should") {
+        sourceTasks = shouldTasks;
+        setSourceTasks = setShouldTasks;
+      } else {
+        sourceTasks = remindTasks;
+        setSourceTasks = setRemindTasks;
+      }
+      if (destination.droppableId === "must") {
+        destTasks = mustTasks;
+        setDestTasks = setMustTasks;
+        newPriority = "must" as import("@/lib/api/tasks").TaskPriority;
+      } else if (destination.droppableId === "should") {
+        destTasks = shouldTasks;
+        setDestTasks = setShouldTasks;
+        newPriority = "should" as import("@/lib/api/tasks").TaskPriority;
+      } else {
+        destTasks = remindTasks;
+        setDestTasks = setRemindTasks;
+        newPriority = "remind" as import("@/lib/api/tasks").TaskPriority;
+      }
+      const sourceArr = Array.from(sourceTasks);
+      const destArr = Array.from(destTasks);
+      const [removed] = sourceArr.splice(source.index, 1);
+      // priority 필드도 변경
+      const updated = { ...removed, priority: newPriority };
+      destArr.splice(destination.index, 0, updated);
+      setSourceTasks(sourceArr);
+      setDestTasks(destArr);
+      // 서버에 priority 변경 동기화
+      await updateTask(updated.id, { priority: newPriority });
+    }
+  };
 
   // 에러 메시지 메모이제이션
   const errorMessage = useMemo(() => {
@@ -156,44 +205,34 @@ export default function MyDayPage() {
       <div className="sticky top-0 z-10 bg-surface-base">
         <DateHeader />
       </div>
-
-      <div className="px-4 py-6 space-y-8">
-        <TaskGroup
-          priority="must"
-          title="오늘 무조건"
-          onEmptyClick={() => handleEmptyClick("must")}
-        >
-          {groupedTasks.must.length > 0
-            ? groupedTasks.must.map((task) => (
-                <TaskItem key={task.id} task={task} onEdit={handleEdit} />
-              ))
-            : null}
-        </TaskGroup>
-
-        <TaskGroup
-          priority="should"
-          title="오늘이면 굿"
-          onEmptyClick={() => handleEmptyClick("should")}
-        >
-          {groupedTasks.should.length > 0
-            ? groupedTasks.should.map((task) => (
-                <TaskItem key={task.id} task={task} onEdit={handleEdit} />
-              ))
-            : null}
-        </TaskGroup>
-
-        <TaskGroup
-          priority="remind"
-          title="잊지말자"
-          onEmptyClick={() => handleEmptyClick("remind")}
-        >
-          {groupedTasks.remind.length > 0
-            ? groupedTasks.remind.map((task) => (
-                <TaskItem key={task.id} task={task} onEdit={handleEdit} />
-              ))
-            : null}
-        </TaskGroup>
-      </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="px-4 py-6 space-y-8">
+          <TaskGroup
+            priority="must"
+            title="오늘 무조건"
+            tasks={mustTasks}
+            droppableId="must"
+            onEmptyClick={() => handleEmptyClick("must")}
+            isLoading={isLoading}
+          />
+          <TaskGroup
+            priority="should"
+            title="오늘이면 굿"
+            tasks={shouldTasks}
+            droppableId="should"
+            onEmptyClick={() => handleEmptyClick("should")}
+            isLoading={isLoading}
+          />
+          <TaskGroup
+            priority="remind"
+            title="잊지말자"
+            tasks={remindTasks}
+            droppableId="remind"
+            onEmptyClick={() => handleEmptyClick("remind")}
+            isLoading={isLoading}
+          />
+        </div>
+      </DragDropContext>
 
       <div className="fixed bottom-[5.5rem] z-20 w-full max-w-md left-1/2 -translate-x-1/2 flex justify-end pr-4 pointer-events-none">
         <Fab
