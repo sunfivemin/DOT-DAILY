@@ -2,7 +2,7 @@ import { useFullScreenModal } from '@/components/ui/Modal/providers/FullScreenMo
 import { useRetrospectStore } from '@/store/useRestrospectStore';
 import { useDateStore } from '@/store/useDateStore';
 import { Emotion } from '@/constants/emotion';
-import { addDailyEmotionMemo, updateDailyEmotionMemo, deleteDailyEmotionMemo } from '../api';
+import { addDailyEmotionMemo, updateDailyEmotionMemo, deleteDailyEmotionMemo } from '../lib/api/retrospect';
 import { useToast } from '@/components/ui/Toast/ToastProvider';
 
 export const useRetrospectModal = () => {

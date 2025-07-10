@@ -1,14 +1,14 @@
 // src/components/ui/Input/Input.tsx
-'use client';
+"use client";
 
-import { clsx } from 'clsx';
-import { inputVariants } from '@/lib/styles/inputVariants';
-import { forwardRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { clsx } from "clsx";
+import { inputVariants } from "@/lib/styles/inputVariants";
+import { forwardRef, useState } from "react";
+import { motion } from "framer-motion";
 
-export type Variant = 'text' | 'textarea';
-export type Size = 'sm' | 'md' | 'lg';
-export type State = 'default' | 'error' | 'success';
+export type Variant = "text" | "textarea";
+export type Size = "sm" | "md" | "lg";
+export type State = "default" | "error" | "success";
 
 interface BaseProps {
   id?: string;
@@ -28,17 +28,17 @@ interface BaseProps {
 // 👇 HTML 기본 size 속성과 충돌 방지용 Omit
 type InputPropsText = Omit<
   BaseProps & React.InputHTMLAttributes<HTMLInputElement>,
-  'size'
+  "size"
 > & {
-  variant?: 'text';
+  variant?: "text";
   size?: Size;
 };
 
 type InputPropsTextarea = Omit<
   BaseProps & React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-  'size'
+  "size"
 > & {
-  variant: 'textarea';
+  variant: "textarea";
   size?: Size;
   rows?: number;
 };
@@ -53,22 +53,22 @@ export const Input = forwardRef<
     id,
     label,
     error,
-    variant = 'text',
-    size = 'md',
-    state = 'default',
+    variant = "text",
+    size = "md",
+    state = "default",
     className,
     disabled = false,
     readOnly = false,
     loading = false,
-    placeholder = ' ',
-    type = 'text'
+    placeholder = " ",
+    type = "text",
   } = props;
 
-  const isTextarea = variant === 'textarea';
+  const isTextarea = variant === "textarea";
 
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState(
-    typeof props.value === 'string' ? props.value : ''
+    typeof props.value === "string" ? props.value : ""
   );
 
   const handleFocus = () => setIsFocused(true);
@@ -81,10 +81,10 @@ export const Input = forwardRef<
   ) => {
     setValue(e.target.value);
 
-    if (isTextarea && 'onChange' in props) {
+    if (isTextarea && "onChange" in props) {
       const textareaProps = props as InputPropsTextarea;
       textareaProps.onChange?.(e as React.ChangeEvent<HTMLTextAreaElement>);
-    } else if (!isTextarea && 'onChange' in props) {
+    } else if (!isTextarea && "onChange" in props) {
       const inputProps = props as InputPropsText;
       inputProps.onChange?.(e as React.ChangeEvent<HTMLInputElement>);
     }
@@ -94,13 +94,13 @@ export const Input = forwardRef<
 
   const baseClass = clsx(
     inputVariants({ size, state }),
-    'peer w-full placeholder-transparent transition rounded-md border px-3 text-base',
+    "peer w-full placeholder-transparent transition rounded-md border px-3 text-base",
     isTextarea
-      ? 'pt-4 pb-2 leading-[1.4] min-h-[120px]'
-      : 'pt-[10px] pb-[9px] leading-[1.25]',
-    disabled && 'opacity-50 cursor-not-allowed bg-gray-100',
-    readOnly && 'bg-gray-50',
-    loading && 'animate-pulse',
+      ? "pt-4 pb-2 leading-[1.4] min-h-[120px]"
+      : "pt-[10px] pb-[9px] leading-[1.25]",
+    disabled && "opacity-50 cursor-not-allowed bg-gray-100",
+    readOnly && "bg-gray-50",
+    loading && "animate-pulse",
     className
   );
 
@@ -109,10 +109,10 @@ export const Input = forwardRef<
       <motion.label
         htmlFor={id}
         className={clsx(
-          'absolute left-3 text-gray-400 pointer-events-none transition-all text-sm',
-          isTextarea ? 'top-2' : 'top-[12px]',
+          "absolute left-3 text-gray-400 pointer-events-none transition-all text-sm",
+          isTextarea ? "top-1" : "top-[12px]",
           (hasValue || isFocused) &&
-            '!top-0 !translate-y-[-1.2rem] !text-sm !text-blue-500'
+            "!-top-1 !translate-y-[-1.2rem] !text-sm !text-blue-500"
         )}
         initial={false}
         animate={{ opacity: 1 }}
@@ -164,4 +164,4 @@ export const Input = forwardRef<
   );
 });
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
