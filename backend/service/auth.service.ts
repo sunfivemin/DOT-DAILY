@@ -43,22 +43,32 @@ export const loginService = async (payload: LoginPayload) => {
     expiresIn: '30d',
   });
 
-  await prisma.account.upsert({
-    where: { userId: user.id },
-    update: {
-      type: 'credentials',
-      provider: 'local',
-      providerAccountId: user.email ?? '',
-      refresh_token: refreshToken,
-    },
-    create: {
+  const existingAccount = await prisma.account.findFirst({
+    where: {
       userId: user.id,
-      type: 'credentials',
       provider: 'local',
-      providerAccountId: user.email ?? '',
-      refresh_token: refreshToken,
     },
   });
+
+  if (existingAccount) {
+    await prisma.account.update({
+      where: { id: existingAccount.id }, // 반드시 id로!
+      data: {
+        provider: 'local',
+        providerAccountId: user.email ?? '',
+        refresh_token: refreshToken,
+      },
+    });
+  } else {
+    await prisma.account.create({
+      data: {
+        userId: user.id,
+        provider: 'local',
+        providerAccountId: user.email ?? '',
+        refresh_token: refreshToken,
+      },
+    });
+  }
 
   return {
     id: user.id,
