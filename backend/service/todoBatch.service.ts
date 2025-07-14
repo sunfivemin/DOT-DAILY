@@ -28,7 +28,7 @@ export const processExpiredTodos = async () => {
         where: { id: todo.id },
         data: {
           status: 'retry',
-          // retryCount: { increment: 1 },
+          retryCount: { increment: 1 },
           date: getKSTDateString(addDays(now, 1)), // KST 기준으로 다음날
         },
       })
