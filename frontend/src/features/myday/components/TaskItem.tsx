@@ -106,17 +106,30 @@ const TaskItem = React.memo(function TaskItem({
         id: updatedTask.id,
         title: updatedTask.title,
         newStatus: updatedTask.status,
+        type: typeof updatedTask.status,
+        eqSuccess: updatedTask.status === "success",
       });
 
       const dateKey = selectedDate.toISOString().split("T")[0];
       queryClient.invalidateQueries({ queryKey: ["tasks", dateKey] });
 
-      if (updatedTask.status === "success") {
-        setShowParticles(true);
-        setTimeout(() => setShowParticles(false), 1000);
-        showToast("할 일을 완료했습니다! 🎉");
-      } else {
-        showToast("할 일 완료가 취소되었습니다.");
+      if (originalStatus !== updatedTask.status) {
+        console.log("토스트 분기 체크:", {
+          originalStatus,
+          updatedStatus: updatedTask.status,
+          eq: updatedTask.status === "success",
+          trimmed: updatedTask.status && updatedTask.status.trim(),
+        });
+        if (
+          typeof updatedTask.status === "string" &&
+          updatedTask.status.trim().toLowerCase() === "success"
+        ) {
+          setShowParticles(true);
+          setTimeout(() => setShowParticles(false), 1000);
+          showToast("할 일을 완료했습니다! 🎉");
+        } else {
+          showToast("할 일 완료가 취소되었습니다.");
+        }
       }
     } catch (error) {
       console.error("상태 변경 실패:", error);
