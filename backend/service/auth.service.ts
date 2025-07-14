@@ -52,8 +52,9 @@ export const loginService = async (payload: LoginPayload) => {
 
   if (existingAccount) {
     await prisma.account.update({
-      where: { id: existingAccount.id }, // 반드시 id로!
+      where: { id: existingAccount.id },
       data: {
+        type: 'credentials',
         provider: 'local',
         providerAccountId: user.email ?? '',
         refresh_token: refreshToken,
@@ -63,13 +64,13 @@ export const loginService = async (payload: LoginPayload) => {
     await prisma.account.create({
       data: {
         userId: user.id,
+        type: 'credentials',
         provider: 'local',
         providerAccountId: user.email ?? '',
         refresh_token: refreshToken,
       },
     });
   }
-
   return {
     id: user.id,
     username: user.username,
