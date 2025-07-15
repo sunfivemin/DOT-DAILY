@@ -42,6 +42,6 @@ export const processExpiredTodos = async () => {
     )
   );
 
-  console.log('[배치] 완료!');
+  console.log('[배치] 완료!!!!!');
   return { updatedCount: expiredTodos.length };
 };
