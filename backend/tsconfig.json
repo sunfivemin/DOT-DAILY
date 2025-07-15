@@ -6,12 +6,13 @@
     "noImplicitAny": true,
     "moduleResolution": "NodeNext",
     "sourceMap": true,
-    "outDir": "dist",
+    "rootDir": "./",             
+    "outDir": "./dist",
     "baseUrl": ".",
     "skipLibCheck": true,
     "strict": true,
-  "typeRoots": ["./types", "./node_modules/@types"]
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
- "include": ["**/*.ts", "types"],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts", "dist/batch/startBatchJobs.js"],         
+  "exclude": ["node_modules", "dist"],
 }
