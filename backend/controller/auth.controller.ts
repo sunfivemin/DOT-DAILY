@@ -4,6 +4,10 @@ import { loginSchema } from '../validations/authValidation';
 import { ZodError } from 'zod';
 import { StatusCodes } from 'http-status-codes';
 import { formatError } from '../utils/zodErrorFormatter';
+import {
+  googleTokenService,
+  googleCallbackService,
+} from '../service/googleAuth.service';
 
 export const loginController = async (req: Request, res: Response) => {
   try {
@@ -62,6 +66,55 @@ export const logoutController = async (req: Request, res: Response) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: '서버 오류가 발생했습니다.',
     });
+    return;
+  }
+};
+
+//  Google 로그인 (idToken 받아서 처리)
+export const googleLoginController = async (req: Request, res: Response) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      res.status(400).json({ message: 'idToken이 필요합니다.' });
+      return;
+    }
+
+    const { user, token } = await googleTokenService(idToken);
+
+    res.status(200).json({
+      message: 'Google 로그인 성공',
+      user,
+      accessToken: `Bearer ${token}`,
+    });
+    return;
+  } catch (error) {
+    console.error('[Google Login Error]', error);
+    res.status(401).json({ message: 'Google 로그인 실패' });
+    return;
+  }
+};
+
+//  Google Callback (로그인 후 콜백 처리)
+export const googleCallbackController = async (req: Request, res: Response) => {
+  try {
+    const { user } = req.body; // 콜백 시 전달받은 user 정보
+
+    if (!user) {
+      res.status(400).json({ message: '사용자 정보가 필요합니다.' });
+      return;
+    }
+
+    const token = await googleCallbackService(user);
+
+    res.status(200).json({
+      message: 'Google 콜백 처리 완료',
+      accessToken: `Bearer ${token}`,
+    });
+    return;
+  } catch (error) {
+    console.error('[Google Callback Error]', error);
+    res.status(500).json({ message: 'Google 콜백 처리 실패' });
     return;
   }
 };
