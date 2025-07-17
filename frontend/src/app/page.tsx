@@ -2,13 +2,11 @@
 
 import { useAuthStore } from "../store/useAuthStore";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import GuestModePage from "../components/auth/GuestModePage";
 import MyDayPage from "../components/pages/MyDayPage";
 
 export default function HomePage() {
   const { isAuthenticated, isGuest } = useAuthStore();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   // 로컬 스토리지와 Zustand 상태를 모두 확인
@@ -47,7 +45,7 @@ export default function HomePage() {
           }
           
           console.log("🚫 인증되지 않은 상태 - 게스트 모드 선택 페이지로");
-        } catch (e) {
+        } catch {
           console.log("🚫 auth-storage 파싱 실패 - 게스트 모드 선택 페이지로");
         }
       }
@@ -90,7 +88,7 @@ export default function HomePage() {
   try {
     authData = JSON.parse(authStorage);
     console.log("📊 렌더링 시 auth-storage 데이터:", authData.state);
-  } catch (e) {
+  } catch {
     console.log("🚫 auth-storage 파싱 실패 - 게스트 모드 선택 페이지");
     return <GuestModePage />;
   }
