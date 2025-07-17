@@ -51,7 +51,6 @@ export default function HomePage() {
           console.log("🚫 auth-storage 파싱 실패 - 게스트 모드 선택 페이지로");
         }
       }
-
       console.log("✅ 인증 상태 정상");
     };
 
