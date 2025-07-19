@@ -132,6 +132,7 @@ function LoginPageContent() {
             height={60}
             priority
           />
+          {/* <h1 className="text-2xl font-bold text-gray-900 tracking-tight">dot<span className="text-blue-400">.</span>daily</h1> */}
         </div>
         <form onSubmit={onLogin} className="flex flex-col gap-6">
           <Input
@@ -177,6 +178,18 @@ function LoginPageContent() {
           />
         </form>
         <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 bg-yellow-300 hover:bg-yellow-400 rounded-full py-3 font-bold text-gray-800 shadow transition"
+          >
+            <Image
+              src="/kakao.svg"
+              alt="카카오 로그인"
+              width={24}
+              height={24}
+            />
+            카카오로 로그인
+          </button>
           <button
             type="button"
             onClick={() => googleLogin()}
