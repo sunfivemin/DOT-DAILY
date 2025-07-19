@@ -50,41 +50,37 @@ function LoginPageContent() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const onLogin = async (e: FormEvent<HTMLFormElement>) => {
+const onLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validateForm()) return;
 
-    setIsLoading(true);
-    console.log("🔐 로그인 시도:", { email });
+    if (!validateForm()) {
+      return;
+    }
 
     try {
-      showToast("서버에 연결 중입니다... 잠시만 기다려주세요.");
       const response = await httpClient.post("/auth/login", {
         email,
         password,
       });
 
+      console.log("로그인 성공:", response.data);
+
+      // 백엔드 응답 구조에 따라 토큰 경로 확인
       const accessToken =
-        response.data.accessToken || response.data.data?.accessToken;
-      const userData = response.data.user || response.data.data?.user;
-
-      if (accessToken && userData) {
+        response.data.data?.accessToken || response.data.accessToken;
+      if (accessToken) {
         localStorage.setItem("accessToken", accessToken);
-        login(userData, accessToken);
-
-        console.log("✅ 로그인 성공, 홈으로 이동");
-        showToast("로그인되었습니다! 🎉");
         router.push("/");
       } else {
-        showToast("로그인 처리 중 오류가 발생했습니다.");
+        console.error("토큰을 찾을 수 없습니다:", response.data);
+        alert("로그인 처리 중 오류가 발생했습니다.");
       }
     } catch (error) {
-      console.error("❌ 로그인 실패:", error);
-      showToast("로그인 실패. 이메일과 비밀번호를 확인하세요.");
-    } finally {
-      setIsLoading(false);
+      console.error("로그인 실패:", error);
+      alert("로그인 실패했습니다.");
     }
   };
+
 
   // 구글 로그인 로직
   const googleLogin = useGoogleLogin({
