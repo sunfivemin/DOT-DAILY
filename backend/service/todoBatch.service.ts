@@ -21,7 +21,7 @@ export const processExpiredTodos = async () => {
       // date: { lte: todayKST }, // 오늘까지 포함
     },
   });
-  
+
   // 1. 문자열 끼리 비교해서 어떤게 우선순위인지 모름
   //  내일부터 다시 짜봐야할 코드
   const todoExpired = expiredTodos.filter(data => {
