@@ -7,6 +7,7 @@ interface ITodo {
   status: 'pending' | 'success' | 'retry' | 'archive';
   priority: 'must' | 'should' | 'remind';
 }
+
 // 투두 저장
 export const createTodoService = async (input: ITodo) => {
   return await prisma.todos.create({
@@ -60,5 +61,57 @@ export const updateTodoService = async (
 export const deleteTodoService = async (todoId: number, userId: number) => {
   return await prisma.todos.deleteMany({
     where: { id: todoId, userId },
+  });
+};
+
+// 투두 상태 변경
+export const updateTodoStatusService = async (
+  todoId: number,
+  userId: number,
+  status: 'pending' | 'success' | 'retry' | 'archive'
+) => {
+  return await prisma.todos.updateMany({
+    where: { id: todoId, userId },
+    data: { status },
+  });
+};
+
+// 보관함으로 이동
+export const moveToArchiveService = async (todoId: number, userId: number) => {
+  return await prisma.todos.updateMany({
+    where: { id: todoId, userId },
+    data: { status: 'archive' },
+  });
+};
+
+// 재시도로 이동 (retryCount 증가, 상태를 retry로 변경)
+export const moveToRetryService = async (todoId: number, userId: number) => {
+  const todo = await prisma.todos.findFirst({
+    where: { id: todoId, userId },
+  });
+
+  if (!todo) {
+    return { count: 0 };
+  }
+
+  return await prisma.todos.updateMany({
+    where: { id: todoId, userId },
+    data: {
+      status: 'retry',
+      retryCount: todo.retryCount + 1,
+    },
+  });
+};
+
+// 오늘로 이동 (날짜를 오늘로 변경, 상태를 pending으로 변경)
+export const moveToTodayService = async (todoId: number, userId: number) => {
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
+
+  return await prisma.todos.updateMany({
+    where: { id: todoId, userId },
+    data: {
+      status: 'pending',
+      date: today,
+    },
   });
 };
