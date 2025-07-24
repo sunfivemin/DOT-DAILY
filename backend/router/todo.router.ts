@@ -5,6 +5,7 @@ import {
   deleteTodoController,
   getAllTodosController,
   getTodosByDateController,
+  getTodosController,
   upDateTodoController,
   updateTodoStatusController,
   moveToArchiveController,
@@ -20,17 +21,8 @@ const router = express.Router();
 
 // 투두 등록
 router.post('/', authenticate, createTodoController);
-// 투두 전체 조회 (date 쿼리 파라미터가 없을 때)
-router.get('/', authenticate, (req: Request, res: Response) => {
-  const { date } = req.query;
-  if (date) {
-    // date 쿼리 파라미터가 있으면 날짜별 조회
-    return getTodosByDateController(req, res);
-  } else {
-    // date 쿼리 파라미터가 없으면 전체 조회
-    return getAllTodosController(req, res);
-  }
-});
+// 투두 조회 (date 쿼리 파라미터에 따라 분기)
+router.get('/', authenticate, getTodosController);
 // 투두 날짜별 조회 (기존 호환성을 위해 유지)
 router.get('/by-date', authenticate, getTodosByDateController);
 

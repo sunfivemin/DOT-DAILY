@@ -34,6 +34,7 @@ interface TaskFormModalProps {
   task?: CommonTask;
   defaultPriority?: "must" | "should" | "remind";
   isGuest?: boolean;
+  onSuccess?: () => void; // 게스트 모드에서 성공 시 호출할 콜백
 }
 
 const inputSize: Size = "md";
@@ -62,6 +63,7 @@ export default function TaskFormModal({
   task,
   defaultPriority = "must",
   isGuest = false,
+  onSuccess,
 }: TaskFormModalProps) {
   const [label, setLabel] = useState(task ? task.title : "");
   const [priority, setPriority] = useState<"must" | "should" | "remind">(
@@ -104,7 +106,7 @@ export default function TaskFormModal({
     let updatedTasks;
     if (task) {
       // 수정 모드
-      updatedTasks = existingTasks.map((t: Record<string, unknown>) =>
+      updatedTasks = existingTasks.map((t: CommonTask) =>
         t.id === task.id ? { ...t, ...newTask } : t
       );
     } else {
@@ -144,7 +146,10 @@ export default function TaskFormModal({
               ? "할 일이 수정되었습니다! ✏️"
               : "새로운 할 일이 등록되었습니다! ✅"
           );
-          window.location.reload(); // 페이지 새로고침으로 상태 업데이트
+          // 성공 콜백 호출로 상태 업데이트 (페이지 새로고침 대신)
+          if (onSuccess) {
+            onSuccess();
+          }
         } else {
           showToast("할 일 저장에 실패했습니다 😭");
         }
