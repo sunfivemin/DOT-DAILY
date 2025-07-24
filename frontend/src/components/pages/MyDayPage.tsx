@@ -123,6 +123,25 @@ export default function MyDayPage() {
     isLoading: guestLoading,
   } = useGuestTasks(selectedDate);
 
+  // 게스트 모드에서 할 일 저장/수정 성공 시 호출할 콜백
+  const handleGuestTaskSuccess = useCallback(() => {
+    // 게스트 모드일 때만 상태 업데이트
+    if (isGuest) {
+      // 로컬 스토리지에서 최신 데이터를 다시 불러와서 상태 업데이트
+      const dateStr = selectedDate.toISOString().split("T")[0];
+      const stored = localStorage.getItem(`guest-tasks-${dateStr}`);
+      if (stored) {
+        try {
+          const updatedTasks = JSON.parse(stored);
+          setGuestTasks(updatedTasks);
+        } catch {
+          // JSON 파싱 실패 시 빈 배열로 설정
+          setGuestTasks([]);
+        }
+      }
+    }
+  }, [isGuest, selectedDate, setGuestTasks]);
+
   // 인증된 사용자일 때 서버 API 사용
   const {
     data: tasks,
@@ -426,6 +445,7 @@ export default function MyDayPage() {
           task={editTask || undefined}
           defaultPriority={defaultPriority}
           isGuest={isGuest}
+          onSuccess={handleGuestTaskSuccess}
         />
       </FullScreenModal>
 
