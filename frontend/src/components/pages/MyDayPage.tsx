@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MobileLayout from "@/components/layout/MobileLayout";
 import {
   TaskGroup,
@@ -54,6 +54,7 @@ interface CommonTask {
 export default function MyDayPage() {
   const { selectedDate } = useDateStore();
   const { isGuest, isAuthenticated } = useAuthStore();
+  const queryClient = useQueryClient();
 
   // 디버깅용 로그
   useEffect(() => {
@@ -316,6 +317,9 @@ export default function MyDayPage() {
         // 서버에 priority 변경 동기화
         if (typeof updated.id === "number") {
           await updateTask(updated.id, { priority: newPriority });
+          // 특정 날짜의 캐시만 무효화
+          const dateKey = selectedDate.toISOString().split("T")[0];
+          queryClient.invalidateQueries({ queryKey: ["tasks", dateKey] });
         }
       }
     }
@@ -415,7 +419,7 @@ export default function MyDayPage() {
         </div>
       </DragDropContext>
 
-      <FullScreenModal open={open} onClose={handleClose}>
+      <FullScreenModal open={open} onClose={handleClose} variant="full">
         <TaskFormModal
           onClose={handleClose}
           defaultDate={selectedDate.toLocaleDateString("en-CA")} // YYYY-MM-DD 형식으로 한국 시간대 사용
