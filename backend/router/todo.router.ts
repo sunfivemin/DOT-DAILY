@@ -3,14 +3,12 @@ import { authenticate } from '../middlewares/authMiddleware';
 import {
   createTodoController,
   deleteTodoController,
-  getAllTodosController,
   getTodosByDateController,
   getTodosController,
   upDateTodoController,
   updateTodoStatusController,
   moveToArchiveController,
   moveToRetryController,
-  moveToTodayController,
 } from '../controller/todo.controller';
 
 const router = express.Router();
@@ -33,7 +31,5 @@ router.put('/:id/status', authenticate, updateTodoStatusController);
 router.put('/:id/archive', authenticate, moveToArchiveController);
 // 재시도로 이동
 router.put('/:id/retry', authenticate, moveToRetryController);
-// 오늘로 이동
-router.put('/:id/today', authenticate, moveToTodayController);
 
 export default router;
