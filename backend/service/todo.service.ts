@@ -121,16 +121,3 @@ export const moveToRetryService = async (todoId: number, userId: number) => {
     },
   });
 };
-
-// 오늘로 이동 (날짜를 오늘로 변경, 상태를 pending으로 변경)
-export const moveToTodayService = async (todoId: number, userId: number) => {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
-
-  return await prisma.todos.updateMany({
-    where: { id: todoId, userId },
-    data: {
-      status: 'pending',
-      date: today,
-    },
-  });
-};

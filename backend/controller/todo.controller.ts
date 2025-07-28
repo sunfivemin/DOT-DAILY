@@ -13,7 +13,6 @@ import {
   updateTodoStatusService,
   moveToArchiveService,
   moveToRetryService,
-  moveToTodayService,
 } from '../service/todo.service';
 import { insertTodoSchema } from '../validations/todoValidation';
 import { ZodError } from 'zod';
@@ -212,31 +211,5 @@ export const moveToRetryController = async (req: Request, res: Response) => {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: '재시도로 이동 중 오류 발생' });
-  }
-};
-
-// 오늘로 이동
-export const moveToTodayController = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    const todoId = Number(req.params.id);
-
-    const updated = await moveToTodayService(todoId, userId);
-
-    if (updated.count === 0) {
-      res.status(StatusCodes.NOT_FOUND).json({
-        message: '오늘로 이동할 투두가 존재하지 않습니다.',
-      });
-      return;
-    }
-
-    res.status(StatusCodes.OK).json({
-      message: '투두가 오늘로 이동되었습니다.',
-      data: { id: todoId, status: 'pending' },
-    });
-  } catch (err) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: '오늘로 이동 중 오류 발생' });
   }
 };
