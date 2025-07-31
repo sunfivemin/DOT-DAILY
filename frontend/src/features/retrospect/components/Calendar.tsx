@@ -68,6 +68,100 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
     return dayCell.dayNumberText.replace("일", "");
   }, []);
 
+  const onDayCellDidMount = useCallback(
+    (dayCell: DayCellContentArg) => {
+      const dateString = formatDateToString(dayCell.date);
+      const emotion = emotionByDateMap[dateString];
+      const isSelected =
+        formatDateToString(dayCell.date) === formatDateToString(selectedDate);
+      const isToday =
+        formatDateToString(dayCell.date) === formatDateToString(new Date());
+
+      if (emotion) {
+        dayCell.el.classList.add(`emotion-${emotion}`);
+      }
+
+      // 기존 라벨들 제거
+      const existingLabel = dayCell.el.querySelector(".selected-label");
+      if (existingLabel) {
+        existingLabel.remove();
+      }
+
+      if (isSelected && !isToday) {
+        // 선택된 날짜이지만 오늘이 아닌 경우 "선택" 라벨 표시
+        dayCell.el.classList.add("selected-date");
+
+        const label = document.createElement("div");
+        label.className = "selected-label";
+        label.textContent = "선택";
+        label.style.cssText = `
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #262c33;
+          color: #fff;
+          padding: 1px 0;
+          font-size: 10px;
+          text-align: center;
+          border-radius: 4px;
+          width: 32px;
+          z-index: 10;
+          pointer-events: none;
+        `;
+
+        dayCell.el.appendChild(label);
+      } else if (isToday) {
+        // 오늘 날짜인 경우 항상 "오늘" 라벨 표시
+        const label = document.createElement("div");
+        label.className = "today-label";
+        label.textContent = "오늘";
+        label.style.cssText = `
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #d1fae5;
+          color: #000;
+          padding: 1px 0;
+          font-size: 10px;
+          text-align: center;
+          border-radius: 4px;
+          width: 32px;
+          z-index: 10;
+          pointer-events: none;
+        `;
+
+        dayCell.el.appendChild(label);
+      } else if (isSelected && isToday) {
+        // 오늘이면서 선택된 경우에도 "오늘" 라벨 표시
+        dayCell.el.classList.add("selected-date");
+
+        const label = document.createElement("div");
+        label.className = "today-label";
+        label.textContent = "오늘";
+        label.style.cssText = `
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #d1fae5;
+          color: #000;
+          padding: 1px 0;
+          font-size: 10px;
+          text-align: center;
+          border-radius: 4px;
+          width: 32px;
+          z-index: 10;
+          pointer-events: none;
+        `;
+
+        dayCell.el.appendChild(label);
+      }
+    },
+    [emotionByDateMap, selectedDate]
+  );
+
   useEffect(() => {
     const fetchEmotionMemos = async () => {
       try {
@@ -115,11 +209,12 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           locale="ko"
-          height={320}
+          height="auto"
           headerToolbar={false}
           dateClick={onDateClick}
           dayCellClassNames={onDayCellClassNames}
           dayCellContent={onDayCellContent}
+          dayCellDidMount={onDayCellDidMount}
           showNonCurrentDates={false}
           fixedWeekCount={false}
           // 성능 최적화 옵션들
