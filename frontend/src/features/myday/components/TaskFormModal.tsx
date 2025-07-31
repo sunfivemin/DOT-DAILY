@@ -177,7 +177,7 @@ export default function TaskFormModal({
 
   return (
     <motion.div
-      className="h-full max-h-screen flex flex-col bg-white"
+      className="h-screen max-h-screen flex flex-col bg-white fixed inset-0 z-50 max-w-md mx-auto"
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
       exit={{ y: "100%" }}
