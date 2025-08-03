@@ -140,20 +140,20 @@
 /* 감정 아이콘이 있는 날짜에서도 선택 라벨이 보이도록 */
 .fc-daygrid-day[class*="emotion-"].selected-date::after,
 .fc-daygrid-day.selected-date::after {
-  content: "선택" !important;
-  background: #262c33 !important;
-  color: #fff !important;
-  z-index: 10 !important;
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  width: 32px !important;
-  padding: 1px 0 !important;
-  font-size: 10px !important;
-  text-align: center !important;
-  border-radius: 4px !important;
-  pointer-events: none !important;
+  content: "선택";
+  background: #262c33;
+  color: #fff;
+  z-index: 10;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  padding: 1px 0;
+  font-size: 10px;
+  text-align: center;
+  border-radius: 4px;
+  pointer-events: none;
 }
 
 [class*="emotion-"] .fc-daygrid-day-number {
