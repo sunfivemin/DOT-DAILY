@@ -22,7 +22,6 @@ export default function GuestModePage() {
             height={80}
             priority
             className="w-20 h-20"
-            style={{ width: "auto", height: "auto" }}
           />
           <div className="text-center">
             <p className="text-gray-600 text-sm">투두 + 회고 기록 앱</p>
