@@ -68,6 +68,32 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
     return dayCell.dayNumberText.replace("일", "");
   }, []);
 
+  // 라벨 생성 헬퍼 함수
+  const createLabel = useCallback(
+    (text: string, className: string, isToday: boolean) => {
+      const label = document.createElement("div");
+      label.className = className;
+      label.textContent = text;
+      label.style.cssText = `
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${isToday ? "#d1fae5" : "#262c33"};
+      color: ${isToday ? "#000" : "#fff"};
+      padding: 1px 0;
+      font-size: 10px;
+      text-align: center;
+      border-radius: 4px;
+      width: 32px;
+      z-index: 10;
+      pointer-events: none;
+    `;
+      return label;
+    },
+    []
+  );
+
   const onDayCellDidMount = useCallback(
     (dayCell: DayCellContentArg) => {
       const dateString = formatDateToString(dayCell.date);
@@ -81,85 +107,28 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
         dayCell.el.classList.add(`emotion-${emotion}`);
       }
 
-      // 기존 라벨들 제거
-      const existingLabel = dayCell.el.querySelector(".selected-label");
-      if (existingLabel) {
-        existingLabel.remove();
-      }
+      // 기존 라벨들 모두 제거
+      const existingLabels = dayCell.el.querySelectorAll(
+        ".selected-label, .today-label"
+      );
+      existingLabels.forEach((label: Element) => label.remove());
 
-      if (isSelected && !isToday) {
+      // 라벨 추가 로직
+      if (isToday) {
+        // 오늘 날짜인 경우 항상 "오늘" 라벨 표시 (선택 여부와 관계없이)
+        if (isSelected) {
+          dayCell.el.classList.add("selected-date");
+        }
+        const label = createLabel("오늘", "today-label", true);
+        dayCell.el.appendChild(label);
+      } else if (isSelected) {
         // 선택된 날짜이지만 오늘이 아닌 경우 "선택" 라벨 표시
         dayCell.el.classList.add("selected-date");
-
-        const label = document.createElement("div");
-        label.className = "selected-label";
-        label.textContent = "선택";
-        label.style.cssText = `
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #262c33;
-          color: #fff;
-          padding: 1px 0;
-          font-size: 10px;
-          text-align: center;
-          border-radius: 4px;
-          width: 32px;
-          z-index: 10;
-          pointer-events: none;
-        `;
-
-        dayCell.el.appendChild(label);
-      } else if (isToday) {
-        // 오늘 날짜인 경우 항상 "오늘" 라벨 표시
-        const label = document.createElement("div");
-        label.className = "today-label";
-        label.textContent = "오늘";
-        label.style.cssText = `
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #d1fae5;
-          color: #000;
-          padding: 1px 0;
-          font-size: 10px;
-          text-align: center;
-          border-radius: 4px;
-          width: 32px;
-          z-index: 10;
-          pointer-events: none;
-        `;
-
-        dayCell.el.appendChild(label);
-      } else if (isSelected && isToday) {
-        // 오늘이면서 선택된 경우에도 "오늘" 라벨 표시
-        dayCell.el.classList.add("selected-date");
-
-        const label = document.createElement("div");
-        label.className = "today-label";
-        label.textContent = "오늘";
-        label.style.cssText = `
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #d1fae5;
-          color: #000;
-          padding: 1px 0;
-          font-size: 10px;
-          text-align: center;
-          border-radius: 4px;
-          width: 32px;
-          z-index: 10;
-          pointer-events: none;
-        `;
-
+        const label = createLabel("선택", "selected-label", false);
         dayCell.el.appendChild(label);
       }
     },
-    [emotionByDateMap, selectedDate]
+    [emotionByDateMap, selectedDate, createLabel]
   );
 
   useEffect(() => {
@@ -170,8 +139,8 @@ const Calendar = ({ onDateModalOpen }: CalendarProps) => {
           selectedYearMonth.month
         );
         setEmotionMemoList(memos);
-      } catch {
-        // 감정 메모 조회 실패
+      } catch (error) {
+        console.error("감정 메모 조회 실패:", error);
       }
     };
 
